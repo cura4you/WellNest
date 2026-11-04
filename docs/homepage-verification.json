@@ -1,0 +1,49 @@
+{
+  "verifiedAt": "2026-11-04T23:25:10.071Z",
+  "url": "https://medivault-roan-six.vercel.app",
+  "team": "mohammad-petiwalas-projects",
+  "project": "medivault",
+  "sourceCommit": "e8ce572",
+  "deploymentId": "dpl_BGny3Ljk8eTu3zJKACyx9rC7TZ93",
+  "deploymentUrl": "https://medivault-7kjjyf7uo-mohammad-petiwalas-projects.vercel.app",
+  "candidateChecksPassed": 10,
+  "publicChecksPassed": 10,
+  "checks": [
+    "Light homepage, single headline and labelled illustrative preview",
+    "Preview tabs show records, appointments and cited AI example",
+    "Preview tabs support arrows, Home and End; ARIA references resolve",
+    "All homepage internal links lead to existing routes or sections",
+    "Role registration cards and sign-in buttons navigate correctly",
+    "Phone, tablet and desktop layouts fit at 320/390/600/768/1024/1440px",
+    "Mobile menu toggles, Escape restores focus, and anchors close menu",
+    "Legacy auth-page section navigation reaches new homepage",
+    "Reduced-motion preference disables homepage smooth scrolling",
+    "Existing signed-in users see their role-specific dashboard links"
+  ],
+  "viewports": [
+    320,
+    390,
+    600,
+    768,
+    1024,
+    1440
+  ],
+  "staticChecks": {
+    "lint": "passed",
+    "typescript": "passed",
+    "productionBuild": "passed",
+    "automatedTests": "36 passed",
+    "diffCheck": "passed"
+  },
+  "health": {
+    "ok": true
+  },
+  "errors": [],
+  "scope": "Homepage UI and route smoke checks with real browsers. Role registration links open the existing forms; no production accounts or medical records were created. Stored-session checks verify role-specific UI routing only. Backend workflows were not re-evaluated in this homepage-only change; their earlier coverage is in deployment-verification.json.",
+  "artifacts": {
+    "desktop": "/private/tmp/medivault-home-1440.png",
+    "tablet": "/private/tmp/medivault-home-768.png",
+    "mobile": "/private/tmp/medivault-home-390.png",
+    "hero": "/private/tmp/medivault-home-hero.png"
+  }
+}
