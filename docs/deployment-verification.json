@@ -1,0 +1,47 @@
+{
+  "verifiedAt": "2026-11-04T22:09:53.680Z",
+  "url": "https://medivault-roan-six.vercel.app",
+  "team": "mohammad-petiwalas-projects",
+  "project": "medivault",
+  "deploymentId": "dpl_GJSGmzj4Mr25MZgfjQye6hAqgg7L",
+  "deploymentUrl": "https://medivault-p32uztvat-mohammad-petiwalas-projects.vercel.app",
+  "sourceCommit": "af91a9b",
+  "migrationApplied": "0011_care_workflows.sql",
+  "productionSettings": {
+    "CHAT_AGENT_ENABLED": "true",
+    "CHAT_AGENT_MAX_STEPS": "4",
+    "AI_TIMEOUT_MS": "45000"
+  },
+  "candidateChecks": [
+    "patient registration and desktop dashboard",
+    "doctor registration and desktop dashboard",
+    "hospital registration and desktop dashboard",
+    "Patient vitals persist",
+    "All roles notification settings persist",
+    "Patient request and doctor confirmation",
+    "Hospital scheduling and participant authorization",
+    "All dashboards navigate and render on mobile",
+    "Hosted AI greeting completes"
+  ],
+  "hostedAgentAndStorageChecks": [
+    "Hosted agent reads own saved patient profile",
+    "Hosted encrypted document upload and authorized download",
+    "Hosted PDF extraction and embeddings persist",
+    "Hosted agent retrieves lab result with persisted citation"
+  ],
+  "publicBrowserChecks": [
+    "Public health endpoint",
+    "Public alias points to verified deployment",
+    "Public patient login, saved appointment, refresh and mobile navigation",
+    "Public doctor login, saved appointment, refresh and mobile navigation",
+    "Public hospital login, saved appointment, refresh and mobile navigation"
+  ],
+  "errors": [],
+  "cleanup": {
+    "syntheticUsersRemoved": 3,
+    "syntheticDocumentsRemoved": 1,
+    "syntheticStorageObjectsRemoved": 1
+  },
+  "scope": "Targeted hosted smoke tests with Playwright and real production services using synthetic accounts; broader isolated regression coverage is recorded in care-verification.json and agent-live-verification.json.",
+  "artifacts": "/private/tmp/medivault-public-*.png and /private/tmp/medivault-*-chat.ndjson (local only)"
+}
