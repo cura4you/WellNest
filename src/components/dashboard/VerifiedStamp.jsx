@@ -1,7 +1,5 @@
-// `color` defaults to the original teal brand color: this is shared with the
-// untouched Doctor/Hospital dashboards (UploadModal.jsx) and must keep
-// looking exactly as it always has there. The Patient dashboard's
-// DocumentViewer passes a plum accent through explicitly instead.
+// `color` defaults to teal for callers outside the new dashboard shell.
+// Dashboard modals pass the plum accent explicitly.
 export default function VerifiedStamp({ size = 180, variant = 'badge', color = '#007f8c' }) {
   const uid = `sv${size}`;
 

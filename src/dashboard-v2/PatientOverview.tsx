@@ -1,6 +1,5 @@
-// Design sample (dashboard-redesign-ts branch) — not merged into main. Health
-// Vitals and Upcoming Appointments below are hardcoded sample data, no backend
-// exists for either yet. See CLAUDE.md for full status.
+// Health Vitals and Upcoming Appointments below are hardcoded sample data; no
+// backend exists for either yet. See CLAUDE.md for full status.
 import type { ReactNode } from 'react';
 import { AiAssistantCard } from './AiAssistantCard';
 import {

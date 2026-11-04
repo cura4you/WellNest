@@ -95,7 +95,7 @@ export default function UploadModal({ onUpload, onClose, busy }) {
               </div>
               {step === 3 && (
                 <div className="upload-stamp-reveal">
-                  <VerifiedStamp size={130} />
+                  <VerifiedStamp size={130} color="var(--mv-accent-text)" />
                 </div>
               )}
               <div className={`upload-step-message${step === 3 ? ' is-done' : ''}`}>

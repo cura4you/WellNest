@@ -601,7 +601,7 @@ app.get('/api/documents/:id/download', requireAuth, async (req, res) => {
     });
 
     // RFC 5987 encoded filename prevents header injection via control chars / newlines
-    const safeAsciiName = doc.original_filename.replace(/[^\w.\-]/g, '_');
+    const safeAsciiName = doc.original_filename.replace(/[^\w.-]/g, '_');
     res.set({
       'Content-Type': doc.mime_type || 'application/octet-stream',
       'Content-Disposition': `attachment; filename="${safeAsciiName}"; filename*=UTF-8''${encodeURIComponent(doc.original_filename)}`,
@@ -911,7 +911,7 @@ app.post('/api/emergency-access/initiate', requireAuth, async (req, res) => {
     await pool.query(
       `INSERT INTO emergency_access_events (patient_id, approved_by_hospital_id, requester_user_id, reason, status, ends_at)
        VALUES ($1, $2, $3, $4, 'active', $5)`,
-      [pt.patient_id, hospitalId, req.userId, 'Emergency access initiated via biometric verification', endsAt]
+      [pt.patient_id, hospitalId, req.userId, 'Emergency access initiated with patient consent', endsAt]
     );
 
     // Audit log

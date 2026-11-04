@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useState, Fragment, type ChangeEvent } from 'react';
 import { DashboardShell } from '../../dashboard-v2/DashboardShell';
 import { DoctorOverview } from '../../dashboard-v2/DoctorOverview';
+import { RoleListPanel } from '../../dashboard-v2/RoleListPanel';
+import { AuditLogView } from '../../dashboard-v2/AuditLogView';
+import { NotificationsPanel } from '../../dashboard-v2/NotificationsPanel';
 import { ToastStack } from '../../dashboard-v2/ToastStack';
 import { useToast } from '../../dashboard-v2/useToast';
 import type { DoctorDashboardData, DoctorView, SearchResultItem } from '../../dashboard-v2/types';
 
-import DashboardSection from '../../components/dashboard/DashboardSection';
-import DataTable from '../../components/dashboard/DataTable';
-import ActivityFeed from '../../components/dashboard/ActivityFeed';
 import UploadModal from '../../components/dashboard/UploadModal';
 import { getDoctorDashboardData } from '../../services/dashboardApi';
 import { searchPatientByEmail, requestDocumentAccess } from '../../services/accessApi';
@@ -36,45 +36,9 @@ import {
 } from '../../dashboard-v2/icons';
 import '../../theme/theme.css';
 import '../../dashboard-v2/dashboard-v2.css';
-// DocumentViewer/AISummaryModal/EmergencyAccess/DrugInteractions below still
-// depend on classes defined in here (docviewer-*/aisummary-*/ea-*/di-*); see
-// PatientDashboardPage.tsx for why this stays imported even post-migration.
+// Shared modals and DrugInteractions still use base classes from this sheet;
+// dashboard-v2.css applies role-consistent overrides inside DashboardShell.
 import '../../components/dashboard/dashboard.css';
-
-const grantedColumns = [
-  { key: 'patient', label: 'Patient' },
-  { key: 'scope', label: 'Scope' },
-  { key: 'expiresAt', label: 'Expires' },
-  {
-    key: 'status',
-    label: 'Status',
-    render: (row: { status: string }) => <span className={`dashboard-badge is-${row.status}`}>{row.status}</span>,
-  },
-];
-
-const historyColumns = [
-  { key: 'patient', label: 'Patient' },
-  { key: 'reason', label: 'Reason' },
-  { key: 'scope', label: 'Scope' },
-  {
-    key: 'status',
-    label: 'Status',
-    render: (row: { status: string }) => <span className={`dashboard-badge is-${row.status}`}>{row.status}</span>,
-  },
-];
-
-const sharedDocColumns = [
-  { key: 'name', label: 'Document' },
-  { key: 'type', label: 'Type' },
-  { key: 'patient', label: 'Patient Name' },
-  { key: 'patient_email', label: 'Patient Email' },
-  { key: 'date', label: 'Date' },
-  {
-    key: 'status',
-    label: 'Status',
-    render: (row: { status: string }) => <span className={`dashboard-badge is-${row.status}`}>{row.status}</span>,
-  },
-];
 
 interface AuthUser {
   email?: string;
@@ -95,7 +59,6 @@ export default function DoctorDashboardPage() {
     specialization: user?.profile?.specialization || '',
     licenseNumber: user?.profile?.licenseNumber || '',
   });
-  const [notifySettings, setNotifySettings] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [viewerDoc, setViewerDoc] = useState<{ url: string; filename: string; mimeType: string } | null>(null);
@@ -105,9 +68,6 @@ export default function DoctorDashboardPage() {
   const refreshData = useCallback(() => {
     setLoading(true);
     getDoctorDashboardData().then((result: DoctorDashboardData) => {
-      const initialNotifications: Record<string, boolean> = {};
-      result.notifications.forEach((entry) => { initialNotifications[entry.id] = entry.enabled; });
-      setNotifySettings(initialNotifications);
       setData(result);
       setLoading(false);
     });
@@ -206,20 +166,6 @@ export default function DoctorDashboardPage() {
     const doc = (data?.sharedDocuments || []).find((d) => d.id === docId);
     setSummaryDoc({ id: docId, name: doc?.name || 'Document' });
   };
-
-  const sharedDocColumnsWithActions = [
-    ...sharedDocColumns,
-    {
-      key: 'actions',
-      label: '',
-      render: (row: { id: string }) => (
-        <div className="dashboard-inline-actions">
-          <button type="button" className="btn btn-outline" onClick={() => handleView(row.id)}>View</button>
-          <button type="button" className="btn btn-ai-summary" onClick={() => handleSummary(row.id)}>🤖 Summary</button>
-        </div>
-      ),
-    },
-  ];
 
   const handleSaveProfile = async () => {
     setBusy(true);
@@ -328,7 +274,7 @@ export default function DoctorDashboardPage() {
     request: ['Request Access', 'Search for a patient and select specific documents to request.'],
     history: ['Request History', 'All your previous access requests.'],
     activity: ['Activity Log', 'Recent activities on your account.'],
-    emergency: ['Emergency Access', 'Initiate 24-hour emergency access to patient records via biometric verification.'],
+    emergency: ['Emergency Access', 'Open a consented, audited 24-hour record window.'],
     'drug-interactions': ['Drug Interactions', 'Record and manage drug interaction notes for patients.'],
     chat: ['Chat', 'Ask questions about the documents you have access to.'],
     settings: ['Profile & Settings', 'Doctor profile details for interoperability and verification.'],
@@ -355,35 +301,43 @@ export default function DoctorDashboardPage() {
 
       case 'shared-docs':
         return (
-          <DashboardSection id="shared-docs" title="Shared Documents" subtitle="Documents shared with you by patients.">
-            <DataTable columns={sharedDocColumnsWithActions} rows={data.sharedDocuments || []} emptyMessage="No shared documents available." />
-          </DashboardSection>
+          <RoleListPanel emptyMessage="No shared documents available." rows={data.sharedDocuments.map((doc) => ({
+            id: doc.id,
+            title: doc.name,
+            meta: `${doc.patient} · ${doc.patient_email} · ${doc.type.replace(/_/g, ' ')} · ${doc.date}`,
+            status: doc.status,
+            onClick: () => handleView(doc.id),
+            actions: <>
+              <button type="button" className="mv-btn mv-btn-ghost mv-btn-sm" onClick={() => handleView(doc.id)}>View</button>
+              <button type="button" className="mv-btn mv-btn-ghost mv-btn-sm" onClick={() => handleSummary(doc.id)}>AI Summary</button>
+            </>,
+          }))} />
         );
 
       case 'grants':
         return (
-          <DashboardSection id="grants" title="Active Grants" subtitle="Your currently active access grants.">
-            <DataTable columns={grantedColumns} rows={data.grantedAccess} emptyMessage="No active grants available." />
-          </DashboardSection>
+          <RoleListPanel emptyMessage="No active grants available." icon={<ShieldCheckIcon size={16} />} rows={data.grantedAccess.map((grant) => ({
+            id: grant.id, title: grant.patient, meta: grant.scope, detail: `Expires ${grant.expiresAt}`, status: grant.status,
+          }))} />
         );
 
       case 'request':
         return (
-          <DashboardSection id="request" title="Request Access" subtitle="Search for a patient and select specific documents to request.">
-            {feedback && <p style={{ color: feedback.includes('submitted') ? 'green' : '#c33', marginBottom: 10 }}>{feedback}</p>}
-            <div className="dashboard-form-grid" style={{ marginBottom: 16 }}>
-              <div className="dashboard-field">
-                <label htmlFor="patientEmail">Patient Email</label>
-                <div style={{ display: 'flex', gap: 8 }}>
+          <div className="mv-card mv-card-pad mv-role-form">
+            {feedback && <p className="mv-role-feedback">{feedback}</p>}
+            <div className="mv-form-grid">
+              <div className="mv-form-field span-2">
+                <label className="mv-form-label" htmlFor="patientEmail">Patient Email</label>
+                <div className="mv-role-input-action">
                   <input
                     id="patientEmail"
                     name="patientEmail"
+                    className="mv-form-input"
                     value={requestForm.patientEmail}
                     onChange={handleRequestChange}
                     placeholder="patient@example.com"
-                    style={{ flex: 1 }}
                   />
-                  <button type="button" className="btn btn-outline" onClick={handleSearchPatient} disabled={searching}>
+                  <button type="button" className="mv-btn mv-btn-ghost" onClick={handleSearchPatient} disabled={searching}>
                     {searching ? 'Searching...' : 'Search'}
                   </button>
                 </div>
@@ -391,32 +345,28 @@ export default function DoctorDashboardPage() {
             </div>
 
             {searchResult && (
-              <div style={{ marginBottom: 16, padding: 12, background: 'rgba(0,119,182,0.1)', borderRadius: 8, border: '1px solid rgba(0,119,182,0.3)' }}>
-                <p style={{ margin: '0 0 8px 0', fontWeight: 600, color: '#0077b6' }}>
-                  Patient Found: {searchResult.patient.fullName}
-                </p>
-                <p style={{ margin: 0, fontSize: '0.9rem', color: '#555' }}>
-                  Age: {searchResult.patient.age ?? 'N/A'} | Gender: {searchResult.patient.gender || 'N/A'} | Blood Group: {searchResult.patient.bloodGroup || 'N/A'} | DOB: {searchResult.patient.dateOfBirth || 'N/A'}
-                </p>
+              <div className="mv-role-result">
+                <strong>{searchResult.patient.fullName}</strong>
+                <span>Age: {searchResult.patient.age ?? 'N/A'} · Gender: {searchResult.patient.gender || 'N/A'} · Blood Group: {searchResult.patient.bloodGroup || 'N/A'} · DOB: {searchResult.patient.dateOfBirth || 'N/A'}</span>
               </div>
             )}
 
             {searchResult && searchResult.documents && searchResult.documents.length > 0 && (
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <label style={{ fontWeight: 600 }}>Select Documents ({requestForm.selectedDocs.length} selected)</label>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button type="button" className="btn btn-outline" onClick={handleSelectAllDocs} style={{ padding: '4px 8px', fontSize: '0.85rem' }}>Select All</button>
-                    <button type="button" className="btn btn-outline" onClick={handleDeselectAllDocs} style={{ padding: '4px 8px', fontSize: '0.85rem' }}>Deselect All</button>
+              <div>
+                <div className="mv-role-selection-head">
+                  <span className="mv-form-label">Select Documents ({requestForm.selectedDocs.length} selected)</span>
+                  <div className="mv-role-actions">
+                    <button type="button" className="mv-btn mv-btn-ghost mv-btn-sm" onClick={handleSelectAllDocs}>Select All</button>
+                    <button type="button" className="mv-btn mv-btn-ghost mv-btn-sm" onClick={handleDeselectAllDocs}>Deselect All</button>
                   </div>
                 </div>
-                <div style={{ maxHeight: 200, overflowY: 'auto', border: '1px solid #ddd', borderRadius: 6, padding: 8 }}>
+                <div className="mv-role-selection-list">
                   {searchResult.documents.map((doc: any) => (
-                    <label key={doc.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', cursor: 'pointer', borderBottom: '1px solid #eee' }}>
+                    <label key={doc.id} className="mv-role-selection-row">
                       <input type="checkbox" checked={requestForm.selectedDocs.includes(doc.id)} onChange={() => handleToggleDoc(doc.id)} />
-                      <span style={{ flex: 1 }}>{doc.documentName || doc.originalFilename}</span>
-                      <span style={{ fontSize: '0.85rem', color: '#666' }}>{doc.documentType}</span>
-                      <span style={{ fontSize: '0.8rem', color: '#888' }}>{doc.visitDate || doc.uploadedAt?.split('T')[0]}</span>
+                      <span className="mv-role-document-name">{doc.documentName || doc.originalFilename}</span>
+                      <span className="mv-row-meta">{doc.documentType}</span>
+                      <span className="mv-row-meta">{doc.visitDate || doc.uploadedAt?.split('T')[0]}</span>
                     </label>
                   ))}
                 </div>
@@ -424,73 +374,69 @@ export default function DoctorDashboardPage() {
             )}
 
             {searchResult && searchResult.documents && searchResult.documents.length === 0 && (
-              <p style={{ color: '#888', marginBottom: 16 }}>No documents found for this patient.</p>
+              <p className="mv-row-meta">No documents found for this patient.</p>
             )}
 
-            <div className="dashboard-form-grid" style={{ marginBottom: 16 }}>
-              <div className="dashboard-field span-2">
-                <label htmlFor="reason">Reason for Request</label>
-                <textarea id="reason" name="reason" value={requestForm.reason} onChange={handleRequestChange} placeholder="Explain why you need access to these documents..." />
+            <div className="mv-form-grid">
+              <div className="mv-form-field span-2">
+                <label className="mv-form-label" htmlFor="reason">Reason for Request</label>
+                <textarea id="reason" name="reason" className="mv-form-input mv-role-textarea" value={requestForm.reason} onChange={handleRequestChange} placeholder="Explain why you need access to these documents..." />
               </div>
             </div>
-            <div className="dashboard-inline-actions">
-              <button type="button" className="btn btn-primary" onClick={handleSubmitRequest} disabled={busy || !searchResult || requestForm.selectedDocs.length === 0}>
+            <div className="mv-role-actions">
+              <button type="button" className="mv-btn mv-btn-accent" onClick={handleSubmitRequest} disabled={busy || !searchResult || requestForm.selectedDocs.length === 0}>
                 {busy ? 'Submitting…' : 'Submit Request'}
               </button>
             </div>
-          </DashboardSection>
+          </div>
         );
 
       case 'history':
         return (
-          <DashboardSection id="history" title="Request History" subtitle="All your previous access requests.">
-            <DataTable columns={historyColumns} rows={data.requestHistory} emptyMessage="No request history available." />
-          </DashboardSection>
+          <RoleListPanel emptyMessage="No request history available." icon={<ClipboardIcon size={16} />} rows={data.requestHistory.map((request) => ({
+            id: request.id, title: request.patient, meta: request.scope, detail: request.reason, status: request.status,
+          }))} />
         );
 
       case 'activity':
-        return (
-          <DashboardSection id="activity" title="Activity Log" subtitle="Recent activities on your account.">
-            <ActivityFeed items={data.auditEvents} emptyMessage="No activity recorded yet." />
-          </DashboardSection>
-        );
+        return <AuditLogView events={data.auditEvents} />;
 
       case 'settings':
         return (
-          <DashboardSection id="settings" title="Profile & Settings" subtitle="Doctor profile details for interoperability and verification.">
-            {feedback && <p style={{ color: feedback.includes('success') ? 'green' : '#c33', marginBottom: 10 }}>{feedback}</p>}
-            <div className="dashboard-form-grid">
-              <div className="dashboard-field">
-                <label htmlFor="fullName">Full Name</label>
-                <input id="fullName" name="fullName" value={profile.fullName} onChange={handleProfileChange} />
+          <div className="mv-card mv-card-pad mv-role-form">
+            <div className="mv-form-grid">
+              <div className="mv-form-field">
+                <label className="mv-form-label" htmlFor="fullName">Full Name</label>
+                <input id="fullName" name="fullName" className="mv-form-input" value={profile.fullName} onChange={handleProfileChange} />
               </div>
-              <div className="dashboard-field">
-                <label htmlFor="specialization">Specialization</label>
-                <input id="specialization" name="specialization" value={profile.specialization} onChange={handleProfileChange} />
+              <div className="mv-form-field">
+                <label className="mv-form-label" htmlFor="specialization">Specialization</label>
+                <input id="specialization" name="specialization" className="mv-form-input" value={profile.specialization} onChange={handleProfileChange} />
               </div>
-              <div className="dashboard-field span-2">
-                <label htmlFor="licenseNumber">License Number</label>
-                <input id="licenseNumber" name="licenseNumber" value={profile.licenseNumber} onChange={handleProfileChange} disabled />
+              <div className="mv-form-field span-2">
+                <label className="mv-form-label" htmlFor="licenseNumber">License Number</label>
+                <input id="licenseNumber" name="licenseNumber" className="mv-form-input" value={profile.licenseNumber} onChange={handleProfileChange} disabled />
               </div>
-              <div className="dashboard-field">
-                <button type="button" className="btn btn-primary" onClick={handleSaveProfile} disabled={busy}>{busy ? 'Saving…' : 'Save Profile'}</button>
+              <div className="mv-form-field">
+                <button type="button" className="mv-btn mv-btn-accent" onClick={handleSaveProfile} disabled={busy}>{busy ? 'Saving…' : 'Save Profile'}</button>
               </div>
             </div>
-          </DashboardSection>
+            {feedback && <p className="mv-role-feedback">{feedback}</p>}
+          </div>
         );
 
       case 'emergency':
         return (
-          <DashboardSection id="emergency" title="Emergency Access" subtitle="Initiate 24-hour emergency access to patient records via biometric verification.">
+          <div className="mv-emergency-panel">
             <EmergencyAccess onViewDocument={handleView} />
-          </DashboardSection>
+          </div>
         );
 
       case 'drug-interactions':
         return (
-          <DashboardSection id="drug-interactions" title="Drug Interactions" subtitle="Record and manage drug interaction notes for patients.">
+          <div className="mv-drug-panel">
             <DrugInteractions />
-          </DashboardSection>
+          </div>
         );
 
       case 'chat':
@@ -501,31 +447,7 @@ export default function DoctorDashboardPage() {
         );
 
       case 'notifications':
-        return (
-          <DashboardSection id="notifications" title="Notifications" subtitle="How you receive request and emergency alerts.">
-            <div className="dashboard-table-wrap">
-              <table className="dashboard-table">
-                <thead><tr><th>Channel</th><th>Description</th><th>Enabled</th></tr></thead>
-                <tbody>
-                  {data.notifications.map((entry) => (
-                    <tr key={entry.id}>
-                      <td>{entry.channel}</td>
-                      <td>{entry.description}</td>
-                      <td>
-                        <input
-                          type="checkbox"
-                          checked={Boolean(notifySettings[entry.id])}
-                          onChange={() => setNotifySettings((prev) => ({ ...prev, [entry.id]: !prev[entry.id] }))}
-                          aria-label={`Toggle ${entry.channel} notifications`}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </DashboardSection>
-        );
+        return <NotificationsPanel notifications={data.notifications} />;
 
       default:
         return null;

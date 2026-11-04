@@ -58,7 +58,7 @@ MediVault is a **secure, role-based medical records platform** that puts patient
 - ⚛️ React 19 + React Router 7
 - ⚡ Vite 7
 - 🎨 Custom CSS (landing, auth, dashboards) — no Tailwind or component library
-- 🧪 The Patient dashboard is mid-migration to a new TypeScript design system (`src/dashboard-v2/`) on the `dashboard-redesign-ts` branch; `main` still ships the original JS/JSX dashboards. See **Project Status** below.
+- 🎨 Patient, Doctor, and Hospital dashboards use the shared TypeScript design system in `src/dashboard-v2/`. See **Project Status** below.
 
 ### Backend
 - 🟢 Node.js + Express 5
@@ -271,9 +271,9 @@ Operational notes:
 
 ## 🧭 Project Status
 
-`main` ships the original JS/JSX dashboards described above and is the stable, deployable branch.
+The Patient, Doctor, and Hospital dashboards share the plum/berry TypeScript design system in `src/dashboard-v2/`. Patient tabs were migrated first; Doctor and Hospital now use matching cards, lists, forms, and notifications throughout. The shared emergency access screen uses the same visual system and describes the actual consented, audited access flow. Patient Health Vitals and Upcoming Appointments are still explicitly labeled sample data because no backend source exists for them.
 
-A ground-up **TypeScript redesign of the Patient dashboard** (new visual language, new component structure under `src/dashboard-v2/`) is in progress on the `dashboard-redesign-ts` branch — not merged into `main`. As of this writing, every Patient-facing tab (Overview, Storage Vault, Access Requests, Audit Log, Notifications, Settings, AI Chat) has been migrated; the Doctor and Hospital dashboards are still on the original design. See `CLAUDE.md` for the detailed, current state of that work, the design decisions behind it, and this machine's local dev setup notes.
+The latest Doctor/Hospital design changes are currently local and have not been deployed. See `CLAUDE.md` for implementation history and local setup notes.
 
 ---
 
@@ -284,7 +284,7 @@ A ground-up **TypeScript redesign of the Patient dashboard** (new visual languag
 - [ ] **Legacy path cleanup** — Retire compatibility branches post-migration
 - [ ] **Mobile app** — React Native patient portal
 - [ ] **HL7 FHIR integration** — Interoperability with hospital systems
-- [ ] **Doctor/Hospital dashboard redesign** — Extend the `dashboard-v2` design system past Patient once it's fully settled
+- [x] **Doctor/Hospital dashboard redesign** — Extend the `dashboard-v2` design system across all role tabs
 
 ---
 

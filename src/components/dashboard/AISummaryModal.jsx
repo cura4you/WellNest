@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { summarizeDocument } from '../../services/vaultApi';
 
 function parseSection(text) {
-  const sections = text.split(/\n(?=[🏥📋⚠️💊🧠🩺❓🔴])/g);
+  const sections = text.split(/\n(?=🏥|📋|⚠️|💊|🧠|🩺|❓|🔴)/gu);
   return sections.map((section, idx) => {
     if (section.startsWith('🏥')) {
       return (

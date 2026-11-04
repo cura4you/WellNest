@@ -1,4 +1,4 @@
-// Design sample (dashboard-redesign-ts branch) — not merged into main. See CLAUDE.md.
+// Shared dashboard shell for Patient, Doctor, and Hospital roles.
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTheme } from '../theme/useTheme';
 import {

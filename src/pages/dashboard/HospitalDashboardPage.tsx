@@ -1,19 +1,20 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DashboardShell } from '../../dashboard-v2/DashboardShell';
 import { HospitalOverview } from '../../dashboard-v2/HospitalOverview';
+import { RoleListPanel } from '../../dashboard-v2/RoleListPanel';
+import { AuditLogView } from '../../dashboard-v2/AuditLogView';
+import { NotificationsPanel } from '../../dashboard-v2/NotificationsPanel';
 import { ToastStack } from '../../dashboard-v2/ToastStack';
 import { useToast } from '../../dashboard-v2/useToast';
 import type { HospitalDashboardData, HospitalView, SearchResultItem } from '../../dashboard-v2/types';
 
-import DashboardSection from '../../components/dashboard/DashboardSection';
-import DataTable from '../../components/dashboard/DataTable';
-import ActivityFeed from '../../components/dashboard/ActivityFeed';
 import UploadModal from '../../components/dashboard/UploadModal';
 import { getHospitalDashboardData } from '../../services/dashboardApi';
-import { uploadDocument } from '../../services/vaultApi';
+import { uploadDocument, viewDocument } from '../../services/vaultApi';
 import { revokeGrantsByGrantee } from '../../services/accessApi';
 import { updateProfile } from '../../services/profileApi';
 import EmergencyAccess from '../../components/dashboard/EmergencyAccess';
+import DocumentViewer from '../../components/dashboard/DocumentViewer';
 import ChatPanel from '../../components/chat/ChatPanel';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -31,17 +32,6 @@ import '../../theme/theme.css';
 import '../../dashboard-v2/dashboard-v2.css';
 import '../../components/dashboard/dashboard.css';
 
-const queueColumns = [
-  { key: 'patient', label: 'Patient' },
-  { key: 'file', label: 'File' },
-  { key: 'submittedAt', label: 'Submitted At' },
-  {
-    key: 'status',
-    label: 'Status',
-    render: (row: { status: string }) => <span className={`dashboard-badge is-${row.status}`}>{row.status}</span>,
-  },
-];
-
 interface AuthUser {
   email?: string;
   profile?: { hospitalName?: string; supportEmail?: string; officialEmail?: string; phone?: string };
@@ -58,17 +48,14 @@ export default function HospitalDashboardPage() {
     supportEmail: user?.profile?.supportEmail || user?.profile?.officialEmail || '',
     contactPhone: user?.profile?.phone || '',
   });
-  const [notifySettings, setNotifySettings] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState('');
+  const [viewerDoc, setViewerDoc] = useState<{ url: string; filename: string; mimeType: string } | null>(null);
   const { toasts, showToast } = useToast();
 
   const refreshData = useCallback(() => {
     setLoading(true);
     getHospitalDashboardData().then((result: HospitalDashboardData) => {
-      const initialNotifications: Record<string, boolean> = {};
-      result.notifications.forEach((entry) => { initialNotifications[entry.id] = entry.enabled; });
-      setNotifySettings(initialNotifications);
       setData(result);
       setLoading(false);
     });
@@ -81,6 +68,14 @@ export default function HospitalDashboardPage() {
     setFeedback('Document uploaded & stamped successfully!');
     showToast('Document uploaded & stamped');
     refreshData();
+  };
+
+  const handleView = async (docId: string) => {
+    try {
+      setViewerDoc(await viewDocument(docId));
+    } catch (err: any) {
+      showToast(err.message || 'Could not open the document.', 'info');
+    }
   };
 
   const handleRevoke = async (granteeUserId: string) => {
@@ -111,26 +106,6 @@ export default function HospitalDashboardPage() {
       setBusy(false);
     }
   };
-
-  const accessColumnsWithActions = [
-    { key: 'doctor', label: 'Doctor' },
-    { key: 'department', label: 'Department' },
-    { key: 'grants', label: 'Active Grants' },
-    {
-      key: 'status',
-      label: 'Status',
-      render: (row: { status: string }) => <span className={`dashboard-badge is-${row.status}`}>{row.status}</span>,
-    },
-    {
-      key: 'actions',
-      label: 'Actions',
-      render: (row: { granteeUserId: string }) => (
-        <div className="dashboard-inline-actions">
-          <button type="button" className="btn btn-primary" onClick={() => handleRevoke(row.granteeUserId)} disabled={busy}>Revoke</button>
-        </div>
-      ),
-    },
-  ];
 
   const handleViewChange = (view: HospitalView) => {
     setFeedback('');
@@ -210,7 +185,7 @@ export default function HospitalDashboardPage() {
     queue: ['Upload Queue', 'Monitor processing status of uploaded documents.'],
     access: ['Staff Access', 'Manage doctor-level access to patient records.'],
     compliance: ['Compliance & Audit', 'Review compliance and audit events.'],
-    emergency: ['Emergency Access', 'Initiate 24-hour emergency access to patient records via biometric verification.'],
+    emergency: ['Emergency Access', 'Open a consented, audited 24-hour record window.'],
     chat: ['Chat', 'Ask questions about the documents you have access to.'],
     settings: ['Profile & Settings', 'Institution identity and communication settings.'],
     notifications: ['Notifications', 'Control institution alert channels.'],
@@ -235,55 +210,56 @@ export default function HospitalDashboardPage() {
 
       case 'queue':
         return (
-          <DashboardSection id="queue" title="Upload Queue" subtitle="Monitor processing status of uploaded documents.">
-            <DataTable columns={queueColumns} rows={data.uploadQueue} emptyMessage="No upload jobs found." />
-          </DashboardSection>
+          <RoleListPanel emptyMessage="No upload jobs found." icon={<UploadIcon size={16} />} rows={data.uploadQueue.map((row) => ({
+            id: row.id, title: row.file, meta: row.patient, detail: row.submittedAt, status: row.status,
+          }))} />
         );
 
       case 'access':
         return (
-          <DashboardSection id="access" title="Staff Access" subtitle="Manage doctor-level access to patient records.">
-            {feedback && <p style={{ color: feedback.includes('success') || feedback.includes('revoked') ? 'green' : '#c33', marginBottom: 10 }}>{feedback}</p>}
-            <DataTable columns={accessColumnsWithActions} rows={data.staffAccess} emptyMessage="No staff access assignments found." />
-          </DashboardSection>
+          <>
+            {feedback && <p className="mv-role-feedback">{feedback}</p>}
+            <RoleListPanel emptyMessage="No staff access assignments found." icon={<BuildingIcon size={16} />} rows={data.staffAccess.map((row) => ({
+              id: row.id,
+              title: row.doctor,
+              meta: row.department,
+              detail: `${row.grants} active grant${Number(row.grants) === 1 ? '' : 's'}`,
+              status: row.status,
+              actions: <button type="button" className="mv-btn mv-btn-ghost mv-btn-sm" onClick={() => handleRevoke(row.granteeUserId)} disabled={busy}>Revoke</button>,
+            }))} />
+          </>
         );
 
       case 'compliance':
-        return (
-          <DashboardSection id="compliance" title="Compliance & Audit" subtitle="Review compliance and audit events.">
-            <ActivityFeed items={data.complianceEvents} emptyMessage="No compliance events yet." />
-          </DashboardSection>
-        );
+        return <AuditLogView events={data.complianceEvents} />;
 
       case 'settings':
         return (
-          <DashboardSection id="settings" title="Profile & Settings" subtitle="Institution identity and communication settings.">
-            {feedback && <p style={{ color: feedback.includes('success') ? 'green' : '#c33', marginBottom: 10 }}>{feedback}</p>}
-            <div className="dashboard-form-grid">
-              <div className="dashboard-field">
-                <label htmlFor="hospitalName">Hospital Name</label>
-                <input id="hospitalName" name="hospitalName" value={settings.hospitalName} onChange={(e) => setSettings((prev) => ({ ...prev, hospitalName: e.target.value }))} />
+          <div className="mv-card mv-card-pad mv-role-form">
+            <div className="mv-form-grid">
+              <div className="mv-form-field">
+                <label className="mv-form-label" htmlFor="hospitalName">Hospital Name</label>
+                <input id="hospitalName" name="hospitalName" className="mv-form-input" value={settings.hospitalName} onChange={(e) => setSettings((prev) => ({ ...prev, hospitalName: e.target.value }))} />
               </div>
-              <div className="dashboard-field">
-                <label htmlFor="supportEmail">Support Email</label>
-                <input id="supportEmail" name="supportEmail" value={settings.supportEmail} onChange={(e) => setSettings((prev) => ({ ...prev, supportEmail: e.target.value }))} />
+              <div className="mv-form-field">
+                <label className="mv-form-label" htmlFor="supportEmail">Support Email</label>
+                <input id="supportEmail" name="supportEmail" className="mv-form-input" value={settings.supportEmail} onChange={(e) => setSettings((prev) => ({ ...prev, supportEmail: e.target.value }))} />
               </div>
-              <div className="dashboard-field span-2">
-                <label htmlFor="contactPhone">Contact Phone</label>
-                <input id="contactPhone" name="contactPhone" value={settings.contactPhone} onChange={(e) => setSettings((prev) => ({ ...prev, contactPhone: e.target.value }))} />
+              <div className="mv-form-field span-2">
+                <label className="mv-form-label" htmlFor="contactPhone">Contact Phone</label>
+                <input id="contactPhone" name="contactPhone" className="mv-form-input" value={settings.contactPhone} onChange={(e) => setSettings((prev) => ({ ...prev, contactPhone: e.target.value }))} />
               </div>
-              <div className="dashboard-field">
-                <button type="button" className="btn btn-primary" onClick={handleSaveProfile} disabled={busy}>{busy ? 'Saving…' : 'Save Profile'}</button>
+              <div className="mv-form-field">
+                <button type="button" className="mv-btn mv-btn-accent" onClick={handleSaveProfile} disabled={busy}>{busy ? 'Saving…' : 'Save Profile'}</button>
               </div>
             </div>
-          </DashboardSection>
+            {feedback && <p className="mv-role-feedback">{feedback}</p>}
+          </div>
         );
 
       case 'emergency':
         return (
-          <DashboardSection id="emergency" title="Emergency Access" subtitle="Initiate 24-hour emergency access to patient records via biometric verification.">
-            <EmergencyAccess />
-          </DashboardSection>
+          <div className="mv-emergency-panel"><EmergencyAccess onViewDocument={handleView} /></div>
         );
 
       case 'chat':
@@ -294,33 +270,7 @@ export default function HospitalDashboardPage() {
         );
 
       case 'notifications':
-        return (
-          <DashboardSection id="notifications" title="Notifications" subtitle="Control institution alert channels.">
-            <div className="dashboard-table-wrap">
-              <table className="dashboard-table">
-                <thead>
-                  <tr><th>Channel</th><th>Description</th><th>Enabled</th></tr>
-                </thead>
-                <tbody>
-                  {data.notifications.map((entry) => (
-                    <tr key={entry.id}>
-                      <td>{entry.channel}</td>
-                      <td>{entry.description}</td>
-                      <td>
-                        <input
-                          type="checkbox"
-                          checked={Boolean(notifySettings[entry.id])}
-                          onChange={() => setNotifySettings((prev) => ({ ...prev, [entry.id]: !prev[entry.id] }))}
-                          aria-label={`Toggle ${entry.channel} notifications`}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </DashboardSection>
-        );
+        return <NotificationsPanel notifications={data.notifications} />;
 
       default:
         return null;
@@ -347,6 +297,15 @@ export default function HospitalDashboardPage() {
       {renderView()}
       {showUpload && (
         <UploadModal onUpload={handleUpload} onClose={() => setShowUpload(false)} busy={busy} />
+      )}
+      {viewerDoc && (
+        <DocumentViewer
+          url={viewerDoc.url}
+          filename={viewerDoc.filename}
+          mimeType={viewerDoc.mimeType}
+          onClose={() => { URL.revokeObjectURL(viewerDoc.url); setViewerDoc(null); }}
+          verifiedColor="var(--mv-accent-text)"
+        />
       )}
       <ToastStack toasts={toasts} />
     </DashboardShell>
