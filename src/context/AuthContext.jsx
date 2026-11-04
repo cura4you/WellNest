@@ -95,6 +95,13 @@ export function AuthProvider({ children }) {
     clearSession();
   }, [clearSession]);
 
+  const updateSessionProfile = useCallback((profile) => {
+    if (!user) return;
+    const nextUser = { ...user, profile: { ...user.profile, ...profile } };
+    setUser(nextUser);
+    persistSession(nextUser, token);
+  }, [user, token, persistSession]);
+
   const clearError = useCallback(() => setError(''), []);
 
   const value = useMemo(
@@ -110,8 +117,9 @@ export function AuthProvider({ children }) {
       register,
       logout,
       clearError,
+      updateSessionProfile,
     }),
-    [user, token, initializing, loading, error, login, register, logout, clearError]
+    [user, token, initializing, loading, error, login, register, logout, clearError, updateSessionProfile]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

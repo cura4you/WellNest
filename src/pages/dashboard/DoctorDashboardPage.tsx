@@ -1,3 +1,4 @@
+import { AppointmentsPanel } from '../../dashboard-v2/AppointmentsPanel';
 import { useCallback, useEffect, useMemo, useState, Fragment, type ChangeEvent } from 'react';
 import { DashboardShell } from '../../dashboard-v2/DashboardShell';
 import { DoctorOverview } from '../../dashboard-v2/DoctorOverview';
@@ -22,6 +23,7 @@ import { useAuth } from '../../hooks/useAuth';
 
 import {
   ActivityIcon,
+  CalendarPlusIcon,
   BellIcon,
   ClipboardIcon,
   FileIcon,
@@ -46,7 +48,7 @@ interface AuthUser {
 }
 
 export default function DoctorDashboardPage() {
-  const { user, logout } = useAuth() as { user: AuthUser | null; logout: () => void };
+  const { user, logout, updateSessionProfile } = useAuth() as { user: AuthUser | null; logout: () => void; updateSessionProfile: (profile: any) => void };
   const [data, setData] = useState<DoctorDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState<DoctorView>('overview');
@@ -171,7 +173,8 @@ export default function DoctorDashboardPage() {
     setBusy(true);
     setFeedback('');
     try {
-      await updateProfile('doctor', { fullName: profile.fullName, specialization: profile.specialization });
+      const result = await updateProfile('doctor', { fullName: profile.fullName, specialization: profile.specialization });
+      updateSessionProfile(result.profile);
       setFeedback('Profile saved successfully!');
       showToast('Profile saved');
     } catch (err: any) {
@@ -239,12 +242,13 @@ export default function DoctorDashboardPage() {
   }, [data]);
 
   const navGroups = [
-    { label: 'Workspace', keys: ['overview', 'shared-docs'] as DoctorView[] },
+    { label: 'Workspace', keys: ['overview', 'shared-docs', 'appointments'] as DoctorView[] },
     { label: 'Access & Activity', keys: ['grants', 'request', 'history', 'activity', 'notifications'] as DoctorView[] },
     { label: 'Tools', keys: ['emergency', 'drug-interactions', 'chat', 'settings'] as DoctorView[] },
   ];
 
   const navItems = [
+    { key: 'appointments' as const, label: 'Appointments', icon: <CalendarPlusIcon size={16} /> },
     { key: 'overview' as const, label: 'Overview', icon: <GridIcon size={16} /> },
     { key: 'shared-docs' as const, label: 'Shared Documents', icon: <FolderIcon size={16} /> },
     { key: 'grants' as const, label: 'Active Grants', icon: <ShieldCheckIcon size={16} /> },
@@ -267,6 +271,7 @@ export default function DoctorDashboardPage() {
     .toUpperCase();
 
   const viewTitles: Record<DoctorView, [string, string]> = {
+    appointments: ['Appointments', 'Request, confirm and manage appointments.'],
     overview: ['Overview', 'Your current access and care workflow summary.'],
     upload: ['Upload Document', 'Upload Document'],
     'shared-docs': ['Shared Documents', 'Documents shared with you by patients.'],
@@ -288,6 +293,7 @@ export default function DoctorDashboardPage() {
     }
 
     switch (activeView) {
+      case 'appointments': return <AppointmentsPanel role="doctor" />;
       case 'overview':
         return (
           <DoctorOverview

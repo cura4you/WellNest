@@ -10,5 +10,6 @@ export const AuthContext = createContext({
   login: async () => {},
   register: async () => {},
   logout: () => {},
+  updateSessionProfile: () => {},
   clearError: () => {},
 });

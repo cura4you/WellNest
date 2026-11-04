@@ -5,6 +5,7 @@ interface ProfileFields {
   bloodGroup: string;
   gender: string;
   emergencyContact: string;
+  emergencyContactPhone: string;
 }
 
 interface SettingsPanelProps {
@@ -34,8 +35,12 @@ export function SettingsPanel({ profile, busy, feedback, onChange, onSave }: Set
           <input id="gender" name="gender" className="mv-form-input" value={profile.gender} onChange={onChange} />
         </div>
         <div className="mv-form-field span-2">
-          <label className="mv-form-label" htmlFor="emergencyContact">Emergency Contact</label>
+          <label className="mv-form-label" htmlFor="emergencyContact">Emergency Contact Name</label>
           <input id="emergencyContact" name="emergencyContact" className="mv-form-input" value={profile.emergencyContact} onChange={onChange} />
+        </div>
+        <div className="mv-form-field span-2">
+          <label className="mv-form-label" htmlFor="emergencyContactPhone">Emergency Contact Phone</label>
+          <input id="emergencyContactPhone" name="emergencyContactPhone" className="mv-form-input" value={profile.emergencyContactPhone} onChange={onChange} />
         </div>
         <div className="mv-form-field">
           <button type="button" className="mv-btn mv-btn-accent" disabled={busy} onClick={onSave} style={{ alignSelf: 'flex-start' }}>

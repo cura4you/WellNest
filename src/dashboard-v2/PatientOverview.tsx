@@ -1,15 +1,12 @@
-// Health Vitals and Upcoming Appointments below are hardcoded sample data; no
-// backend exists for either yet. See CLAUDE.md for full status.
 import type { ReactNode } from 'react';
+import { VitalsSummary } from './VitalsPanel';
+import { AppointmentPreview } from './AppointmentsPanel';
 import { AiAssistantCard } from './AiAssistantCard';
 import {
   ActivityIcon,
-  CalendarCheckIcon,
   CalendarPlusIcon,
   ClipboardIcon,
-  DropletIcon,
   FileIcon,
-  HeartIcon,
   ShieldCheckIcon,
   ShieldIcon,
 } from './icons';
@@ -39,11 +36,10 @@ interface PatientOverviewProps {
   showToast: (message: string, tone?: 'success' | 'info') => void;
 }
 
-export function PatientOverview({ data, onNavigate, onViewDocument, showToast }: PatientOverviewProps) {
+export function PatientOverview({ data, onNavigate, onViewDocument }: PatientOverviewProps) {
   const recentDocuments = data.documents.slice(0, 3);
   const recentActivity = data.auditEvents.slice(0, 3);
 
-  const notConnected = () => showToast("This isn't connected yet — sample data for now.", 'info');
 
   return (
     <>
@@ -66,83 +62,11 @@ export function PatientOverview({ data, onNavigate, onViewDocument, showToast }:
         ))}
       </div>
 
-      {/* Sample vitals — not backed by real data yet */}
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-          <span className="mv-card-title">Health Vitals</span>
-          <span className="mv-sample-badge">Sample data</span>
-        </div>
-        <div className="mv-grid-4">
-          <div className="mv-tile mv-stat-tile">
-            <div className="mv-stat-head"><HeartIcon size={15} /><span className="mv-stat-label">Heart Rate</span></div>
-            <div className="mv-stat-value mv-tabular">76 <small>bpm</small></div>
-            <span className="mv-stat-hint mv-status-green">Normal range</span>
-          </div>
-          <div className="mv-tile mv-stat-tile">
-            <div className="mv-stat-head"><ActivityIcon size={15} /><span className="mv-stat-label">Blood Pressure</span></div>
-            <div className="mv-stat-value mv-tabular">118/76 <small>mmHg</small></div>
-            <span className="mv-stat-hint mv-status-green">Normal range</span>
-          </div>
-          <div className="mv-tile mv-stat-tile">
-            <div className="mv-stat-head"><DropletIcon size={15} /><span className="mv-stat-label">Blood Glucose</span></div>
-            <div className="mv-stat-value mv-tabular">94 <small>mg/dL fasting</small></div>
-            <span className="mv-stat-hint mv-status-green">Normal range</span>
-          </div>
-          <div className="mv-tile mv-stat-tile">
-            <div className="mv-stat-head"><CalendarCheckIcon size={15} /><span className="mv-stat-label">Last Checkup</span></div>
-            <div className="mv-stat-value">Aug 12</div>
-            <span className="mv-stat-hint">General Physician</span>
-          </div>
-        </div>
-      </div>
+      <VitalsSummary onOpen={() => onNavigate('vitals')} />
 
       <div className="mv-two-col">
         <div className="mv-col">
-          {/* Sample appointments */}
-          <div className="mv-card">
-            <div className="mv-card-head">
-              <span className="mv-card-title">Upcoming Appointments</span>
-              <span className="mv-sample-badge">Sample data</span>
-            </div>
-            <div className="mv-card-body">
-              <div className="mv-row">
-                <div className="mv-avatar">MI</div>
-                <div>
-                  <div className="mv-row-title">Dr. Meera Iyer</div>
-                  <div className="mv-row-meta">Cardiologist</div>
-                </div>
-                <div className="mv-row-trailing mv-tabular">
-                  <div style={{ fontWeight: 700, color: 'var(--mv-accent-text)', fontSize: 12.5 }}>Today</div>
-                  <div className="mv-row-meta">4:30 PM</div>
-                </div>
-                <button type="button" className="mv-btn mv-btn-accent" onClick={notConnected}>Join</button>
-              </div>
-              <div className="mv-row">
-                <div className="mv-avatar">AR</div>
-                <div>
-                  <div className="mv-row-title">Dr. Arjun Rao</div>
-                  <div className="mv-row-meta">Endocrinologist</div>
-                </div>
-                <div className="mv-row-trailing mv-tabular">
-                  <div style={{ fontWeight: 500, fontSize: 12.5 }}>Fri, Sep 18</div>
-                  <div className="mv-row-meta">11:00 AM</div>
-                </div>
-                <button type="button" className="mv-btn mv-btn-ghost" onClick={notConnected}>Reschedule</button>
-              </div>
-              <div className="mv-row">
-                <div className="mv-avatar">PN</div>
-                <div>
-                  <div className="mv-row-title">Dr. Priya Nair</div>
-                  <div className="mv-row-meta">General Physician</div>
-                </div>
-                <div className="mv-row-trailing mv-tabular">
-                  <div style={{ fontWeight: 500, fontSize: 12.5 }}>Mon, Sep 22</div>
-                  <div className="mv-row-meta">9:30 AM</div>
-                </div>
-                <button type="button" className="mv-btn mv-btn-ghost" onClick={notConnected}>Reschedule</button>
-              </div>
-            </div>
-          </div>
+          <AppointmentPreview role="patient" onOpen={() => onNavigate('appointments')} />
 
           {/* Real recent documents */}
           <div className="mv-card">
@@ -192,7 +116,7 @@ export function PatientOverview({ data, onNavigate, onViewDocument, showToast }:
                 <ShieldCheckIcon size={15} />
                 <span>Review<br />Access Requests</span>
               </button>
-              <button type="button" className="mv-tile is-clickable mv-quick-tile" onClick={notConnected}>
+              <button type="button" className="mv-tile is-clickable mv-quick-tile" onClick={() => onNavigate('appointments')}>
                 <CalendarPlusIcon size={15} />
                 <span>Book<br />Appointment</span>
               </button>

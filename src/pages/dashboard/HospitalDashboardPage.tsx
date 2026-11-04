@@ -1,3 +1,4 @@
+import { AppointmentsPanel } from '../../dashboard-v2/AppointmentsPanel';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DashboardShell } from '../../dashboard-v2/DashboardShell';
 import { HospitalOverview } from '../../dashboard-v2/HospitalOverview';
@@ -19,6 +20,7 @@ import ChatPanel from '../../components/chat/ChatPanel';
 import { useAuth } from '../../hooks/useAuth';
 
 import {
+  CalendarPlusIcon,
   BellIcon,
   BuildingIcon,
   ClipboardIcon,
@@ -38,7 +40,7 @@ interface AuthUser {
 }
 
 export default function HospitalDashboardPage() {
-  const { user, logout } = useAuth() as { user: AuthUser | null; logout: () => void };
+  const { user, logout, updateSessionProfile } = useAuth() as { user: AuthUser | null; logout: () => void; updateSessionProfile: (profile: any) => void };
   const [data, setData] = useState<HospitalDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showUpload, setShowUpload] = useState(false);
@@ -97,7 +99,8 @@ export default function HospitalDashboardPage() {
     setBusy(true);
     setFeedback('');
     try {
-      await updateProfile('hospital', { hospitalName: settings.hospitalName, phone: settings.contactPhone });
+      const result = await updateProfile('hospital', { hospitalName: settings.hospitalName, phone: settings.contactPhone });
+      updateSessionProfile(result.profile);
       setFeedback('Profile saved successfully!');
       showToast('Profile saved');
     } catch (err: any) {
@@ -155,12 +158,13 @@ export default function HospitalDashboardPage() {
   }, [data]);
 
   const navGroups = [
-    { label: 'Workspace', keys: ['overview', 'queue'] as HospitalView[] },
+    { label: 'Workspace', keys: ['overview', 'queue', 'appointments'] as HospitalView[] },
     { label: 'Access & Activity', keys: ['access', 'compliance', 'notifications'] as HospitalView[] },
     { label: 'Tools', keys: ['emergency', 'chat', 'settings'] as HospitalView[] },
   ];
 
   const navItems = [
+    { key: 'appointments' as const, label: 'Appointments', icon: <CalendarPlusIcon size={16} /> },
     { key: 'overview' as const, label: 'Overview', icon: <GridIcon size={16} /> },
     { key: 'queue' as const, label: 'Upload Queue', icon: <UploadIcon size={16} /> },
     { key: 'access' as const, label: 'Staff Access', icon: <BuildingIcon size={16} /> },
@@ -180,6 +184,7 @@ export default function HospitalDashboardPage() {
     .toUpperCase();
 
   const viewTitles: Record<HospitalView, [string, string]> = {
+    appointments: ['Appointments', 'Request, confirm and manage appointments.'],
     overview: ['Overview', 'Institutional metrics and vault operations summary.'],
     upload: ['Upload Document', 'Upload Document'],
     queue: ['Upload Queue', 'Monitor processing status of uploaded documents.'],
@@ -198,6 +203,7 @@ export default function HospitalDashboardPage() {
     }
 
     switch (activeView) {
+      case 'appointments': return <AppointmentsPanel role="hospital" />;
       case 'overview':
         return (
           <HospitalOverview
@@ -242,8 +248,8 @@ export default function HospitalDashboardPage() {
                 <input id="hospitalName" name="hospitalName" className="mv-form-input" value={settings.hospitalName} onChange={(e) => setSettings((prev) => ({ ...prev, hospitalName: e.target.value }))} />
               </div>
               <div className="mv-form-field">
-                <label className="mv-form-label" htmlFor="supportEmail">Support Email</label>
-                <input id="supportEmail" name="supportEmail" className="mv-form-input" value={settings.supportEmail} onChange={(e) => setSettings((prev) => ({ ...prev, supportEmail: e.target.value }))} />
+                <label className="mv-form-label" htmlFor="supportEmail">Account Email</label>
+                <input id="supportEmail" name="supportEmail" className="mv-form-input" value={user?.email || ''} disabled />
               </div>
               <div className="mv-form-field span-2">
                 <label className="mv-form-label" htmlFor="contactPhone">Contact Phone</label>

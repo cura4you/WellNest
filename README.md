@@ -164,7 +164,7 @@ psql -d medivault -c "CREATE EXTENSION IF NOT EXISTS vector;"
 for f in db/migrations/*.sql; do psql -v ON_ERROR_STOP=1 -d medivault -f "$f" || break; done
 ```
 
-As of this writing there are 10 migration files, through `0010_patient_gender.sql`. Always apply every file in order — a database built from an earlier subset will 500 on requests that touch newer columns/tables rather than failing loudly at startup.
+There are 11 migration files, through `0011_care_workflows.sql`. Always apply every file in order — a database built from an earlier subset will 500 on requests that touch newer columns/tables rather than failing loudly at startup.
 
 ### Run the App
 
@@ -269,6 +269,10 @@ Operational notes:
 
 ---
 
+## Care workflows and local verification
+
+Patient vitals, appointment scheduling for all three roles, and persistent in-app notification preferences are implemented. Apply migration `0011_care_workflows.sql`. `npm run dev:local` starts a local-only preview on port 5177, and `npm run test:e2e:care` runs the real-stack Playwright suite with synthetic accounts and isolated storage/database fixtures. See [CARE_WORKFLOWS.md](CARE_WORKFLOWS.md).
+
 ## Agentic chat
 
 An optional read-only agent can gather evidence across several document lookups before answering. It provides document search/discovery/paged reads and patient-only profile/recorded-interaction tools, with per-tool authorization checks, auditing, progress events, limits, and fallback to existing RAG chat. Enable it only after the live evaluation in [AGENTIC_CHAT_RUNBOOK.md](AGENTIC_CHAT_RUNBOOK.md). It defaults to `CHAT_AGENT_ENABLED=false`; a tool-capable `AI_AGENT_MODEL` is required for useful agent behavior.
@@ -277,9 +281,9 @@ Run `npm test` for deterministic agent/tool tests. These use injected data/model
 
 ## 🧭 Project Status
 
-The Patient, Doctor, and Hospital dashboards share the plum/berry TypeScript design system in `src/dashboard-v2/`. Patient tabs were migrated first; Doctor and Hospital now use matching cards, lists, forms, and notifications throughout. The shared emergency access screen uses the same visual system and describes the actual consented, audited access flow. Patient Health Vitals and Upcoming Appointments are still explicitly labeled sample data because no backend source exists for them.
+The Patient, Doctor, and Hospital dashboards share the plum/berry TypeScript design system in `src/dashboard-v2/`. Patient tabs were migrated first; Doctor and Hospital now use matching cards, lists, forms, and notifications throughout. The shared emergency access screen uses the same visual system and describes the actual consented, audited access flow. Patient Health Vitals now use patient-entered measurements, appointments support patient requests and provider scheduling across all roles, and notification preferences persist per account. See [CARE_WORKFLOWS.md](CARE_WORKFLOWS.md) for permissions, setup and browser verification.
 
-The latest Doctor/Hospital design changes are currently local and have not been deployed. See `CLAUDE.md` for implementation history and local setup notes.
+The latest dashboard and care workflow changes have not been deployed. See `CLAUDE.md` for implementation history and local setup notes.
 
 ---
 

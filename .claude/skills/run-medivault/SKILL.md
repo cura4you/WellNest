@@ -175,13 +175,9 @@ npm run dev:all        # also starts the API on 3001 - needs a .env with DATABAS
 
 ## Test
 
-There is no test suite. Lint is the only check:
+`npm test` runs deterministic backend tests. `npm run test:e2e:care` uses `care-driver.mjs` to test the actual local API, PostgreSQL, MinIO and Ollama with synthetic accounts, including care workflows and all dashboard tabs at desktop/mobile widths. It creates/removes its own database and bucket and prints the artifact directory. See `CARE_WORKFLOWS.md` in the repo root. The new care screens require a real backend; the older mock-auth driver does not verify them.
 
-```bash
-npm run lint
-```
-
-As of commit d7eeb81 this exits 1 with 11 pre-existing errors in `src/` (unused vars in the dashboard pages, `no-misleading-character-class` in `MediVault-Flowcharts.jsx`). ESLint only matches `*.js`/`*.jsx`, so the `.mjs` driver is not linted.
+Run `npm run lint`, `npx tsc --noEmit`, and `npm run build` as additional gates. `npm run dev:local` starts the local-services configuration on port 5177 while leaving hosted settings in the private `.env` untouched.
 
 ## Gotchas
 

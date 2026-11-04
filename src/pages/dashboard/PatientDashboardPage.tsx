@@ -1,3 +1,5 @@
+import { VitalsPanel } from '../../dashboard-v2/VitalsPanel';
+import { AppointmentsPanel } from '../../dashboard-v2/AppointmentsPanel';
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent } from 'react';
 import { DashboardShell } from '../../dashboard-v2/DashboardShell';
 import { PatientOverview } from '../../dashboard-v2/PatientOverview';
@@ -20,6 +22,7 @@ import { useAuth } from '../../hooks/useAuth';
 import ChatPanel from '../../components/chat/ChatPanel';
 
 import {
+  CalendarPlusIcon,
   BellIcon,
   ClipboardIcon,
   FolderIcon,
@@ -37,20 +40,21 @@ import '../../components/dashboard/dashboard.css';
 
 interface AuthUser {
   email?: string;
-  profile?: { fullName?: string; bloodGroup?: string; gender?: string; emergencyContact?: string };
+  profile?: { fullName?: string; bloodGroup?: string; gender?: string; emergencyContact?: string; emergencyContactName?: string; emergencyContactPhone?: string };
 }
 
 export default function PatientDashboardPage() {
   // useAuth's context is still untyped JS (defaults user to `null`), which
   // infers too narrowly for a TS consumer — widen it here at the boundary.
-  const { user, logout } = useAuth() as { user: AuthUser | null; logout: () => void };
+  const { user, logout, updateSessionProfile } = useAuth() as { user: AuthUser | null; logout: () => void; updateSessionProfile: (profile: any) => void };
   const [data, setData] = useState<PatientDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState({
     fullName: user?.profile?.fullName || '',
     bloodGroup: user?.profile?.bloodGroup || '',
     gender: user?.profile?.gender || '',
-    emergencyContact: user?.profile?.emergencyContact || '',
+    emergencyContact: user?.profile?.emergencyContactName || '',
+    emergencyContactPhone: user?.profile?.emergencyContactPhone || '',
   });
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState('');
@@ -89,12 +93,14 @@ export default function PatientDashboardPage() {
     setBusy(true);
     setFeedback('');
     try {
-      await updateProfile('patient', {
+      const result = await updateProfile('patient', {
         fullName: profile.fullName,
         bloodGroup: profile.bloodGroup,
         gender: profile.gender,
         emergencyContactName: profile.emergencyContact,
+        emergencyContactPhone: profile.emergencyContactPhone,
       });
+      updateSessionProfile(result.profile);
       setFeedback('Profile saved successfully!');
       showToast('Profile saved');
     } catch (err: any) {
@@ -178,6 +184,8 @@ export default function PatientDashboardPage() {
   }, [data]);
 
   const navItems = [
+    { key: 'appointments' as const, label: 'Appointments', icon: <CalendarPlusIcon size={16} /> },
+    { key: 'vitals' as const, label: 'Health Vitals', icon: <ClipboardIcon size={16} /> },
     { key: 'overview' as const, label: 'Overview', icon: <GridIcon size={16} /> },
     { key: 'documents' as const, label: 'Storage Vault', icon: <FolderIcon size={16} /> },
     {
@@ -195,7 +203,7 @@ export default function PatientDashboardPage() {
   ];
 
   const navGroups = [
-    { label: 'Workspace', keys: ['overview', 'documents'] as PatientView[] },
+    { label: 'Workspace', keys: ['overview', 'documents', 'vitals', 'appointments'] as PatientView[] },
     { label: 'Access & Activity', keys: ['requests', 'audit', 'notifications'] as PatientView[] },
     { label: 'Tools', keys: ['chat', 'settings'] as PatientView[] },
   ];
@@ -209,6 +217,8 @@ export default function PatientDashboardPage() {
     .toUpperCase();
 
   const viewTitles: Record<PatientView, [string, string]> = {
+    appointments: ['Appointments', 'Request, confirm and manage appointments.'],
+    vitals: ['Health Vitals', 'Record and review your own measurements.'],
     overview: ['Overview', 'Your latest vault and access activity at a glance.'],
     documents: ['Storage Vault', 'View and download your medical records.'],
     requests: ['Access Requests', 'Review and manage who can access your records.'],
@@ -225,6 +235,8 @@ export default function PatientDashboardPage() {
     }
 
     switch (activeView) {
+      case 'appointments': return <AppointmentsPanel role="patient" />;
+      case 'vitals': return <VitalsPanel />;
       case 'overview':
         return (
           <PatientOverview

@@ -12,7 +12,9 @@
     "preview": "vite preview",
     "start:api": "node server/src/index.js",
     "db:migrate": "node scripts/migrate.mjs",
-    "test": "node --test server/test/*.test.js"
+    "test": "node --test server/test/*.test.js",
+    "dev:local": "node scripts/dev-local.mjs",
+    "test:e2e:care": "node .claude/skills/run-medivault/care-driver.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1131.0",

@@ -24,6 +24,7 @@ export async function getHospitalId(userId) {
  *   1. The requester is the patient who owns the document.
  *   2. The requester uploaded the document (doctor/hospital).
  *   3. The requester holds an approved, unrevoked, unexpired access grant.
+ *   4. A clinician holds an active, unexpired emergency window and patient consent remains enabled.
  *
  * @param {{ patient_id: string, uploaded_by_user_id: string }} doc - a row from `documents`
  * @param {string} userId
@@ -43,7 +44,15 @@ export async function isAuthorizedForDocument(doc, userId, userRole) {
        AND revoked_at IS NULL AND (expires_at IS NULL OR expires_at > NOW())`,
     [doc.id, userId]
   );
-  return grantR.rowCount > 0;
+  if (grantR.rowCount > 0) return true;
+  if (!['doctor', 'hospital'].includes(userRole)) return false;
+  const emergency = await pool.query(
+    `SELECT e.id FROM emergency_access_events e JOIN patients p ON p.id = e.patient_id
+     WHERE e.patient_id = $1 AND e.requester_user_id = $2 AND e.status = 'active'
+       AND e.ends_at > NOW() AND p.emergency_consent_enabled = true LIMIT 1`,
+    [doc.patient_id, userId]
+  );
+  return emergency.rowCount > 0;
 }
 
 /**
@@ -103,7 +112,12 @@ export async function getAuthorizedDocumentIds(userId, userRole) {
      SELECT d.id FROM documents d
      JOIN document_access_grants g ON g.document_id = d.id
      WHERE g.grantee_user_id = $1 AND g.status = 'approved'
-       AND g.revoked_at IS NULL AND (g.expires_at IS NULL OR g.expires_at > NOW())`,
+       AND g.revoked_at IS NULL AND (g.expires_at IS NULL OR g.expires_at > NOW())
+     UNION
+     SELECT d.id FROM documents d JOIN patients p ON p.id = d.patient_id
+     JOIN emergency_access_events e ON e.patient_id = d.patient_id
+     WHERE e.requester_user_id = $1 AND e.status = 'active' AND e.ends_at > NOW()
+       AND p.emergency_consent_enabled = true`,
     [userId]
   );
   return rows.map((r) => r.id);

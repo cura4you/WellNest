@@ -12,6 +12,8 @@ import { encryptFile, decryptFile } from './crypto.js';
 import { logAudit } from './audit.js';
 import { indexDocument, isEmbeddingConfigured, extractPdfText } from './embeddings.js';
 import chatRouter from './chat.js';
+import careRouter from './care.js';
+import { getPreferences, notifyUser } from './notifications.js';
 import { waitUntil } from '@vercel/functions';
 
 // Vercel serverless functions reject request bodies over 4.5 MB, so cap uploads there when deployed.
@@ -232,7 +234,7 @@ app.post('/auth/login', loginLimiter, async (req, res) => {
     // Load profile with camelCase keys
     let profile = {};
     if (role === 'patient') {
-      const r = await pool.query('SELECT full_name, date_of_birth, blood_group, gender FROM patients WHERE user_id = $1', [user.id]);
+      const r = await pool.query('SELECT full_name, date_of_birth, blood_group, gender, emergency_contact_name, emergency_contact_phone FROM patients WHERE user_id = $1', [user.id]);
       profile = camelRow(r.rows[0]) || {};
     } else if (role === 'doctor') {
       const r = await pool.query('SELECT full_name, license_number, specialization FROM doctors WHERE user_id = $1', [user.id]);
@@ -256,13 +258,6 @@ app.post('/auth/login', loginLimiter, async (req, res) => {
 // ════════════════════════════════════════
 //  Dashboard data endpoints
 // ════════════════════════════════════════
-const DEFAULT_NOTIFICATIONS = [
-  { id: 'access_request', channel: 'In-App', description: 'When someone requests access to your records', enabled: true },
-  { id: 'access_granted', channel: 'In-App', description: 'When access is granted or revoked', enabled: true },
-  { id: 'emergency_access', channel: 'In-App', description: 'Emergency access alerts', enabled: true },
-  { id: 'document_upload', channel: 'In-App', description: 'When a new document is uploaded', enabled: false },
-];
-
 app.get('/api/dashboard/patient', requireAuth, async (req, res) => {
   try {
     const userId = req.userId;
@@ -298,7 +293,7 @@ app.get('/api/dashboard/patient', requireAuth, async (req, res) => {
       documents: camelRows(docsListR.rows),
       accessRequests: camelRows(reqsR.rows),
       auditEvents: camelRows(auditListR.rows),
-      notifications: DEFAULT_NOTIFICATIONS,
+      notifications: await getPreferences(req.userId),
     });
   } catch (err) {
     console.error('Patient dashboard error:', err.message);
@@ -355,7 +350,7 @@ app.get('/api/dashboard/doctor', requireAuth, async (req, res) => {
       requestHistory: camelRows(reqListR.rows),
       sharedDocuments: camelRows(sharedDocsR.rows),
       auditEvents: camelRows(auditListR.rows),
-      notifications: DEFAULT_NOTIFICATIONS,
+      notifications: await getPreferences(req.userId),
     });
   } catch (err) {
     console.error('Doctor dashboard error:', err.message);
@@ -370,8 +365,10 @@ app.get('/api/dashboard/hospital', requireAuth, async (req, res) => {
     if (!hospitalId) return res.status(404).json({ message: 'Hospital profile not found.' });
 
     const [staffR, uploadsR, verifyR, compR, uploadListR, staffListR, compListR] = await Promise.all([
-      pool.query(`SELECT COUNT(DISTINCT grantee_user_id)::int AS c FROM document_access_grants
-                  WHERE patient_id IN (SELECT p.id FROM patients p JOIN documents d ON d.patient_id = p.id WHERE d.hospital_id = $1)`, [hospitalId]),
+      pool.query(`SELECT COUNT(DISTINCT g.grantee_user_id)::int AS c FROM document_access_grants g
+                  JOIN documents d ON d.id = g.document_id
+                  WHERE d.hospital_id = $1 AND g.status = 'approved' AND g.revoked_at IS NULL
+                    AND (g.expires_at IS NULL OR g.expires_at > NOW())`, [hospitalId]),
       pool.query("SELECT COUNT(*)::int AS c FROM documents WHERE uploaded_by_user_id = $1 AND created_at > NOW() - interval '7 days'", [userId]),
       pool.query(`SELECT COUNT(*)::int AS c FROM access_requests
                   WHERE patient_id IN (SELECT p.id FROM patients p JOIN documents d ON d.patient_id = p.id WHERE d.hospital_id = $1) AND status = 'pending'`, [hospitalId]),
@@ -382,11 +379,12 @@ app.get('/api/dashboard/hospital', requireAuth, async (req, res) => {
                   FROM documents d LEFT JOIN patients p ON p.id = d.patient_id
                   LEFT JOIN users u ON u.id = p.user_id
                   WHERE d.uploaded_by_user_id = $1 ORDER BY d.created_at DESC LIMIT 50`, [userId]),
-      pool.query(`SELECT DISTINCT u.email AS doctor, u.id AS grantee_user_id, 'General' AS department,
+      pool.query(`SELECT u.id AS id, u.email AS doctor, u.id AS grantee_user_id, 'General' AS department,
                     COUNT(g.id)::int AS grants, 'active' AS status
                   FROM document_access_grants g
-                  JOIN users u ON u.id = g.grantee_user_id
-                  WHERE g.patient_id IN (SELECT p.id FROM patients p JOIN documents d ON d.patient_id = p.id WHERE d.hospital_id = $1) AND g.revoked_at IS NULL
+                  JOIN documents d ON d.id = g.document_id JOIN users u ON u.id = g.grantee_user_id
+                  WHERE d.hospital_id = $1 AND g.status = 'approved' AND g.revoked_at IS NULL
+                    AND (g.expires_at IS NULL OR g.expires_at > NOW())
                   GROUP BY u.email, u.id LIMIT 50`, [hospitalId]),
       pool.query(`SELECT id, action AS title, TO_CHAR(created_at, 'YYYY-MM-DD HH24:MI') AS time, COALESCE(reason, metadata_json::text) AS description
                   FROM audit_logs WHERE actor_user_id = $1 ORDER BY created_at DESC LIMIT 30`, [userId]),
@@ -402,7 +400,7 @@ app.get('/api/dashboard/hospital', requireAuth, async (req, res) => {
       uploadQueue: camelRows(uploadListR.rows),
       staffAccess: camelRows(staffListR.rows),
       complianceEvents: camelRows(compListR.rows),
-      notifications: DEFAULT_NOTIFICATIONS,
+      notifications: await getPreferences(req.userId),
     });
   } catch (err) {
     console.error('Hospital dashboard error:', err.message);
@@ -699,7 +697,7 @@ app.patch('/api/access-requests/:id', requireAuth, async (req, res) => {
             [doc.id, patientId, ar.requester_user_id, ar.reason, doc.dek_wrapped]
           );
         }
-        await logAudit({ patientId, actorUserId: req.userId, action: 'grant_access', req, metadata: { requestId: arId, documentCount: docsToGrant.length } }, client);
+        await logAudit({ patientId, actorUserId: req.userId, action: 'grant_access', req, metadata: { requestId: arId, documentCount: docsToGrant.length, granteeUserId: ar.requester_user_id } }, client);
       } else {
         await logAudit({ patientId, actorUserId: req.userId, action: 'revoke_access', status: 'denied', req, metadata: { requestId: arId } }, client);
       }
@@ -853,10 +851,12 @@ app.post('/api/grants/revoke-by-grantee', requireAuth, async (req, res) => {
        FROM documents d
        WHERE g.document_id = d.id AND d.uploaded_by_user_id = $1
          AND g.grantee_user_id = $2 AND g.revoked_at IS NULL
-       RETURNING g.id`,
+       RETURNING g.id, g.patient_id, g.document_id`,
       [req.userId, granteeUserId]
     );
 
+    for (const grant of result.rows) await logAudit({ patientId: grant.patient_id, documentId: grant.document_id, actorUserId: req.userId,
+      action: 'revoke_access', req, metadata: { grantId: grant.id, granteeUserId } });
     res.json({ message: `Revoked ${result.rowCount} grant(s).` });
   } catch (err) {
     console.error('Bulk revoke error:', err.message);
@@ -966,6 +966,7 @@ app.post('/api/emergency-access/initiate', requireAuth, async (req, res) => {
       })),
     };
 
+    await notifyUser(pt.user_id, 'emergency_access', 'Emergency access started', 'A clinician opened a 24-hour emergency access window.');
     res.json({ patient, endsAt: endsAt.toISOString() });
   } catch (err) {
     console.error('Emergency access error:', err.message);
@@ -1322,6 +1323,7 @@ app.delete('/api/drug-interactions/:id', requireAuth, async (req, res) => {
 //  Chat + RAG (server/src/chat.js) — mounted at /api, so its internal
 //  '/chat', '/chat/sessions', '/documents/:id/reindex' become /api/chat, etc.
 // ════════════════════════════════════════
+app.use('/api', careRouter);
 app.use('/api', chatRouter);
 
 export default app;

@@ -76,6 +76,9 @@ export function DashboardShell<V extends string>({
 }: DashboardShellProps<V>) {
   const { theme, toggleTheme } = useTheme();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const menuRef = useRef<HTMLButtonElement>(null);
   const [query, setQuery] = useState('');
   const search = useDropdown<HTMLDivElement>();
   const profile = useDropdown<HTMLDivElement>();
@@ -91,6 +94,25 @@ export function DashboardShell<V extends string>({
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    sidebarRef.current?.querySelector('button')?.focus();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { setMobileOpen(false); menuRef.current?.focus(); }
+      if (event.key === 'Tab') {
+        const buttons = sidebarRef.current?.querySelectorAll<HTMLButtonElement>('button:not([disabled])');
+        if (!buttons?.length) return;
+        const first = buttons[0], last = buttons[buttons.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => { document.body.style.overflow = previous; window.removeEventListener('keydown', onKey); };
+  }, [mobileOpen]);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -115,7 +137,9 @@ export function DashboardShell<V extends string>({
   return (
     <div className="mv-root" data-mv-theme={theme}>
       <div className="mv-shell">
-        <aside className={`mv-sidebar${collapsed ? ' is-collapsed' : ''}`}>
+        {mobileOpen && <button className="mv-navigation-backdrop" aria-label="Dismiss navigation" onClick={() => setMobileOpen(false)} />}
+        <aside ref={sidebarRef} id="mv-navigation" aria-label="Dashboard navigation" role={mobileOpen ? 'dialog' : undefined} aria-modal={mobileOpen || undefined} className={`mv-sidebar${collapsed ? ' is-collapsed' : ''}${mobileOpen ? ' is-mobile-open' : ''}`}>
+          <button type="button" className="mv-mobile-close mv-btn mv-btn-ghost" aria-label="Close navigation" onClick={() => { setMobileOpen(false); menuRef.current?.focus(); }}>Close navigation</button>
           <div className="mv-sidebar-top">
             <div className="mv-brand">
               <button type="button" className="mv-brand-link" onClick={onHome} aria-label="Go to homepage">
@@ -146,8 +170,9 @@ export function DashboardShell<V extends string>({
                       <button
                         key={item.key}
                         type="button"
+                        aria-label={item.label}
                         className={`mv-nav-item${activeView === item.key ? ' is-active' : ''}`}
-                        onClick={() => onViewChange(item.key)}
+                        onClick={() => { onViewChange(item.key); setMobileOpen(false); }}
                         title={collapsed ? item.label : undefined}
                       >
                         {item.icon}
@@ -187,9 +212,10 @@ export function DashboardShell<V extends string>({
 
         <div className="mv-main">
           <div className="mv-topbar">
-            <div>
-              <div className="mv-topbar-title">{title}</div>
-              <div className="mv-topbar-sub">{subtitle}</div>
+            <div className="mv-topbar-heading">
+              <button ref={menuRef} type="button" className="mv-mobile-menu mv-icon-btn" aria-label="Open navigation" aria-expanded={mobileOpen} aria-controls="mv-navigation" onClick={() => { setCollapsed(false); setMobileOpen(true); }}><PanelLeftIcon size={18} /></button>
+              <div><div className="mv-topbar-title">{title}</div>
+              <div className="mv-topbar-sub">{subtitle}</div></div>
             </div>
             <div className="mv-search" ref={search.ref}>
               <SearchIcon size={15} />

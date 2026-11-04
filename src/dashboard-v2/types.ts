@@ -58,7 +58,7 @@ export interface PatientDashboardData {
   notifications: NotificationSetting[];
 }
 
-export type PatientView = 'overview' | 'documents' | 'requests' | 'audit' | 'chat' | 'settings' | 'notifications';
+export type PatientView = 'vitals' | 'appointments' | 'overview' | 'documents' | 'requests' | 'audit' | 'chat' | 'settings' | 'notifications';
 
 // Generic so DashboardShell (and its navItems) work for any role's set of
 // view keys, not just Patient's. `V extends string = string` keeps every
@@ -86,6 +86,7 @@ export interface SearchResultItem {
 /* ---------- Doctor ---------- */
 
 export type DoctorView =
+  | 'appointments'
   | 'overview'
   | 'upload'
   | 'shared-docs'
@@ -139,6 +140,7 @@ export interface DoctorDashboardData {
 /* ---------- Hospital ---------- */
 
 export type HospitalView =
+  | 'appointments'
   | 'overview'
   | 'upload'
   | 'queue'

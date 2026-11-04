@@ -1,3 +1,4 @@
+import { AppointmentPreview } from './AppointmentsPanel';
 import type { ReactNode } from 'react';
 import { AiAssistantCard } from './AiAssistantCard';
 import {
@@ -57,6 +58,8 @@ export function DoctorOverview({ data, onNavigate, onViewDocument, onOpenUpload 
           </button>
         ))}
       </div>
+
+      <AppointmentPreview role="doctor" onOpen={() => onNavigate('appointments')} />
 
       <div className="mv-two-col">
         <div className="mv-col">
