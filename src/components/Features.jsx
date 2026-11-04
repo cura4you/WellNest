@@ -25,6 +25,7 @@ const FEATURES = [
     },
     {
         iconClass: 'fc-red',
+        dark: true,
         icon: (
             <svg viewBox="0 0 32 32" fill="none">
                 <circle cx="16" cy="16" r="11" stroke="currentColor" strokeWidth="2" />
@@ -101,7 +102,7 @@ export default function Features() {
                     {FEATURES.map((f, i) => (
                         <div
                             key={i}
-                            className="feature-card"
+                            className={`feature-card${f.dark ? ' feature-card-dark' : ''}`}
                             ref={(el) => (cardRefs.current[i] = el)}
                         >
                             <div className={`fc-icon ${f.iconClass}`}>{f.icon}</div>

@@ -132,7 +132,7 @@ export default function FlowSection() {
 
                 {/* Flow Panel */}
                 <div className="flow-panels">
-                    <div className="flow-panel active">
+                    <div className="flow-panel active flow-panel-card">
                         <div className="flow-stepper">
                             {currentRole?.steps.map((step, i) => (
                                 <div
