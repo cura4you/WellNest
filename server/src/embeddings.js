@@ -150,7 +150,7 @@ async function extractText(buffer, mimeType, filename) {
   return '';
 }
 
-async function embedBatch(texts) {
+async function embedBatch(texts, signal) {
   if (!isEmbeddingConfigured()) throw new Error('EMBEDDING_BASE_URL/EMBEDDING_MODEL not configured.');
   if (texts.length === 0) return [];
 
@@ -160,6 +160,7 @@ async function embedBatch(texts) {
       'Content-Type': 'application/json',
       ...(EMBEDDING_API_KEY ? { Authorization: `Bearer ${EMBEDDING_API_KEY}` } : {}),
     },
+    signal: signal || AbortSignal.timeout(AI_TIMEOUT_MS),
     body: JSON.stringify({ model: EMBEDDING_MODEL, input: texts, dimensions: EMBEDDING_DIMENSIONS }),
   });
   if (!res.ok) throw new Error(`Embedding request failed: ${res.status} ${await res.text()}`);
@@ -235,10 +236,10 @@ export async function indexDocument(documentId) {
  * @param {number} [topK]
  * @returns {Promise<Array<{ documentId: string, chunkIndex: number, content: string, distance: number }>>}
  */
-export async function retrieveRelevantChunks(query, documentIds, topK = RAG_TOP_K) {
+export async function retrieveRelevantChunks(query, documentIds, topK = RAG_TOP_K, signal) {
   if (documentIds.length === 0) return [];
 
-  const [queryEmbedding] = await embedBatch([query]);
+  const [queryEmbedding] = await embedBatch([query], signal);
   const { rows } = await pool.query(
     `SELECT document_id, chunk_index, content, embedding <=> $1::vector AS distance
      FROM document_chunks

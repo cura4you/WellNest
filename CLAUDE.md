@@ -203,3 +203,9 @@ Doctor and Hospital no longer render their remaining tabs through the old `Dashb
 The emergency screen was rebuilt from the simulated fingerprint/Aadhaar scanner to a direct patient-email request. This matches the backend's real consent check, 24-hour window, and audit record; the backend event reason was corrected accordingly. Patient vitals and appointments remain explicitly labeled sample data and were not changed.
 
 Verification: `npm run build`, `npx tsc --noEmit`, `npm run lint`, and `git diff --check` pass. A live browser preview was unavailable in the current sandbox (`listen EPERM` for Vite; Chromium MachPort permission denied), so the new visual states still need manual review in a normal local browser. These changes are uncommitted and undeployed.
+
+## Agentic chat implementation (2026-11-04)
+
+Implemented all five read-only tools, bounded multi-round gathering, fresh document authorization, patient-only profile/interaction scope, immediate deduplicated auditing, streamed status/source labels, preserved citation order, and single-pass RAG fallback. New code is in `server/src/chatAgent.js`; integration is in `chat.js` and `ChatPanel.jsx`. Embedding retrieval now accepts cancellation. Agent traces and source/citation metadata use existing `token_usage` JSONB; no migration is needed.
+
+`npm test` runs 22 deterministic tests with injected data/model dependencies. Build, TypeScript, lint, and diff checks are also required. Ollama could not be reached from this environment, so no live model evaluation was claimed and the flag remains off by default. `AGENTIC_CHAT_RUNBOOK.md` records configuration, the live evaluation set, and remaining wider project work.

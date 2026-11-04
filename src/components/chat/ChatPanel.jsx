@@ -37,6 +37,7 @@ export default function ChatPanel() {
   }, [messages]);
 
   const openSession = async (sessionId) => {
+    if (sending) return;
     setError('');
     setActiveSessionId(sessionId);
     try {
@@ -48,6 +49,7 @@ export default function ChatPanel() {
   };
 
   const startNewChat = () => {
+    if (sending) return;
     setActiveSessionId(null);
     setMessages([]);
     setError('');
@@ -79,10 +81,16 @@ export default function ChatPanel() {
     try {
       let sessionIdForThisMessage = activeSessionId;
       for await (const event of sendChatMessage({ sessionId: activeSessionId, message: text })) {
-        if (event.type === 'citations') {
+        if (event.type === 'status') {
+          sessionIdForThisMessage = event.sessionId;
+          if (event.sessionId) setActiveSessionId(event.sessionId);
+          setMessages((prev) => prev.map((m) => m.id === assistantMessage.id ? { ...m, status: event.message } : m));
+        } else if (event.type === 'sources') {
+          setMessages((prev) => prev.map((m) => m.id === assistantMessage.id ? { ...m, sources: event.sources } : m));
+        } else if (event.type === 'citations') {
           sessionIdForThisMessage = event.sessionId;
           if (!activeSessionId) setActiveSessionId(event.sessionId);
-          setMessages((prev) => prev.map((m) => (m.id === assistantMessage.id ? { ...m, citations: event.citations, phase: 'thinking' } : m)));
+          setMessages((prev) => prev.map((m) => (m.id === assistantMessage.id ? { ...m, citations: event.citations, status: 'Preparing an answer…', phase: 'thinking' } : m)));
         } else if (event.type === 'token') {
           setMessages((prev) => prev.map((m) => (m.id === assistantMessage.id ? { ...m, content: m.content + event.content, phase: 'streaming' } : m)));
         } else if (event.type === 'error') {
@@ -98,6 +106,7 @@ export default function ChatPanel() {
       setError(err.message);
       setMessages((prev) => prev.filter((m) => m.id !== userMessage.id && m.id !== assistantMessage.id));
     } finally {
+      setMessages((prev) => prev.map((m) => m.id === assistantMessage.id ? { ...m, phase: 'done' } : m));
       setSending(false);
     }
   };
@@ -132,6 +141,7 @@ export default function ChatPanel() {
                   type="button"
                   className="chat-session-delete"
                   aria-label="Delete chat"
+                  disabled={sending}
                   onClick={(e) => handleDeleteSession(s.id, e)}
                 >
                   ×
@@ -153,7 +163,7 @@ export default function ChatPanel() {
           ) : (
             messages.map((m) => {
               const uniqueCitations = m.citations && m.citations.length > 0
-                ? [...new Map(m.citations.map((c) => [c.documentId, c])).values()]
+                ? [...new Map(m.citations.map((c) => [c.documentId, { ...c, numbers: m.citations.flatMap((item, index) => item.documentId === c.documentId ? [index + 1] : []) }])).values()]
                 : [];
               const showStatus = m.role === 'assistant' && !m.content && (m.phase === 'searching' || m.phase === 'thinking');
 
@@ -163,11 +173,11 @@ export default function ChatPanel() {
                     <div className="chat-status">
                       <span className="chat-status-dots"><span></span><span></span><span></span></span>
                       <span className="chat-status-text">
-                        {m.phase === 'searching'
+                        {m.status || (m.phase === 'searching'
                           ? 'Searching your documents…'
                           : uniqueCitations.length > 0
                             ? `Found ${uniqueCitations.length} relevant document${uniqueCitations.length > 1 ? 's' : ''}. Thinking…`
-                            : 'No matching documents found. Thinking…'}
+                            : 'Preparing an answer…')}
                       </span>
                     </div>
                   ) : (
@@ -176,11 +186,12 @@ export default function ChatPanel() {
                       {m.role === 'assistant' && m.phase === 'streaming' ? <span className="chat-cursor" /> : null}
                     </div>
                   )}
+                  {m.sources?.length > 0 && !showStatus && <div className="chat-citations">{m.sources.map((source) => <span className="dashboard-badge chat-citation-badge" key={source.label}>{source.label}</span>)}</div>}
                   {uniqueCitations.length > 0 && !showStatus ? (
                     <div className="chat-citations">
                       {uniqueCitations.map((c) => (
                         <span key={c.documentId} className="dashboard-badge chat-citation-badge">
-                          📄 {c.documentName || c.originalFilename}
+                          Doc {c.numbers.join(', ')}: {c.documentName || c.originalFilename}
                         </span>
                       ))}
                     </div>

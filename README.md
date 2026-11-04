@@ -269,6 +269,12 @@ Operational notes:
 
 ---
 
+## Agentic chat
+
+An optional read-only agent can gather evidence across several document lookups before answering. It provides document search/discovery/paged reads and patient-only profile/recorded-interaction tools, with per-tool authorization checks, auditing, progress events, limits, and fallback to existing RAG chat. Enable it only after the live evaluation in [AGENTIC_CHAT_RUNBOOK.md](AGENTIC_CHAT_RUNBOOK.md). It defaults to `CHAT_AGENT_ENABLED=false`; a tool-capable `AI_AGENT_MODEL` is required for useful agent behavior.
+
+Run `npm test` for deterministic agent/tool tests. These use injected data/model fixtures and do not replace testing against the real database and model.
+
 ## 🧭 Project Status
 
 The Patient, Doctor, and Hospital dashboards share the plum/berry TypeScript design system in `src/dashboard-v2/`. Patient tabs were migrated first; Doctor and Hospital now use matching cards, lists, forms, and notifications throughout. The shared emergency access screen uses the same visual system and describes the actual consented, audited access flow. Patient Health Vitals and Upcoming Appointments are still explicitly labeled sample data because no backend source exists for them.
