@@ -36,7 +36,7 @@ test('exposes exactly five read-only tools', () => {
 });
 test('greetings finish with no data reads', async () => {
   const f = fixture();
-  const result = await runAgentLoop({ records: f.records, history, complete: sequence([{ content: 'Hello' }]) });
+  const result = await runAgentLoop({ records: f.records, history: [{ role: 'user', content: 'Hello' }], complete: sequence([{ content: 'Hello' }]) });
   assert.equal(result.fallback, false); assert.equal(f.audit.length, 0); assert.equal(f.queries.length, 0);
 });
 test('multiple rounds collect two documents, deduplicate evidence and audit', async () => {
@@ -162,4 +162,49 @@ test('document text paging provides a next chunk and bounded evidence', async ()
     ? [0, 1, 2, 3].map((index) => ({ chunk_index: index, content: 'lab value' })) : [doc(A)] }) });
   const result = await f.records.execute('get_document_text', { document_id: A });
   assert.equal(result.chunks.length, 3); assert.equal(result.next_chunk, 3); assert.equal(f.audit.length, 1);
+});
+
+test('invalid document type filters return actionable errors instead of empty results', async () => {
+  const f = fixture();
+  for (const name of ['list_documents', 'search_documents']) {
+    await assert.rejects(f.records.execute(name, { query: 'labs', document_type: 'lab reports' }), /Unsupported document_type.*lab_report/);
+  }
+  assert.equal(f.queries.length, 0);
+});
+
+test('empty optional id filters search the authorized set without widening nonempty filters', async () => {
+  const f = fixture();
+  await f.records.execute('search_documents', { query: 'labs', document_ids: [] });
+  assert.deepEqual(f.searches, [[A]]);
+  const denied = await f.records.execute('search_documents', { query: 'labs', document_ids: [B] });
+  assert.deepEqual(denied, { chunks: [] });
+  await assert.rejects(f.records.execute('search_documents', { query: 'labs', document_ids: B }), /must be an array/);
+});
+
+test('unsupported factual planner answers trigger grounded fallback', async () => {
+  const result = await runAgentLoop({ records: fixture().records,
+    history: [{ role: 'user', content: 'And how often is it prescribed?' }],
+    complete: async () => ({ content: 'Metformin is taken twice daily.' }) });
+  assert.equal(result.fallback, true); assert.equal(result.reason, 'ungrounded_completion');
+});
+test('explicit no-record routing and safe conversational replies avoid unnecessary reads', async () => {
+  const result = await runAgentLoop({ records: fixture().records,
+    history: [{ role: 'user', content: 'What can you help with?' }],
+    complete: async () => ({ content: 'NO_RECORD_LOOKUP' }) });
+  assert.equal(result.fallback, false);
+});
+
+test('thanks skips planning entirely while record questions prefixed with greetings still plan', async () => {
+  let calls = 0;
+  const complete = async () => { calls++; return { content: 'NO_RECORD_LOOKUP' }; };
+  await runAgentLoop({ records: fixture().records, history: [{ role: 'user', content: 'Thanks!' }], complete });
+  assert.equal(calls, 0);
+  await runAgentLoop({ records: fixture().records, history: [{ role: 'user', content: 'Hello, what is my prescription dose?' }], complete });
+  assert.equal(calls, 1);
+});
+
+test('unrequested date bounds cannot hide the relevant records', async () => {
+  const f = fixture();
+  await assert.rejects(f.records.execute('list_documents', { from_date: '2026-10-01' }), /Date bounds were not requested/);
+  assert.equal(f.queries.length, 0);
 });

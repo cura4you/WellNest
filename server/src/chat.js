@@ -6,13 +6,15 @@ import { pool } from './db.js';
 import { requireAuth, camelRow, camelRows, callAIChatCompletion, describeAiFailure } from './utils.js';
 import { getAuthorizedDocumentIds, isAuthorizedForDocument } from './authz.js';
 import { retrieveRelevantChunks, indexDocument, isEmbeddingConfigured } from './embeddings.js';
-import { createRecordTools, runAgentLoop } from './chatAgent.js';
+import { createRecordTools, runAgentLoop, isConversationalMessage } from './chatAgent.js';
+import { createCitationFilter } from './chatCitations.js';
 
 const router = express.Router();
 
 const AI_API_KEY = process.env.AI_API_KEY || process.env.GEMINI_API_KEY || '';
 const AI_BASE_URL = (process.env.AI_BASE_URL || (process.env.GEMINI_API_KEY ? 'https://openrouter.ai/api/v1' : '')).replace(/\/$/, '');
-const AI_MODEL = process.env.AI_MODEL || 'openai/gpt-4o';
+// Text chat can use a tool-capable text model without changing vision summaries.
+const AI_MODEL = process.env.AI_CHAT_MODEL || process.env.AI_MODEL || 'openai/gpt-4o';
 const AI_FALLBACK_MODEL = process.env.AI_FALLBACK_MODEL || '';
 const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS) || 60000;
 // The intent-detection call needs a model that actually supports OpenAI-style
@@ -118,7 +120,7 @@ function buildSystemPrompt(contextChunks, sources = []) {
 
   const profileEvidence = sources.map((source) => `\n[${source.label}] (cite as (${source.label})):\n${source.content}`).join('\n');
   if (contextChunks.length === 0) {
-    return `${base}\n\nNo relevant documents were found for this question (either none exist, or none are within your access).${profileEvidence}`;
+    return `${base}\n\nNo relevant documents were found for this question (either none exist, or none are within your access). There are no numbered document sources: do not emit any (Doc N) citations. Only cite a labeled profile source if one is provided below.${profileEvidence}`;
   }
 
   const excerpts = contextChunks
@@ -200,9 +202,9 @@ router.post('/chat', requireAuth, async (req, res) => {
       const records = createRecordTools({
         query: pool.query.bind(pool), authorizedIds: getAuthorizedDocumentIds,
         retrieve: retrieveRelevantChunks, audit: auditRead,
-        userId: req.userId, role: req.userRole, signal: controller.signal,
+        userId: req.userId, role: req.userRole, signal: controller.signal, queryText: message.trim(),
       });
-      status('Looking through your records…');
+      status(isConversationalMessage(message) ? 'Preparing a response…' : 'Looking through your records…');
       agent = await runAgentLoop({
         records, history: history.map(({ role, content }) => ({ role, content })),
         signal: controller.signal, onStatus: status, maxSteps: CHAT_AGENT_MAX_STEPS, timeoutMs: AI_TIMEOUT_MS,
@@ -223,14 +225,14 @@ router.post('/chat', requireAuth, async (req, res) => {
       status('Searching authorized documents…');
       const authorizedDocIds = await getAuthorizedDocumentIds(req.userId, req.userRole);
       if (authorizedDocIds.length > 0) {
-        const intent = agent ? { needsSearch: true, query: message.trim() }
+        const intent = agent ? { needsSearch: true, query: history.filter((h) => h.role === 'user').slice(-3).map((h) => h.content).join('\n').slice(-3000) }
           : await detectDocumentSearchIntent(message.trim(), history, controller.signal);
         if (intent.needsSearch) chunks = [...chunks, ...await retrieveRelevantChunks(intent.query, authorizedDocIds, undefined, AbortSignal.any([controller.signal, AbortSignal.timeout(AI_TIMEOUT_MS)]))];
       }
     }
     controller.signal.throwIfAborted();
     // Recheck after gathering: a grant may have expired or been revoked mid-turn.
-    const freshIds = new Set(await getAuthorizedDocumentIds(req.userId, req.userRole));
+    const freshIds = chunks.length ? new Set(await getAuthorizedDocumentIds(req.userId, req.userRole)) : new Set();
     chunks = [...new Map(chunks.filter((c) => freshIds.has(c.documentId))
       .map((c) => [`${c.documentId}:${c.chunkIndex}`, c])).values()].slice(0, 20).map((c) => ({ ...c, content: c.content.slice(0, 1200) }));
 
@@ -253,7 +255,8 @@ router.post('/chat', requireAuth, async (req, res) => {
     const systemPrompt = buildSystemPrompt(contextChunks, sources);
     const upstreamMessages = [
       { role: 'system', content: systemPrompt },
-      ...history.map((h) => ({ role: h.role, content: h.content })),
+      // Do not re-expose previous medical answers after current evidence becomes unavailable.
+      ...(contextChunks.length || sources.length ? history : history.slice(-1)).map((h) => ({ role: h.role, content: h.content })),
     ];
 
     const citations = contextChunks.map((c) => ({
@@ -268,6 +271,13 @@ router.post('/chat', requireAuth, async (req, res) => {
     const timeoutId = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
 
     let fullText = '';
+    let streamFailed = false;
+    const citationFilter = createCitationFilter(contextChunks.length);
+    const emit = (text) => {
+      if (!text) return;
+      fullText += text;
+      res.write(JSON.stringify({ type: 'token', content: text }) + '\n');
+    };
     try {
       const upstream = await callAIChatCompletion({
         url: `${AI_BASE_URL}/chat/completions`,
@@ -317,13 +327,12 @@ router.post('/chat', requireAuth, async (req, res) => {
             continue;
           }
           const delta = parsed.choices?.[0]?.delta?.content;
-          if (delta) {
-            fullText += delta;
-            res.write(JSON.stringify({ type: 'token', content: delta }) + '\n');
-          }
+          if (delta) emit(citationFilter.push(delta));
         }
       }
+      emit(citationFilter.finish());
     } catch (streamErr) {
+      streamFailed = true;
       if (streamErr.name === 'AbortError') {
         console.warn('Chat stream aborted (timeout or client disconnect).');
         if (!res.destroyed) res.write(JSON.stringify({ type: 'error', message: 'The answer timed out. Please try again.' }) + '\n');
@@ -336,7 +345,7 @@ router.post('/chat', requireAuth, async (req, res) => {
       clearTimeout(timeoutId);
     }
 
-    if (controller.signal.aborted) return res.end();
+    if (controller.signal.aborted || streamFailed) return res.end();
     if (!fullText.trim()) {
       res.end();
       return;

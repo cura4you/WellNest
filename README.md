@@ -275,9 +275,9 @@ Patient vitals, appointment scheduling for all three roles, and persistent in-ap
 
 ## Agentic chat
 
-An optional read-only agent can gather evidence across several document lookups before answering. It provides document search/discovery/paged reads and patient-only profile/recorded-interaction tools, with per-tool authorization checks, auditing, progress events, limits, and fallback to existing RAG chat. Enable it only after the live evaluation in [AGENTIC_CHAT_RUNBOOK.md](AGENTIC_CHAT_RUNBOOK.md). It defaults to `CHAT_AGENT_ENABLED=false`; a tool-capable `AI_AGENT_MODEL` is required for useful agent behavior.
+An optional read-only agent can gather evidence across several document lookups before answering. It provides document search/discovery/paged reads and patient-only profile/recorded-interaction tools, with per-tool authorization checks, auditing, progress events, limits, and fallback to existing RAG chat. It passed 26 local live evaluation scenarios; see [AGENT_EVALUATION.md](AGENT_EVALUATION.md) for results and remaining rollout limits, and [AGENTIC_CHAT_RUNBOOK.md](AGENTIC_CHAT_RUNBOOK.md) for activation. It defaults to `CHAT_AGENT_ENABLED=false`; a tool-capable `AI_AGENT_MODEL` is required for useful agent behavior.
 
-Run `npm test` for deterministic agent/tool tests. These use injected data/model fixtures and do not replace testing against the real database and model.
+Run `npm run test:e2e:agent` for live local model/API/browser evaluation and `npm test` for deterministic agent/tool tests. These use injected data/model fixtures and do not replace testing against the real database and model.
 
 ## 🧭 Project Status
 

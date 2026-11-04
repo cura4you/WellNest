@@ -1,8 +1,8 @@
 # Agentic Chat — Implementation Plan
 
-Status: **implemented behind a feature flag, 2026-11-04; live model evaluation pending.** Original proposal written 2026-10-08.
+Status: **implemented; 26 live local evaluation scenarios passed on 2026-11-04. Production flag remains off by default.** Original proposal written 2026-10-08.
 
-Implementation: `server/src/chatAgent.js`, `server/src/chat.js`, and `ChatPanel.jsx`. All five tools, bounded gathering, fallback, citations/source labels, immediate audit logging, and progress events are implemented. Profile and recorded-interaction tools are patient-only; clinician grants do not imply profile consent. `npm test` runs deterministic engine/tool tests with injected dependencies; these are not real-database or live-model evaluations. No schema migration is required. See `AGENTIC_CHAT_RUNBOOK.md` for activation and remaining validation.
+Implementation: `server/src/chatAgent.js`, `server/src/chat.js`, and `ChatPanel.jsx`. All five tools, bounded gathering, fallback, citations/source labels, immediate audit logging, and progress events are implemented. Profile and recorded-interaction tools are patient-only; clinician grants do not imply profile consent. `npm test` runs deterministic engine/tool tests with injected dependencies; these are not real-database or live-model evaluations. No schema migration is required. See `AGENT_EVALUATION.md` for findings and `AGENTIC_CHAT_RUNBOOK.md` for controlled activation and remaining deployment validation.
 
 The sections below retain the original proposal; the implementation summary above and runbook supersede its unresolved choices.
 Scope: upgrade `/api/chat` (`server/src/chat.js`) from "one retrieval + one answer" to a bounded tool-using agent loop. Other agent ideas (drug-interaction checker, intake agent, access triage, emergency brief, audit agent) are out of scope here.
