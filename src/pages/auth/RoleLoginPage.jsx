@@ -78,6 +78,7 @@ export default function RoleLoginPage({ roleKey }) {
             autoComplete="current-password"
             error={fieldErrors.password}
           />
+          <p className="auth-switch-copy"><Link to={`/forgot-password?role=${role.key}`}>Forgot password?</Link></p>
           <AuthSubmitButton loading={loading} label={`Login as ${role.label}`} />
           <p className="auth-switch-copy">
             Need another role? <Link to="/login">Switch role</Link>

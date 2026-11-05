@@ -1,4 +1,4 @@
-import { boolean, pgEnum, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
+import { boolean, integer, pgEnum, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
 
 export const roleEnum = pgEnum('role', ['patient', 'doctor', 'hospital']);
 
@@ -8,6 +8,7 @@ export const users = pgTable('users', {
   passwordHash: text('password_hash').notNull(),
   role: roleEnum('role').notNull(),
   emailVerified: boolean('email_verified').default(false).notNull(),
+  authVersion: integer('auth_version').default(0).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 });
@@ -40,6 +41,10 @@ export const hospitals = pgTable('hospitals', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: uuid('user_id').notNull().unique().references(() => users.id, { onDelete: 'cascade' }),
   hospitalName: varchar('hospital_name', { length: 255 }).notNull(),
+  proofFileId: text('proof_file_id'),
+  proofFilename: varchar('proof_filename', { length: 255 }),
+  proofDekWrapped: text('proof_dek_wrapped'),
+  proofDekIv: text('proof_dek_iv'),
   licenseNumber: varchar('license_number', { length: 120 }).notNull().unique(),
   phone: varchar('phone', { length: 20 }).notNull(),
   address: text('address').notNull(),

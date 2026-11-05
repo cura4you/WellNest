@@ -67,11 +67,11 @@ async function request(path, options) {
   let response;
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
       headers: {
         ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
         ...(options.headers || {}),
       },
-      ...options,
     });
   } catch {
     throw new Error('Failed to fetch API. Start backend with `npm run dev:api` or `npm run dev:all`.');
@@ -79,7 +79,9 @@ async function request(path, options) {
 
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(payload.message || 'Request failed.');
+    const error = new Error(payload.message || 'Request failed.');
+    error.status = response.status;
+    throw error;
   }
   return payload;
 }
@@ -197,4 +199,18 @@ export async function registerUser({ role, data }) {
   } catch (error) {
     throw new Error(normalizeError(error));
   }
+}
+
+export function requestPasswordReset(role, email) {
+  return request('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ role, email }) });
+}
+export function resetPassword(token, password) {
+  return request('/auth/reset-password', { method: 'POST', body: JSON.stringify({ token, password }) });
+}
+export function secureAccountAction(action, token, body = {}) {
+  if (USE_MOCK_AUTH) {
+    if (action === 'logout') return Promise.resolve({ message: 'Signed out.' });
+    return Promise.reject(new Error('Account security requires the real backend.'));
+  }
+  return request(`/auth/${action}`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: JSON.stringify(body), signal: AbortSignal.timeout(15000) });
 }

@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { pool } from './db.js';
 
 export function normalizeEmail(email = '') {
   return String(email).trim().toLowerCase();
@@ -140,9 +141,11 @@ if (!TOKEN_SECRET) {
 
 const TOKEN_TTL_MS = 8 * 60 * 60 * 1000; // 8 hours
 
-export function issueToken(userId, role) {
+export function issueToken(userId, role, authVersion = 0) {
   const payload = Buffer.from(JSON.stringify({
     sub: userId,
+    ver: authVersion,
+    jti: crypto.randomUUID(),
     role,
     iat: Date.now(),
     exp: Date.now() + TOKEN_TTL_MS,
@@ -151,7 +154,7 @@ export function issueToken(userId, role) {
   return `${payload}.${sig}`;
 }
 
-export function resolveSession(token) {
+function decodeSession(token) {
   try {
     const parts = (token || '').split('.');
     if (parts.length !== 2) return null;
@@ -164,16 +167,31 @@ export function resolveSession(token) {
     const data = JSON.parse(Buffer.from(payload, 'base64url').toString());
     // Enforce token expiry
     if (!data.exp || Date.now() > data.exp) return null;
-    return { userId: data.sub, role: data.role };
+    return { userId: data.sub, role: data.role, authVersion: data.ver ?? 0, expiresAt: data.exp };
   } catch {
     return null;
   }
 }
 
-export function revokeToken() {
-  // Stateless tokens expire after TOKEN_TTL_MS (8 hours).
-  // For immediate revocation: add token signature to a DB `revoked_tokens` table
-  // and check it in resolveSession before returning the session.
+export function tokenHash(token) {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+export async function resolveSession(token) {
+  const session = decodeSession(token);
+  if (!session || !/^[a-f0-9-]{36}$/i.test(session.userId || '')) return null;
+  const { rows } = await pool.query(`SELECT u.role, u.auth_version FROM users u
+    WHERE u.id = $1 AND NOT EXISTS (SELECT 1 FROM revoked_tokens WHERE token_hash = $2)`,
+  [session.userId, tokenHash(token)]);
+  if (!rows[0] || rows[0].role !== session.role || rows[0].auth_version !== session.authVersion) return null;
+  return session;
+}
+
+export async function revokeToken(token, userId) {
+  const session = decodeSession(token);
+  if (!session || session.userId !== userId) return;
+  await pool.query(`INSERT INTO revoked_tokens(token_hash, user_id, expires_at) VALUES ($1,$2,$3)
+    ON CONFLICT (token_hash) DO NOTHING`, [tokenHash(token), userId, new Date(session.expiresAt)]);
 }
 
 export function makeSafeUser(userRow, profile = {}) {
@@ -186,13 +204,17 @@ export function makeSafeUser(userRow, profile = {}) {
 }
 
 /* ── Auth middleware ── */
-export function requireAuth(req, res, next) {
+export async function requireAuth(req, res, next) {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : header;
-  const session = resolveSession(token);
+  let session;
+  try { session = await resolveSession(token); } catch {
+    return res.status(503).json({ message: 'Unable to verify your session. Please try again.' });
+  }
   if (!session) {
     return res.status(401).json({ message: 'Unauthorized. Please log in.' });
   }
+  req.authToken = token;
   req.userId = session.userId;
   req.userRole = session.role;
   next();

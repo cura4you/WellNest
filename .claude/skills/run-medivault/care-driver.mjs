@@ -27,6 +27,17 @@ const container = JSON.parse(execFileSync('docker', ['inspect', 'medivault-minio
 const storageEnv = Object.fromEntries(container.Config.Env.map((entry) => { const i = entry.indexOf('='); return [entry.slice(0, i), entry.slice(i + 1)]; }));
 env.S3_ENDPOINT = 'http://localhost:9000'; env.S3_REGION = 'us-east-1';
 env.S3_ACCESS_KEY = storageEnv.MINIO_ROOT_USER; env.S3_SECRET_KEY = storageEnv.MINIO_ROOT_PASSWORD;
+// Optional hosted provider path avoids downloading local AI models.
+if (process.env.CARE_E2E_AI_MODE === 'hosted') {
+  env.AI_BASE_URL = process.env.AI_BASE_URL;
+  env.AI_API_KEY = process.env.AI_API_KEY || process.env.GEMINI_API_KEY || '';
+  env.AI_MODEL = process.env.CARE_E2E_AI_MODEL || process.env.AI_MODEL;
+  env.AI_FALLBACK_MODEL = '';
+  env.AI_INTENT_MODEL = env.AI_MODEL;
+  env.EMBEDDING_BASE_URL = process.env.EMBEDDING_BASE_URL || env.AI_BASE_URL;
+  env.EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || 'gemini-embedding-001';
+  env.EMBEDDING_API_KEY = process.env.EMBEDDING_API_KEY || env.AI_API_KEY;
+}
 const children = [], contexts = [], failures = [], steps = [];
 let browser, currentPage;
 const accounts = {};
@@ -231,7 +242,7 @@ try {
     const login = await fetch(`${api}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ role: 'patient', email: accounts.patient.email, password: 'CareTest2026' }) });
     assert.equal((await login.json()).user.profile.emergencyContactName, 'Test Contact');
   });
-  await check('Real local AI summary and cited RAG chat', async () => {
+  await check(`Real ${process.env.CARE_E2E_AI_MODE === 'hosted' ? 'hosted' : 'local'} AI summary and cited RAG chat`, async () => {
     await nav(doctor, 'Shared Documents'); await doctor.getByRole('button', { name: 'AI Summary', exact: true }).click();
     await doctor.locator('.aisummary-result').waitFor({ timeout: 150000 }); await shot(doctor, 'doctor-ai-summary.png');
     await doctor.locator('.aisummary-close').click();

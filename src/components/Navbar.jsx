@@ -72,8 +72,8 @@ export default function Navbar() {
     const currentRole = roleByKey(role);
     const isNavActive = (id) => location.pathname === '/' && activeSection === id;
 
-    const handleLogout = () => {
-        logout();
+    const handleLogout = async () => {
+        if (!await logout()) return;
         closeMenu();
         navigate('/');
     };

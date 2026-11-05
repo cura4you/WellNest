@@ -13,6 +13,7 @@ import { logAudit } from './audit.js';
 import { indexDocument, isEmbeddingConfigured, extractPdfText } from './embeddings.js';
 import chatRouter from './chat.js';
 import careRouter from './care.js';
+import securityRouter from './security.js';
 import { getPreferences, notifyUser } from './notifications.js';
 import { waitUntil } from '@vercel/functions';
 
@@ -63,6 +64,8 @@ app.use((req, _res, next) => {
   console.log(`→ ${req.method} ${req.path}`);
   next();
 });
+
+app.use('/auth', securityRouter);
 
 // ════════════════════════════════════════
 //  Health
@@ -184,14 +187,14 @@ app.post('/auth/register/hospital', registerLimiter, upload.single('proofDocumen
     // Store proof document in Appwrite if provided
     if (req.file) {
       try {
-        const { blob } = encryptFile(req.file.buffer);
+        const { blob, dekWrapped, dekIv } = encryptFile(req.file.buffer);
         const appwriteFileId = await uploadFile(blob, `${crypto.randomUUID()}_${req.file.originalname}`);
 
         // Save Appwrite file reference on the hospital profile
         await pool.query(
-          `UPDATE hospitals SET proof_file_id = $1, proof_filename = $2, updated_at = NOW()
+          `UPDATE hospitals SET proof_file_id = $1, proof_filename = $2, proof_dek_wrapped = $4, proof_dek_iv = $5, updated_at = NOW()
            WHERE user_id = (SELECT id FROM users WHERE email = $3)`,
-          [appwriteFileId, req.file.originalname, normalizeEmail(req.body.officialEmail || req.body.email)]
+          [appwriteFileId, req.file.originalname, normalizeEmail(req.body.officialEmail || req.body.email), dekWrapped, dekIv]
         );
         console.log(`✅  Hospital proof document stored in object storage: ${appwriteFileId}`);
       } catch (proofErr) {
@@ -217,7 +220,7 @@ app.post('/auth/login', loginLimiter, async (req, res) => {
     }
 
     const { rows, rowCount } = await pool.query(
-      'SELECT id, email, role, password_hash FROM users WHERE email = $1 AND role = $2',
+      'SELECT id, email, role, password_hash, auth_version FROM users WHERE email = $1 AND role = $2',
       [normalizedEmail, role]
     );
 
@@ -246,7 +249,7 @@ app.post('/auth/login', loginLimiter, async (req, res) => {
 
     console.log(`✅  Login ${role}: ${normalizedEmail}`);
     return res.json({
-      token: issueToken(user.id, user.role),
+      token: issueToken(user.id, user.role, user.auth_version),
       user: makeSafeUser(user, profile),
     });
   } catch (err) {

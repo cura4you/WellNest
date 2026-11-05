@@ -13,7 +13,7 @@ export default function ProtectedRoute({ allowedRole }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to={`/login/${allowedRole}`} replace />;
+    return <Navigate to={allowedRole ? `/login/${allowedRole}` : '/login'} replace />;
   }
 
   if (allowedRole && role !== allowedRole) {

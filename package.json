@@ -18,7 +18,9 @@
     "test:e2e:agent": "node .claude/skills/run-medivault/agent-driver.mjs",
     "test:e2e:homepage": "node .claude/skills/run-medivault/homepage-driver.mjs",
     "test:e2e:dashboard-ui": "node .claude/skills/run-medivault/dashboard-ui-driver.mjs",
-    "test:e2e:dashboard-ux": "node .claude/skills/run-medivault/dashboard-ux-driver.mjs"
+    "test:e2e:dashboard-ux": "node .claude/skills/run-medivault/dashboard-ux-driver.mjs",
+    "test:e2e:security": "node .claude/skills/run-medivault/security-driver.mjs",
+    "keys:rewrap": "node scripts/rewrap-document-keys.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1131.0",

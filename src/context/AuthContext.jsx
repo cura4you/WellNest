@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { loginUser, registerUser, validateStoredAuthSession } from '../services/authApi';
+import { loginUser, registerUser, validateStoredAuthSession, secureAccountAction } from '../services/authApi';
 import { AuthContext } from './authContextObject';
 
 const STORAGE_KEY = 'medivault.auth';
@@ -21,6 +21,7 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [logoutError, setLogoutError] = useState('');
   // Starts true so ProtectedRoute can wait for this mount effect to read
   // localStorage before deciding isAuthenticated — otherwise the very first
   // render (user/token still null) reads as logged-out and redirects to
@@ -91,9 +92,18 @@ export function AuthProvider({ children }) {
     }
   }, [persistSession]);
 
-  const logout = useCallback(() => {
-    clearSession();
-  }, [clearSession]);
+  const logout = useCallback(async () => {
+    setLogoutError('');
+    try {
+      await secureAccountAction('logout', token);
+      clearSession();
+      return true;
+    } catch (err) {
+      if (err.status === 401) { clearSession(); return true; }
+      setLogoutError('Unable to sign out on the server. Check your connection and try again.');
+      return false;
+    }
+  }, [clearSession, token]);
 
   const updateSessionProfile = useCallback((profile) => {
     if (!user) return;
@@ -117,10 +127,11 @@ export function AuthProvider({ children }) {
       register,
       logout,
       clearError,
+      clearLocalSession: clearSession,
       updateSessionProfile,
     }),
-    [user, token, initializing, loading, error, login, register, logout, clearError, updateSessionProfile]
+    [user, token, initializing, loading, error, login, register, logout, clearError, clearSession, updateSessionProfile]
   );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={value}>{logoutError && <div className="auth-session-error" role="alert">{logoutError}<button type="button" onClick={() => setLogoutError('')}>Dismiss</button></div>}{children}</AuthContext.Provider>;
 }

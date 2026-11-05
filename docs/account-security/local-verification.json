@@ -1,0 +1,30 @@
+{
+  "verifiedAt": "2026-11-05T20:34:58.556Z",
+  "unitTests": 41,
+  "security": {
+    "passed": [
+      "All three roles register and hydrate through real APIs; hospital proof key is wrapped",
+      "Encrypted upload/download is byte-identical; legacy keys and grant copies rewrap idempotently",
+      "Logout revokes only that token for every role; separately issued sessions remain valid",
+      "Recovery response is identical for existing, missing and mismatched-role accounts; only token hashes persist",
+      "Patient resets through browser; URL secret is removed, old password and all old sessions fail",
+      "Expired and invalid links fail; weak passwords fail; concurrent reset has exactly one winner",
+      "Doctor changes password in shared account security; current password required and all sessions revoked",
+      "Hospital signs out all devices through shared security screen",
+      "Failed server logout stays signed in with an error; retry revokes token",
+      "Recovery pages fit phone widths and all login roles expose recovery links",
+      "Database-backed recovery throttle rejects repeated requests"
+    ],
+    "errors": [],
+    "scope": "Isolated real PostgreSQL, MinIO, API and headless Chromium. Email captured to a private local file; no external mail sent."
+  },
+  "checks": {
+    "lint": "passed",
+    "typescript": "passed",
+    "productionBuild": "passed"
+  },
+  "limits": [
+    "External recovery email delivery remains unconfigured/unverified.",
+    "Earlier full care attempt stopped at AI because local Ollama models were removed; hosted rerun pending."
+  ]
+}

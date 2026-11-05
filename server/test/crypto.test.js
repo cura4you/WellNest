@@ -1,0 +1,40 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
+import { encryptFile, decryptFile, wrapDocumentKey, unwrapDocumentKey } from '../src/crypto.js';
+const key1 = crypto.randomBytes(32).toString('base64');
+const key2 = crypto.randomBytes(32).toString('base64');
+process.env.DOCUMENT_KEKS = JSON.stringify({ first: key1, second: key2 });
+process.env.DOCUMENT_KEK_ID = 'first';
+test('file round trip stores an authenticated wrapped key and detects ciphertext/key tampering', () => {
+  const original = Buffer.from('private patient record');
+  const file = encryptFile(original);
+  assert.match(file.dekWrapped, /^v1:first:/);
+  assert.deepEqual(decryptFile(file.blob, file.dekWrapped), original);
+  const corrupted = Buffer.from(file.blob); corrupted[30] ^= 1;
+  assert.throws(() => decryptFile(corrupted, file.dekWrapped));
+  const pieces = file.dekWrapped.split(':'); const bytes = Buffer.from(pieces[2], 'base64url'); bytes[40] ^= 1; pieces[2] = bytes.toString('base64url');
+  assert.throws(() => decryptFile(file.blob, pieces.join(':')));
+  assert.throws(() => unwrapDocumentKey(file.dekWrapped.replace(':first:', ':second:')));
+});
+test('key rotation retains old reads and rewraps without rewriting ciphertext', () => {
+  const file = encryptFile(Buffer.from('rotation'));
+  process.env.DOCUMENT_KEK_ID = 'second';
+  assert.equal(decryptFile(file.blob, file.dekWrapped).toString(), 'rotation');
+  const dek = unwrapDocumentKey(file.dekWrapped);
+  const wrapped = wrapDocumentKey(dek); dek.fill(0);
+  assert.match(wrapped, /^v1:second:/);
+  assert.equal(decryptFile(file.blob, wrapped).toString(), 'rotation');
+  process.env.DOCUMENT_KEK_ID = 'first';
+});
+test('legacy keys require explicit migration mode; malformed keys fail closed', () => {
+  const old = crypto.randomBytes(32).toString('base64');
+  assert.throws(() => unwrapDocumentKey(old));
+  const dek = unwrapDocumentKey(old, { allowLegacy: true });
+  assert.equal(dek.length, 32);
+  assert.deepEqual(unwrapDocumentKey(wrapDocumentKey(dek)), dek);
+  for (const value of ['', 'v1:first:garbage', 'not-a-key']) assert.throws(() => unwrapDocumentKey(value, { allowLegacy: true }));
+  process.env.DOCUMENT_KEKS = '{}';
+  assert.throws(() => encryptFile(Buffer.from('must not fall back')));
+  process.env.DOCUMENT_KEKS = JSON.stringify({ first: key1, second: key2 });
+});

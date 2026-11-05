@@ -51,7 +51,7 @@ Also compare the same basic record question with the flag off. Deterministic tes
 
 ## Wider project work remaining
 
-- Password recovery and immediate session revocation.
+- Password recovery and immediate session revocation are now implemented; configure production recovery email as described in SECURITY_OPERATIONS.md.
 - Deployment configuration/verification. Care-workflow browser coverage is documented in `CARE_WORKFLOWS.md`.
 - Backups, monitoring, and further release hardening.
 

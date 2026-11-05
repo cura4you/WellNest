@@ -9,7 +9,8 @@ export const AuthContext = createContext({
   error: '',
   login: async () => {},
   register: async () => {},
-  logout: () => {},
+  logout: async () => {},
+  clearLocalSession: () => {},
   updateSessionProfile: () => {},
   clearError: () => {},
 });

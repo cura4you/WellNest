@@ -2,6 +2,8 @@ import { useLayoutEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
+import PasswordRecoveryPage from './pages/auth/PasswordRecoveryPage';
+import AccountSecurityPage from './pages/auth/AccountSecurityPage';
 import AuthRoleEntryPage from './pages/auth/AuthRoleEntryPage';
 import PatientLoginPage from './pages/auth/PatientLoginPage';
 import DoctorLoginPage from './pages/auth/DoctorLoginPage';
@@ -21,6 +23,10 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+
+      <Route path="/forgot-password" element={<PasswordRecoveryPage key="forgot" />} />
+      <Route path="/reset-password" element={<PasswordRecoveryPage key="reset" />} />
+      <Route element={<ProtectedRoute />}><Route path="/account/security" element={<AccountSecurityPage />} /></Route>
 
       <Route path="/login" element={<AuthRoleEntryPage mode="login" />} />
       <Route path="/login/patient" element={<PatientLoginPage />} />

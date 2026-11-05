@@ -308,3 +308,10 @@
     font-size: 15px;
   }
 }
+
+.auth-field select { width: 100%; padding: 12px 14px; border: 1px solid var(--border-color, #ded7df); border-radius: 8px; background: white; color: #28232b; font: inherit; }
+.auth-security-devices { margin-top: 28px; padding-top: 24px; border-top: 1px solid #ded7df; }
+.auth-security-devices h2 { font-size: 18px; margin-bottom: 8px; }
+.auth-security-devices p { margin-bottom: 16px; }
+.auth-session-error { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 9999; width: min(560px, calc(100% - 32px)); padding: 16px; background: #fff5f5; color: #7f1d1d; border: 1px solid #e5baba; border-radius: 8px; }
+.auth-session-error button { margin-left: 12px; text-decoration: underline; }
