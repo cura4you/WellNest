@@ -1,0 +1,164 @@
+{
+  "verifiedAt": "2026-11-05T01:47:49.016Z",
+  "url": "https://medivault-roan-six.vercel.app",
+  "sourceCommit": "4e6b515",
+  "deploymentId": "dpl_5npgyJU2qHcY8nt1y7cy7GASJZMq",
+  "logoOptionsUrl": "https://medivault-roan-six.vercel.app/logo-options/index.html",
+  "logoOptions": 12,
+  "currentIdentityChanged": false,
+  "findings": [
+    {
+      "issue": "Mobile homepage menu remained open after an outside click or keyboard focus departure.",
+      "fix": "Dismiss on outside pointer/focus and Escape."
+    },
+    {
+      "issue": "Mobile menu open state survived a resize through desktop.",
+      "fix": "Reset state at the matching navigation breakpoint."
+    },
+    {
+      "issue": "Skip link left focus on the body.",
+      "fix": "Make the main content target programmatically focusable."
+    },
+    {
+      "issue": "The preview overflowed internally by up to 29px at 320px, concealed by outer overflow clipping.",
+      "fix": "Fit metric content and footer within small-phone preview widths."
+    },
+    {
+      "issue": "Several small text labels had insufficient contrast on their backgrounds.",
+      "fix": "Darken the affected muted text colors. Opaque foreground/background DOM samples rechecked."
+    },
+    {
+      "issue": "Homepage logo clicks did not reliably return to top; mobile registration could open scrolled down (observed scrollY 319 and heading above viewport).",
+      "fix": "Reset scroll on pathname changes and same-page homepage logo clicks."
+    },
+    {
+      "issue": "Switching dashboard views retained scroll from long content.",
+      "fix": "Reset scroll on active-view change in the shared shell."
+    },
+    {
+      "issue": "Hospital encrypted document status presentation differed from patient/doctor overviews.",
+      "fix": "Use the same label and semantic green color."
+    },
+    {
+      "issue": "Shared overview AI input/send controls lacked accessible labels and exposed an implementation term.",
+      "fix": "Label both controls and use Your records for the badge."
+    }
+  ],
+  "publicHomepageChecks": [
+    "19 homepage links individually exercised",
+    "Every visible homepage link is clicked and reaches its destination",
+    "Mobile menu closes on outside click, keyboard departure, Escape and logo click",
+    "Mobile menu state resets when crossing the desktop breakpoint",
+    "Homepage logo returns to top and registration starts at the top on mobile",
+    "All three preview tabs fit internally at 12 phone/tablet/desktop widths",
+    "Preview keyboard selection and accessible state stay synchronized",
+    "Reduced-motion preference and skip-to-content focus work",
+    "All 12 logo choices, four palettes, theme toggle and shortlist work"
+  ],
+  "homepageWidths": [
+    320,
+    360,
+    390,
+    600,
+    768,
+    820,
+    860,
+    900,
+    1024,
+    1280,
+    1440,
+    1920
+  ],
+  "publicDashboardUiChecks": [
+    "patient: shared branding, typography and navigation",
+    "patient: switching a long view resets scrolling; AI controls are labelled",
+    "patient: collapsed sidebar keeps logo and labelled controls",
+    "patient: every tab fits desktop and phone",
+    "patient: mobile focus trap, Escape and inert background",
+    "patient: themes persist and logo stays visible",
+    "doctor: shared branding, typography and navigation",
+    "doctor: switching a long view resets scrolling; AI controls are labelled",
+    "doctor: collapsed sidebar keeps logo and labelled controls",
+    "doctor: every tab fits desktop and phone",
+    "doctor: mobile focus trap, Escape and inert background",
+    "doctor: themes persist and logo stays visible",
+    "hospital: shared branding, typography and navigation",
+    "hospital: switching a long view resets scrolling; AI controls are labelled",
+    "hospital: collapsed sidebar keeps logo and labelled controls",
+    "hospital: every tab fits desktop and phone",
+    "hospital: mobile focus trap, Escape and inert background",
+    "hospital: themes persist and logo stays visible",
+    "All three roles use identical core design tokens",
+    "Homepage, authentication and SVG assets use the new identity"
+  ],
+  "dashboardWidths": [
+    320,
+    390,
+    600,
+    768,
+    1024,
+    1440
+  ],
+  "dashboardDesignTokens": [
+    {
+      "font": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+      "accent": "#84416c",
+      "canvas": "rgb(247, 246, 244)",
+      "sidebar": "rgb(253, 252, 251)",
+      "width": "252px",
+      "cardRadius": "12px"
+    },
+    {
+      "font": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+      "accent": "#84416c",
+      "canvas": "rgb(247, 246, 244)",
+      "sidebar": "rgb(253, 252, 251)",
+      "width": "252px",
+      "cardRadius": "12px"
+    },
+    {
+      "font": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+      "accent": "#84416c",
+      "canvas": "rgb(247, 246, 244)",
+      "sidebar": "rgb(253, 252, 251)",
+      "width": "252px",
+      "cardRadius": "12px"
+    }
+  ],
+  "realLocalWorkflowChecks": [
+    "Real registration and dashboard hydration for all three roles",
+    "Patient overview has no sample vitals or appointments",
+    "Vitals create, persist after reload, and appear on Overview",
+    "Vitals reject invalid measurements and cross-role access",
+    "Patient requests an appointment with doctor",
+    "Doctor confirms; patient sees persisted confirmation",
+    "Appointment permissions, stale versions and overlap checks",
+    "Patient reschedule requires renewed provider confirmation",
+    "Hospital schedules, reschedules and patient cancels",
+    "All roles persist notification preferences across reload and login",
+    "Preferences suppress new appointment notifications; inbox read state persists",
+    "Cross-patient isolation, concurrent scheduling and appointment completion",
+    "Vitals delete through UI persists",
+    "Hospital upload creates a real encrypted record in local MinIO",
+    "Doctor requests a document and patient approves via dashboard",
+    "Doctor interaction notes save and delete through UI",
+    "All roles save profile settings",
+    "Real local AI summary and cited RAG chat",
+    "Hospital revokes doctor access; emergency window permits document view",
+    "All dashboard tabs render in light/dark themes and mobile without overflow"
+  ],
+  "realLocalArtifacts": "/private/tmp/medivault_care_e2e_1793842774150",
+  "candidateChecks": {
+    "homepage": 9,
+    "dashboard": 20
+  },
+  "staticChecks": {
+    "lint": "passed",
+    "typescript": "passed",
+    "build": "passed",
+    "automatedTests": "36 passed",
+    "diff": "passed"
+  },
+  "errors": [],
+  "scope": "Homepage links and controls are tested against the actual public site without account creation. Dashboard visual/interaction comparisons use populated API fixtures; these do not establish production authentication or permissions. Twenty separate real local API/PostgreSQL/MinIO/Ollama workflow groups passed. Current findings are fixed and deployed; these checks do not establish that every possible state or browser is bug-free."
+}
