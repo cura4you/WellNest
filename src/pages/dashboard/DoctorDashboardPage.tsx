@@ -1,5 +1,9 @@
+import { readableLabel } from '../../dashboard-v2/overviewUi';
+import { RecordBrowser } from '../../dashboard-v2/RecordBrowser';
+import { useDashboardData } from '../../dashboard-v2/useDashboardData';
+import { DashboardLoadState } from '../../dashboard-v2/DashboardLoadState';
 import { AppointmentsPanel } from '../../dashboard-v2/AppointmentsPanel';
-import { useCallback, useEffect, useMemo, useState, Fragment, type ChangeEvent } from 'react';
+import { useMemo, useState, Fragment, type ChangeEvent } from 'react';
 import { DashboardShell } from '../../dashboard-v2/DashboardShell';
 import { DoctorOverview } from '../../dashboard-v2/DoctorOverview';
 import { RoleListPanel } from '../../dashboard-v2/RoleListPanel';
@@ -49,8 +53,7 @@ interface AuthUser {
 
 export default function DoctorDashboardPage() {
   const { user, logout, updateSessionProfile } = useAuth() as { user: AuthUser | null; logout: () => void; updateSessionProfile: (profile: any) => void };
-  const [data, setData] = useState<DoctorDashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, loading, error: loadError, refreshData } = useDashboardData<DoctorDashboardData>(getDoctorDashboardData);
   const [activeView, setActiveView] = useState<DoctorView>('overview');
   const [requestForm, setRequestForm] = useState({ patientEmail: '', reason: '', selectedDocs: [] as string[] });
   const [searchResult, setSearchResult] = useState<any>(null);
@@ -67,19 +70,11 @@ export default function DoctorDashboardPage() {
   const [summaryDoc, setSummaryDoc] = useState<{ id: string; name: string } | null>(null);
   const { toasts, showToast } = useToast();
 
-  const refreshData = useCallback(() => {
-    setLoading(true);
-    getDoctorDashboardData().then((result: DoctorDashboardData) => {
-      setData(result);
-      setLoading(false);
-    });
-  }, []);
 
-  useEffect(() => { refreshData(); }, [refreshData]);
 
   const handleRequestChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
-    setRequestForm((prev) => ({ ...prev, [name]: value }));
+    setRequestForm((prev) => ({ ...prev, [name]: value, ...(name === 'patientEmail' ? { selectedDocs: [] } : {}) }));
     if (name === 'patientEmail') setSearchResult(null);
   };
 
@@ -288,8 +283,8 @@ export default function DoctorDashboardPage() {
   const [topbarTitle, topbarSubtitle] = viewTitles[activeView];
 
   const renderView = () => {
-    if (loading || !data) {
-      return <p className="mv-empty">Loading doctor dashboard…</p>;
+    if (loading || loadError || !data) {
+      return <DashboardLoadState loading={loading} error={loadError} onRetry={refreshData} role="doctor" />;
     }
 
     switch (activeView) {
@@ -306,19 +301,7 @@ export default function DoctorDashboardPage() {
         );
 
       case 'shared-docs':
-        return (
-          <RoleListPanel emptyMessage="No shared documents available." rows={data.sharedDocuments.map((doc) => ({
-            id: doc.id,
-            title: doc.name,
-            meta: `${doc.patient} · ${doc.patient_email} · ${doc.type.replace(/_/g, ' ')} · ${doc.date}`,
-            status: doc.status,
-            onClick: () => handleView(doc.id),
-            actions: <>
-              <button type="button" className="mv-btn mv-btn-ghost mv-btn-sm" onClick={() => handleView(doc.id)}>View</button>
-              <button type="button" className="mv-btn mv-btn-ghost mv-btn-sm" onClick={() => handleSummary(doc.id)}>AI Summary</button>
-            </>,
-          }))} />
-        );
+        return <RecordBrowser doctor documents={data.sharedDocuments.map(doc => ({ ...doc, person: doc.patient, personEmail: doc.patientEmail }))} onView={handleView} onSummary={handleSummary} onRequestAccess={() => handleViewChange('request')} />;
 
       case 'grants':
         return (
@@ -329,70 +312,29 @@ export default function DoctorDashboardPage() {
 
       case 'request':
         return (
-          <div className="mv-card mv-card-pad mv-role-form">
-            {feedback && <p className="mv-role-feedback">{feedback}</p>}
-            <div className="mv-form-grid">
-              <div className="mv-form-field span-2">
-                <label className="mv-form-label" htmlFor="patientEmail">Patient Email</label>
-                <div className="mv-role-input-action">
-                  <input
-                    id="patientEmail"
-                    name="patientEmail"
-                    className="mv-form-input"
-                    value={requestForm.patientEmail}
-                    onChange={handleRequestChange}
-                    placeholder="patient@example.com"
-                  />
-                  <button type="button" className="mv-btn mv-btn-ghost" onClick={handleSearchPatient} disabled={searching}>
-                    {searching ? 'Searching...' : 'Search'}
-                  </button>
+          <div className="mv-request-flow">
+            <ol className="mv-request-steps" aria-label="Access request steps">
+              {['Find patient', 'Choose records', 'Explain and submit'].map((step, index) => <li key={step} aria-current={index === (!searchResult ? 0 : !requestForm.selectedDocs.length ? 1 : 2) ? 'step' : undefined}><span>{index + 1}</span>{step}</li>)}
+            </ol>
+            <div className="mv-card mv-card-pad mv-role-form">
+              <div><h2 className="mv-card-title">Request access to patient records</h2><p className="mv-section-caption">Find the patient, select the records you need, and explain the purpose. The patient reviews your request.</p></div>
+              {feedback && <p className="mv-role-feedback" role="status">{feedback}</p>}
+              <form onSubmit={event => { event.preventDefault(); void handleSearchPatient(); }}>
+                <div className="mv-form-field"><label className="mv-form-label" htmlFor="patientEmail">Patient Email</label>
+                  <p id="patient-email-hint" className="mv-field-hint">Use the email the patient registered with.</p>
+                  <div className="mv-role-input-action"><input id="patientEmail" name="patientEmail" type="email" required aria-describedby="patient-email-hint" className="mv-form-input" value={requestForm.patientEmail} onChange={handleRequestChange} disabled={searching || busy} placeholder="patient@example.com" />
+                    <button type="submit" className="mv-btn mv-btn-ghost" disabled={searching || busy}>{searching ? 'Searching…' : 'Search'}</button></div>
                 </div>
-              </div>
-            </div>
-
-            {searchResult && (
-              <div className="mv-role-result">
-                <strong>{searchResult.patient.fullName}</strong>
-                <span>Age: {searchResult.patient.age ?? 'N/A'} · Gender: {searchResult.patient.gender || 'N/A'} · Blood Group: {searchResult.patient.bloodGroup || 'N/A'} · DOB: {searchResult.patient.dateOfBirth || 'N/A'}</span>
-              </div>
-            )}
-
-            {searchResult && searchResult.documents && searchResult.documents.length > 0 && (
-              <div>
-                <div className="mv-role-selection-head">
-                  <span className="mv-form-label">Select Documents ({requestForm.selectedDocs.length} selected)</span>
-                  <div className="mv-role-actions">
-                    <button type="button" className="mv-btn mv-btn-ghost mv-btn-sm" onClick={handleSelectAllDocs}>Select All</button>
-                    <button type="button" className="mv-btn mv-btn-ghost mv-btn-sm" onClick={handleDeselectAllDocs}>Deselect All</button>
-                  </div>
+              </form>
+              {searchResult && <div className="mv-role-result" role="status"><span>Patient found</span><strong>{searchResult.patient.fullName}</strong><span>{requestForm.patientEmail}</span></div>}
+              {searchResult && searchResult.documents?.length > 0 && <>
+                <div><div className="mv-role-selection-head"><span className="mv-form-label">Select Documents ({requestForm.selectedDocs.length} selected)</span><div className="mv-role-actions"><button type="button" className="mv-btn mv-btn-ghost mv-btn-sm" disabled={busy} onClick={handleSelectAllDocs}>Select All</button><button type="button" className="mv-btn mv-btn-ghost mv-btn-sm" disabled={busy} onClick={handleDeselectAllDocs}>Deselect All</button></div></div>
+                  <div className="mv-role-selection-list">{searchResult.documents.map((doc: any) => <label key={doc.id} className="mv-role-selection-row"><input type="checkbox" disabled={busy} checked={requestForm.selectedDocs.includes(doc.id)} onChange={() => handleToggleDoc(doc.id)} /><span className="mv-role-document-name">{doc.documentName || doc.originalFilename}</span><span className="mv-row-meta">{readableLabel(doc.documentType || 'Document')}</span><span className="mv-row-meta">{doc.visitDate || doc.uploadedAt?.split('T')[0]}</span></label>)}</div>
                 </div>
-                <div className="mv-role-selection-list">
-                  {searchResult.documents.map((doc: any) => (
-                    <label key={doc.id} className="mv-role-selection-row">
-                      <input type="checkbox" checked={requestForm.selectedDocs.includes(doc.id)} onChange={() => handleToggleDoc(doc.id)} />
-                      <span className="mv-role-document-name">{doc.documentName || doc.originalFilename}</span>
-                      <span className="mv-row-meta">{doc.documentType}</span>
-                      <span className="mv-row-meta">{doc.visitDate || doc.uploadedAt?.split('T')[0]}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {searchResult && searchResult.documents && searchResult.documents.length === 0 && (
-              <p className="mv-row-meta">No documents found for this patient.</p>
-            )}
-
-            <div className="mv-form-grid">
-              <div className="mv-form-field span-2">
-                <label className="mv-form-label" htmlFor="reason">Reason for Request</label>
-                <textarea id="reason" name="reason" className="mv-form-input mv-role-textarea" value={requestForm.reason} onChange={handleRequestChange} placeholder="Explain why you need access to these documents..." />
-              </div>
-            </div>
-            <div className="mv-role-actions">
-              <button type="button" className="mv-btn mv-btn-accent" onClick={handleSubmitRequest} disabled={busy || !searchResult || requestForm.selectedDocs.length === 0}>
-                {busy ? 'Submitting…' : 'Submit Request'}
-              </button>
+                <div className="mv-form-field"><label className="mv-form-label" htmlFor="reason">Reason for Request</label><textarea id="reason" name="reason" className="mv-form-input mv-role-textarea" disabled={busy} value={requestForm.reason} onChange={handleRequestChange} placeholder="Explain why these records are needed for the patient’s care." /><p className="mv-field-hint">The patient will see this explanation before deciding.</p></div>
+                <div className="mv-request-submit"><p>{requestForm.selectedDocs.length ? `${requestForm.selectedDocs.length} record${requestForm.selectedDocs.length === 1 ? '' : 's'} selected` : 'Choose at least one record to continue.'}</p><button type="button" className="mv-btn mv-btn-accent" onClick={handleSubmitRequest} disabled={busy || !requestForm.selectedDocs.length || !requestForm.reason.trim()}>{busy ? 'Submitting…' : 'Submit Request'}</button></div>
+              </>}
+              {searchResult && !searchResult.documents?.length && <div className="mv-useful-empty"><h3>No records available to request</h3><p>This patient does not have any uploaded documents to select yet.</p></div>}
             </div>
           </div>
         );

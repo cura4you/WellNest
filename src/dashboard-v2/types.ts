@@ -123,7 +123,7 @@ export interface SharedDocumentRow {
   name: string;
   type: string;
   patient: string;
-  patient_email: string;
+  patientEmail: string;
   date: string;
   status: DocumentStatus;
 }

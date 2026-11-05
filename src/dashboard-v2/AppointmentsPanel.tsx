@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { careRequest, localDateTime, type Appointment } from '../services/careApi';
 const emptyForm = () => ({ participantEmail: '', startsAt: localDateTime(new Date(Date.now() + 86400000)), durationMinutes: 30, reason: '', location: '' });
 export function AppointmentsPanel({ role }: { role: 'patient' | 'doctor' | 'hospital' }) {
@@ -52,8 +52,20 @@ export function AppointmentsPanel({ role }: { role: 'patient' | 'doctor' | 'hosp
 }
 export function AppointmentPreview({ role, onOpen }: { role: 'patient' | 'doctor' | 'hospital'; onOpen: () => void }) {
   const [items, setItems] = useState<Appointment[] | null>(null), [error, setError] = useState('');
-  useEffect(() => { careRequest<{ appointments: Appointment[] }>('/appointments').then((r) => setItems(r.appointments.filter((a) => ['requested', 'confirmed'].includes(a.status) && new Date(a.startsAt).getTime() > Date.now()).sort((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt)).slice(0, 3))).catch((e) => setError(e.message)); }, []);
-  return <section className="mv-card"><div className="mv-card-head"><h2 className="mv-card-title">Upcoming Appointments</h2><button className="mv-card-link" onClick={onOpen}>Manage appointments</button></div>
-    {error ? <p className="mv-care-error" role="alert">{error}</p> : items === null ? <p className="mv-empty">Loading appointments…</p> : !items.length ? <p className="mv-empty">No upcoming appointments.</p> : items.map((a) => <button key={a.id} className="mv-row is-clickable" onClick={onOpen}><div className="mv-role-row-main"><strong className="mv-row-title">{role === 'patient' ? a.providerName : a.patientName}</strong><span className="mv-row-meta">{new Date(a.startsAt).toLocaleString()} · {a.status}</span></div></button>)}
+  const load = useCallback(async () => {
+    setError(''); setItems(null);
+    try { const result = await careRequest<{ appointments: Appointment[] }>('/appointments'); setItems(result.appointments.filter(a => ['requested', 'confirmed'].includes(a.status) && Date.parse(a.startsAt) + a.durationMinutes * 60000 > Date.now()).sort((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt)).slice(0, 3)); }
+    catch (failure: any) { setError(failure.message || 'Appointments could not be loaded.'); }
+  }, []);
+  useEffect(() => { void load(); }, [load]);
+  return <section className="mv-card mv-appointments-preview"><div className="mv-card-head"><h2 className="mv-card-title">Upcoming Appointments</h2><button className="mv-card-link" onClick={onOpen}>Manage appointments</button></div>
+    {error ? <div className="mv-care-inset"><p className="mv-care-error" role="alert">{error}</p><button type="button" className="mv-card-link" onClick={() => void load()}>Retry appointments</button></div> : items === null ? <p className="mv-empty" role="status">Loading appointments…</p> : !items.length ? <div className="mv-useful-empty"><h3>No upcoming appointments.</h3><p>{role === 'patient' ? 'Request your next visit when you’re ready. Your provider will confirm the time.' : 'Confirmed visits and appointment requests will appear here.'}</p></div> : items.map(a => {
+      const time = new Date(a.startsAt);
+      return <button key={a.id} className="mv-row mv-appointment-preview is-clickable" onClick={onOpen}>
+        <span className="mv-appointment-date"><small>{time.toLocaleDateString(undefined, { month: 'short' })}</small><strong>{time.getDate()}</strong></span>
+        <span className="mv-role-row-main"><strong className="mv-row-title">{role === 'patient' ? a.providerName : a.patientName}</strong><span className="mv-row-meta">{time.toLocaleDateString(undefined, { weekday: 'short' })} · {time.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })} · {a.durationMinutes} min</span><span className="mv-row-meta">{a.reason}</span></span>
+        <span className={`mv-status-pill ${a.status === 'confirmed' ? 'is-approved' : 'is-pending'}`}>{a.status === 'confirmed' ? 'Confirmed' : role === 'patient' ? 'Awaiting confirmation' : 'Needs confirmation'}</span>
+      </button>;
+    })}
   </section>;
 }

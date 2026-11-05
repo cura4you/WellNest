@@ -1,157 +1,34 @@
 import { WorkspaceHeading } from './WorkspaceHeading';
 import { AppointmentPreview } from './AppointmentsPanel';
-import type { ReactNode } from 'react';
 import { AiAssistantCard } from './AiAssistantCard';
-import {
-  ActivityIcon,
-  FileIcon,
-  PillIcon,
-  ShieldCheckIcon,
-  ShieldIcon,
-  UploadIcon,
-} from './icons';
+import { OverviewActions, OverviewActivity, OverviewFocus, OverviewMetrics, OverviewRecords } from './overviewUi';
+import { ActivityIcon, CalendarPlusIcon, FileIcon, PillIcon, ShieldCheckIcon, ShieldIcon, UploadIcon } from './icons';
 import type { DoctorDashboardData, DoctorView } from './types';
 
-const METRIC_ICONS: Record<string, ReactNode> = {
-  grants: <ShieldCheckIcon size={15} />,
-  pending: <ActivityIcon size={15} />,
-  emergency: <ShieldIcon size={15} />,
-  views: <FileIcon size={15} />,
-};
-
-// Where each metric tile navigates on click — same reasoning as Patient's
-// Overview: route to whichever real tab the number actually corresponds to.
-const METRIC_DESTINATIONS: Record<string, DoctorView> = {
-  grants: 'grants',
-  pending: 'history',
-  emergency: 'emergency',
-  views: 'shared-docs',
-};
-
+const destinations: Record<string, DoctorView> = { grants: 'grants', pending: 'history', emergency: 'emergency', views: 'shared-docs' };
 interface DoctorOverviewProps {
-  data: DoctorDashboardData;
-  onNavigate: (view: DoctorView) => void;
-  onViewDocument: (docId: string) => void;
-  onOpenUpload: () => void;
-  showToast: (message: string, tone?: 'success' | 'info') => void;
+  data: DoctorDashboardData; onNavigate: (view: DoctorView) => void; onViewDocument: (id: string) => void;
+  onOpenUpload: () => void; showToast: (message: string, tone?: 'success' | 'info') => void;
 }
-
 export function DoctorOverview({ data, onNavigate, onViewDocument, onOpenUpload }: DoctorOverviewProps) {
-  const recentDocuments = data.sharedDocuments.slice(0, 3);
-  const recentActivity = data.auditEvents.slice(0, 3);
-
-  return (
-    <>
-      <WorkspaceHeading role="doctor" />
-      <div className="mv-grid-4">
-        {data.metrics.map((metric) => (
-          <button
-            key={metric.key}
-            type="button"
-            className="mv-tile mv-stat-tile is-clickable"
-            onClick={() => onNavigate(METRIC_DESTINATIONS[metric.key] ?? 'overview')}
-          >
-            <div className="mv-stat-head">
-              {METRIC_ICONS[metric.key] ?? <ActivityIcon size={15} />}
-              <span className="mv-stat-label">{metric.title}</span>
-            </div>
-            <div className="mv-stat-value mv-tabular">{metric.value}</div>
-            <span className="mv-stat-hint">{metric.hint}</span>
-          </button>
-        ))}
-      </div>
-
+  const pending = Number(data.metrics.find(m => m.key === 'pending')?.value) || data.requestHistory.filter(r => r.status === 'pending').length;
+  return <>
+    <WorkspaceHeading role="doctor" actions={<><button className="mv-btn mv-btn-ghost" onClick={() => onNavigate('request')}>Request access</button><button className="mv-btn mv-btn-accent" onClick={onOpenUpload}><UploadIcon size={16} /> Upload Document</button></>} />
+    {pending > 0 ? <OverviewFocus title={`${pending} request${pending === 1 ? '' : 's'} awaiting patient approval`} description="Patients choose which records to share. Check the status of your submitted requests." label="Check request status" onOpen={() => onNavigate('history')} /> : !data.sharedDocuments.length && <OverviewFocus title="Request the records you need" description="Find a registered patient and request the records you need. They stay in control of access." label="Request record access" onOpen={() => onNavigate('request')} />}
+    <OverviewMetrics metrics={data.metrics} labels={{ grants: 'Active access grants', pending: 'Awaiting approval', emergency: 'Emergency access history', views: 'Document views' }} icons={{ grants: <ShieldCheckIcon size={16} />, pending: <ActivityIcon size={16} />, emergency: <ShieldIcon size={16} />, views: <FileIcon size={16} /> }} onSelect={key => onNavigate(destinations[key] || 'overview')} />
+    <div className="mv-overview-layout"><div className="mv-col">
       <AppointmentPreview role="doctor" onOpen={() => onNavigate('appointments')} />
-
-      <div className="mv-two-col">
-        <div className="mv-col">
-          <div className="mv-card">
-            <div className="mv-card-head">
-              <span className="mv-card-title">Recently Shared Documents</span>
-              <button type="button" className="mv-card-link" onClick={() => onNavigate('shared-docs')}>View all</button>
-            </div>
-            <div className="mv-card-body">
-              {recentDocuments.length === 0 ? (
-                <div className="mv-empty">No documents shared with you yet.</div>
-              ) : (
-                recentDocuments.map((doc) => (
-                  <div key={doc.id} className="mv-row">
-                    <FileIcon size={16} style={{ color: 'var(--mv-accent-text)', flexShrink: 0 }} />
-                    <div style={{ minWidth: 0 }}>
-                      <div className="mv-row-title">{doc.name}</div>
-                      <div className="mv-row-meta mv-tabular">{doc.patient} · {doc.date}</div>
-                    </div>
-                    <span className={`mv-status-text ${doc.status === 'encrypted' ? 'mv-status-green' : ''}`}>
-                      {doc.status === 'encrypted' ? 'Encrypted' : 'Stored'}
-                    </span>
-                    <button
-                      type="button"
-                      className="mv-btn mv-btn-ghost mv-btn-sm mv-reveal"
-                      style={{ marginLeft: 10 }}
-                      onClick={() => onViewDocument(doc.id)}
-                    >
-                      View
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="mv-col">
-          <div className="mv-card mv-card-pad">
-            <span className="mv-card-title">Quick Actions</span>
-            <div className="mv-grid-4" style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
-              <button type="button" className="mv-tile is-clickable mv-quick-tile" onClick={onOpenUpload}>
-                <UploadIcon size={15} />
-                <span>Upload<br />Document</span>
-              </button>
-              <button type="button" className="mv-tile is-clickable mv-quick-tile" onClick={() => onNavigate('request')}>
-                <ShieldCheckIcon size={15} />
-                <span>Request<br />Access</span>
-              </button>
-              <button type="button" className="mv-tile is-clickable mv-quick-tile" onClick={() => onNavigate('drug-interactions')}>
-                <PillIcon size={15} />
-                <span>Drug<br />Interactions</span>
-              </button>
-              <button type="button" className="mv-tile is-danger is-clickable mv-quick-tile" onClick={() => onNavigate('emergency')}>
-                <ShieldIcon size={15} />
-                <span>Emergency<br />Access</span>
-              </button>
-            </div>
-          </div>
-
-          <AiAssistantCard onOpenFullChat={() => onNavigate('chat')} />
-
-          <div className="mv-card">
-            <div className="mv-card-head">
-              <span className="mv-card-title">Recent Activity</span>
-              <button type="button" className="mv-card-link" onClick={() => onNavigate('activity')}>View all</button>
-            </div>
-            <div className="mv-card-body">
-              {recentActivity.length === 0 ? (
-                <div className="mv-empty">No activity yet.</div>
-              ) : (
-                recentActivity.map((event) => (
-                  <button
-                    key={event.id}
-                    type="button"
-                    className="mv-row is-align-start is-clickable"
-                    onClick={() => onNavigate('activity')}
-                  >
-                    <span className="mv-unread-dot" style={{ background: 'var(--mv-blue)' }} />
-                    <div style={{ minWidth: 0 }}>
-                      <div className="mv-row-title" style={{ fontWeight: 500, fontSize: 12 }}>{event.title}</div>
-                      <div className="mv-row-meta mv-tabular">{event.time}</div>
-                    </div>
-                  </button>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+      <OverviewRecords doctor documents={data.sharedDocuments} onOpen={() => onNavigate('shared-docs')} onView={onViewDocument} />
+      <OverviewActivity events={data.auditEvents} onOpen={() => onNavigate('activity')} />
+    </div><div className="mv-col">
+      <OverviewActions actions={[
+        { title: 'Request access', detail: 'Ask a patient to share records', icon: <ShieldCheckIcon size={19} />, onClick: () => onNavigate('request') },
+        { title: 'Appointments', detail: 'Confirm requests and manage visits', icon: <CalendarPlusIcon size={19} />, onClick: () => onNavigate('appointments') },
+        { title: 'Drug interactions', detail: 'Review or record interaction notes', icon: <PillIcon size={19} />, onClick: () => onNavigate('drug-interactions') },
+        { title: 'Emergency access', detail: 'Open the consented emergency flow', icon: <ShieldIcon size={19} />, onClick: () => onNavigate('emergency'), urgent: true },
+      ]} />
+      <AiAssistantCard onOpenFullChat={() => onNavigate('chat')} />
+      <section className="mv-card mv-sharing-note"><ShieldCheckIcon size={21} /><div><h3>Access stays with the patient</h3><p>Appointments and uploads do not grant access to other records. Check your current permissions before a consultation.</p><button type="button" className="mv-card-link" onClick={() => onNavigate('grants')}>View active grants →</button></div></section>
+    </div></div>
+  </>;
 }

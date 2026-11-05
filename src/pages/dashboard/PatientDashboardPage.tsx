@@ -1,6 +1,8 @@
+import { useDashboardData } from '../../dashboard-v2/useDashboardData';
+import { DashboardLoadState } from '../../dashboard-v2/DashboardLoadState';
 import { VitalsPanel } from '../../dashboard-v2/VitalsPanel';
 import { AppointmentsPanel } from '../../dashboard-v2/AppointmentsPanel';
-import { useCallback, useEffect, useMemo, useState, type ChangeEvent } from 'react';
+import { useMemo, useState, type ChangeEvent } from 'react';
 import { DashboardShell } from '../../dashboard-v2/DashboardShell';
 import { PatientOverview } from '../../dashboard-v2/PatientOverview';
 import { StorageVault } from '../../dashboard-v2/StorageVault';
@@ -47,8 +49,7 @@ export default function PatientDashboardPage() {
   // useAuth's context is still untyped JS (defaults user to `null`), which
   // infers too narrowly for a TS consumer — widen it here at the boundary.
   const { user, logout, updateSessionProfile } = useAuth() as { user: AuthUser | null; logout: () => void; updateSessionProfile: (profile: any) => void };
-  const [data, setData] = useState<PatientDashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, loading, error: loadError, refreshData } = useDashboardData<PatientDashboardData>(getPatientDashboardData);
   const [profile, setProfile] = useState({
     fullName: user?.profile?.fullName || '',
     bloodGroup: user?.profile?.bloodGroup || '',
@@ -63,15 +64,7 @@ export default function PatientDashboardPage() {
   const [summaryDoc, setSummaryDoc] = useState<{ id: string; name: string } | null>(null);
   const { toasts, showToast } = useToast();
 
-  const refreshData = useCallback(() => {
-    setLoading(true);
-    getPatientDashboardData().then((result: PatientDashboardData) => {
-      setData(result);
-      setLoading(false);
-    });
-  }, []);
 
-  useEffect(() => { refreshData(); }, [refreshData]);
 
   const handleProfileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -230,8 +223,8 @@ export default function PatientDashboardPage() {
   const [topbarTitle, topbarSubtitle] = viewTitles[activeView];
 
   const renderView = () => {
-    if (loading || !data) {
-      return <p className="mv-empty">Loading patient dashboard…</p>;
+    if (loading || loadError || !data) {
+      return <DashboardLoadState loading={loading} error={loadError} onRetry={refreshData} role="patient" />;
     }
 
     switch (activeView) {

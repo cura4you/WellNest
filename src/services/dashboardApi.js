@@ -11,17 +11,22 @@ function getToken() {
 }
 
 async function dashboardRequest(path) {
+  if (import.meta.env.VITE_ENABLE_MOCK_AUTH === 'true') return null;
   const token = getToken();
-  if (!token) {
-    return null;
-  }
+  if (!token) throw Object.assign(new Error('Your session is missing. Please sign in again.'), { status: 401 });
 
   const res = await fetch(`${API_BASE_URL}${path}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  if (!res.ok) return null;
-  return res.json();
+  if (!res.ok) {
+    const message = res.status === 401 ? 'Your session has expired. Please sign in again.' : 'Please check your connection and try again.';
+    throw Object.assign(new Error(message), { status: res.status });
+  }
+  const data = await res.json().catch(() => null);
+  const required = path.endsWith('/patient') ? ['metrics', 'documents', 'accessRequests', 'auditEvents', 'notifications'] : path.endsWith('/doctor') ? ['metrics', 'grantedAccess', 'requestHistory', 'sharedDocuments', 'auditEvents', 'notifications'] : ['metrics', 'uploadQueue', 'staffAccess', 'complianceEvents', 'notifications'];
+  if (!data || required.some(key => !Array.isArray(data[key]))) throw new Error('The dashboard response could not be loaded. Please try again.');
+  return data;
 }
 
 const PATIENT_EMPTY = {

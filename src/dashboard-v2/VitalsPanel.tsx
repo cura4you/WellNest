@@ -44,7 +44,7 @@ export function VitalsPanel() {
 export function VitalsSummary({ onOpen }: { onOpen: () => void }) {
   const [vitals, setVitals] = useState<Vital[] | null>(null), [error, setError] = useState('');
   useEffect(() => { careRequest<{ vitals: Vital[] }>('/vitals').then((r) => setVitals(r.vitals)).catch((e) => setError(e.message)); }, []);
-  return <section className="mv-card"><div className="mv-card-head"><h2 className="mv-card-title">Health Vitals</h2><button className="mv-card-link" onClick={onOpen}>Record vitals</button></div>
+  return <section className="mv-card mv-vitals-summary"><div className="mv-card-head"><h2 className="mv-card-title">Health Vitals</h2><button className="mv-card-link" onClick={onOpen}>Record vitals</button></div>
     {error ? <p className="mv-care-error" role="alert">{error}</p> : vitals === null ? <p className="mv-empty">Loading vitals…</p> : !vitals.length ? <p className="mv-empty">No measurements yet. Record your first vitals.</p> : <div className="mv-care-metrics">{fields.map(([key, label, unit]) => {
       const v = vitals.find((entry) => entry[key] !== null);
       return <div key={key}><span className="mv-row-meta">{label}</span><strong>{v?.[key] ?? '—'} <small>{unit}</small></strong><span className="mv-row-meta">{v ? new Date(v.measuredAt).toLocaleDateString() : 'Not recorded'}</span></div>;

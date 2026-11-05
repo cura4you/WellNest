@@ -1,5 +1,7 @@
+import { useDashboardData } from '../../dashboard-v2/useDashboardData';
+import { DashboardLoadState } from '../../dashboard-v2/DashboardLoadState';
 import { AppointmentsPanel } from '../../dashboard-v2/AppointmentsPanel';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { DashboardShell } from '../../dashboard-v2/DashboardShell';
 import { HospitalOverview } from '../../dashboard-v2/HospitalOverview';
 import { RoleListPanel } from '../../dashboard-v2/RoleListPanel';
@@ -41,8 +43,7 @@ interface AuthUser {
 
 export default function HospitalDashboardPage() {
   const { user, logout, updateSessionProfile } = useAuth() as { user: AuthUser | null; logout: () => void; updateSessionProfile: (profile: any) => void };
-  const [data, setData] = useState<HospitalDashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, loading, error: loadError, refreshData } = useDashboardData<HospitalDashboardData>(getHospitalDashboardData);
   const [showUpload, setShowUpload] = useState(false);
   const [activeView, setActiveView] = useState<HospitalView>('overview');
   const [settings, setSettings] = useState({
@@ -55,15 +56,7 @@ export default function HospitalDashboardPage() {
   const [viewerDoc, setViewerDoc] = useState<{ url: string; filename: string; mimeType: string } | null>(null);
   const { toasts, showToast } = useToast();
 
-  const refreshData = useCallback(() => {
-    setLoading(true);
-    getHospitalDashboardData().then((result: HospitalDashboardData) => {
-      setData(result);
-      setLoading(false);
-    });
-  }, []);
 
-  useEffect(() => { refreshData(); }, [refreshData]);
 
   const handleUpload = async (uploadForm: any) => {
     await uploadDocument(uploadForm);
@@ -198,8 +191,8 @@ export default function HospitalDashboardPage() {
   const [topbarTitle, topbarSubtitle] = viewTitles[activeView];
 
   const renderView = () => {
-    if (loading || !data) {
-      return <p className="mv-empty">Loading hospital dashboard…</p>;
+    if (loading || loadError || !data) {
+      return <DashboardLoadState loading={loading} error={loadError} onRetry={refreshData} role="hospital" />;
     }
 
     switch (activeView) {

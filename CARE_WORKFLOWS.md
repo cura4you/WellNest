@@ -69,3 +69,9 @@ Use `npm run test:e2e:homepage` against the running frontend (default `http://lo
 Use `npm run test:e2e:dashboard-ui` (`DASHBOARD_UI_E2E_BASE` overrides the same default) to compare patient, doctor, and hospital styling with populated UI fixtures at six widths. It checks long-view scroll reset, accessible AI controls, collapsed branding, the mobile focus trap, themes, and matching core tokens. These API fixtures deliberately isolate UI behavior and do not prove backend authentication or permissions; use `test:e2e:care` for real workflows.
 
 Both drivers print the private artifact directory containing their JSON reports. Optional `HOMEPAGE_E2E_COOKIE_JAR` / `DASHBOARD_UI_E2E_COOKIE_JAR` can supply an existing Vercel bypass cookie jar for protected deployment verification. Do not commit cookie jars or credentials.
+
+## Patient and doctor UX verification
+
+`npm run test:e2e:dashboard-ux` runs focused headless tests against the frontend (default http://localhost:5177; set `DASHBOARD_UX_E2E_BASE` to override). It uses controlled API fixtures for pending requests, populated records, appointments and vitals, and injected failures. Checks include dashboard recovery and 401 sign-in links, patient request reasons and detail retries, record search by name/care team/patient email, type/date filters and reset, visible document actions on phones, doctor lookup with Enter and guided submission, and populated overview layouts in both themes.
+
+These are interaction and failure-state tests, separate from `test:e2e:care`, which verifies actual backend persistence, permissions and storage/model services. Set `DASHBOARD_UX_E2E_ARTIFACTS` for a report/screenshot directory, or `DASHBOARD_UX_E2E_COOKIE_JAR` for an existing private Vercel bypass jar when checking a protected candidate. No production accounts or medical records are created by the fixture tests.
