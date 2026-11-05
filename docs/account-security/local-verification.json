@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-11-05T20:34:58.556Z",
+  "verifiedAt": "2026-11-05T20:40:11.324Z",
   "unitTests": 41,
   "security": {
     "passed": [
@@ -13,6 +13,7 @@
       "Hospital signs out all devices through shared security screen",
       "Failed server logout stays signed in with an error; retry revokes token",
       "Recovery pages fit phone widths and all login roles expose recovery links",
+      "Authentication fails closed during a database verification outage and recovers",
       "Database-backed recovery throttle rejects repeated requests"
     ],
     "errors": [],
@@ -25,6 +26,33 @@
   },
   "limits": [
     "External recovery email delivery remains unconfigured/unverified.",
-    "Earlier full care attempt stopped at AI because local Ollama models were removed; hosted rerun pending."
-  ]
+    "Initial Ollama-based care run could not complete because local models had been removed; the complete care suite subsequently passed using hosted Gemini."
+  ],
+  "care": {
+    "passed": [
+      "Real registration and dashboard hydration for all three roles",
+      "Patient overview has no sample vitals or appointments",
+      "Vitals create, persist after reload, and appear on Overview",
+      "Vitals reject invalid measurements and cross-role access",
+      "Patient requests an appointment with doctor",
+      "Doctor confirms; patient sees persisted confirmation",
+      "Appointment permissions, stale versions and overlap checks",
+      "Patient reschedule requires renewed provider confirmation",
+      "Hospital schedules, reschedules and patient cancels",
+      "All roles persist notification preferences across reload and login",
+      "Preferences suppress new appointment notifications; inbox read state persists",
+      "Cross-patient isolation, concurrent scheduling and appointment completion",
+      "Vitals delete through UI persists",
+      "Hospital upload creates a real encrypted record in local MinIO",
+      "Doctor requests a document and patient approves via dashboard",
+      "Doctor interaction notes save and delete through UI",
+      "All roles save profile settings",
+      "Real hosted AI summary and cited RAG chat",
+      "Hospital revokes doctor access; emergency window permits document view",
+      "All dashboard tabs render in light/dark themes and mobile without overflow"
+    ],
+    "errors": [],
+    "artifacts": "/private/tmp/medivault_care_e2e_1793910888327"
+  },
+  "careAiProvider": "Hosted Gemini gemini-3.1-flash-lite with real local PostgreSQL/MinIO and isolated synthetic accounts"
 }

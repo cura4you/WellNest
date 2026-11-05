@@ -218,6 +218,12 @@ try {
     await page.setViewportSize({width:390,height:844});await page.goto(`${base}/forgot-password`);await page.locator('#email').waitFor();
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await shot(page,'recovery-mobile.png');
   });
+  await check('Authentication fails closed during a database verification outage and recovers', async () => {
+    await db.query('ALTER TABLE revoked_tokens RENAME TO revoked_tokens_unavailable');
+    try { assert.equal((await call('/auth/session',null,tokens.doctor)).status,503); }
+    finally { await db.query('ALTER TABLE revoked_tokens_unavailable RENAME TO revoked_tokens'); }
+    assert.equal((await call('/auth/session',null,tokens.doctor)).status,200);
+  });
   await check('Database-backed recovery throttle rejects repeated requests', async () => {
     await db.query('DELETE FROM auth_rate_limits');
     for(let i=0;i<5;i++) assert.equal((await call('/auth/forgot-password',{role:'patient',email:'missing@example.com'})).status,202);
