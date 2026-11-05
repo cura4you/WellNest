@@ -66,21 +66,52 @@ export default function LandingPage() {
   const { isAuthenticated, role } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButton = useRef(null);
+  const headerRef = useRef(null);
   const dashboardPath = roleByKey(role)?.dashboardPath || '/login';
   useEffect(() => {
     const id = location.state?.scrollTo;
     if (id) document.getElementById(id)?.scrollIntoView({ behavior: 'instant', block: 'start' });
   }, [location.state]);
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 601px)');
+    const onResize = event => { if (event.matches) setMenuOpen(false); };
+    desktop.addEventListener('change', onResize);
+    return () => desktop.removeEventListener('change', onResize);
+  }, []);
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointerDown = event => {
+      if (!headerRef.current?.contains(event.target)) setMenuOpen(false);
+    };
+    const onFocus = event => {
+      if (!headerRef.current?.contains(event.target)) setMenuOpen(false);
+    };
+    const onEscape = event => {
+      if (event.key === 'Escape') {
+        setMenuOpen(false);
+        menuButton.current?.focus();
+      }
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('focusin', onFocus);
+    document.addEventListener('keydown', onEscape);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('focusin', onFocus);
+      document.removeEventListener('keydown', onEscape);
+    };
+  }, [menuOpen]);
   const closeMenu = () => setMenuOpen(false);
-  const onMenuKeyDown = event => {
-    if (event.key === 'Escape' && menuOpen) { setMenuOpen(false); menuButton.current?.focus(); }
+  const goToTop = () => {
+    closeMenu();
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
   return (
     <div className="medivault-home">
       <a className="home-skip" href="#home-main">Skip to content</a>
-      <header className="home-header" onKeyDown={onMenuKeyDown}>
+      <header className="home-header" ref={headerRef}>
         <div className="home-container home-nav">
-          <Link to="/" aria-label="MediVault home"><BrandLogo /></Link>
+          <Link to="/" aria-label="MediVault home" onClick={goToTop}><BrandLogo /></Link>
           <button className="home-menu-toggle" type="button" ref={menuButton} aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="home-navigation" onClick={() => setMenuOpen(!menuOpen)}><Icon name={menuOpen ? 'close' : 'menu'} size={24} /></button>
           <nav className={`home-navigation${menuOpen ? ' is-open' : ''}`} id="home-navigation" aria-label="Main navigation">
             <div className="home-nav-links"><a href="#flow" onClick={closeMenu}>How it works</a><a href="#patients" onClick={closeMenu}>For patients</a><a href="#providers" onClick={closeMenu}>For providers</a></div>
@@ -88,7 +119,7 @@ export default function LandingPage() {
           </nav>
         </div>
       </header>
-      <main id="home-main">
+      <main id="home-main" tabIndex={-1}>
         <section className="home-hero home-container" aria-labelledby="home-title">
           <div className="home-hero-copy">
             <div className="home-eyebrow"><span /> YOUR HEALTH, CONNECTED</div>
@@ -113,7 +144,7 @@ export default function LandingPage() {
         <section className="home-access home-container" aria-labelledby="home-access-title"><div className="home-access-art" aria-hidden="true"><div className="home-access-orbit"><span className="home-orbit-icon home-orbit-file"><Icon name="file" size={24} /></span><span className="home-orbit-icon home-orbit-doctor"><Icon name="doctor" size={24} /></span><span className="home-orbit-icon home-orbit-hospital"><Icon name="hospital" size={24} /></span><div className="home-access-center"><Icon name="shield" size={48} /></div></div><span className="home-access-label"><Icon name="check" size={15} /> Shared on your terms</span></div><div className="home-access-copy"><span className="home-kicker">BUILT AROUND YOUR SAY</span><h2 id="home-access-title">Your care is personal.<br />Your access should be, too.</h2><p>Sharing records should be a choice you can see and manage.</p><ul><li><Icon name="check" /> Review and approve access requests.</li><li><Icon name="check" /> Revoke access when you need to.</li><li><Icon name="check" /> Check who accessed your records and when.</li></ul><Link className="home-text-link" to="/register/patient">Start with your own workspace <Icon name="arrow" size={18} /></Link></div></section>
         <section className="home-cta home-container" id="cta" aria-labelledby="home-cta-title"><div><span className="home-kicker">A CLEARER PLACE TO START</span><h2 id="home-cta-title">Make room for better care.</h2><p>Your records, your appointments, your next step. Together.</p></div><Link className="home-button home-button-primary" to={isAuthenticated ? dashboardPath : '/register'}>{isAuthenticated ? 'Go to dashboard' : 'Find your workspace'}<Icon name="arrow" size={18} /></Link></section>
       </main>
-      <footer className="home-footer home-container"><div className="home-footer-top"><Link to="/" aria-label="MediVault home"><BrandLogo /></Link><p>A clearer connection to your health.</p><nav aria-label="Footer navigation"><Link to="/login">Sign in</Link><Link to="/register/patient">Patients</Link><Link to="/register/doctor">Doctors</Link><Link to="/register/hospital">Hospitals</Link></nav></div><div className="home-footer-bottom"><span>© {new Date().getFullYear()} MediVault</span><span>Built with care. Designed around you.</span></div></footer>
+      <footer className="home-footer home-container"><div className="home-footer-top"><Link to="/" aria-label="MediVault home" onClick={goToTop}><BrandLogo /></Link><p>A clearer connection to your health.</p><nav aria-label="Footer navigation"><Link to="/login">Sign in</Link><Link to="/register/patient">Patients</Link><Link to="/register/doctor">Doctors</Link><Link to="/register/hospital">Hospitals</Link></nav></div><div className="home-footer-bottom"><span>© {new Date().getFullYear()} MediVault</span><span>Built with care. Designed around you.</span></div></footer>
     </div>
   );
 }

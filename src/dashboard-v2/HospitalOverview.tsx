@@ -77,7 +77,7 @@ export function HospitalOverview({ data, onNavigate, onOpenUpload }: HospitalOve
                       <div className="mv-row-title">{row.file}</div>
                       <div className="mv-row-meta mv-tabular">{row.patient} · {row.submittedAt}</div>
                     </div>
-                    <span className="mv-status-text">{row.status}</span>
+                    <span className={`mv-status-text ${row.status === 'encrypted' ? 'mv-status-green' : ''}`}>{row.status === 'encrypted' ? 'Encrypted' : row.status}</span>
                   </div>
                 ))
               )}

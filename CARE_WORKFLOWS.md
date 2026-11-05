@@ -61,3 +61,11 @@ If Playwright is missing, install it in `.claude/skills/run-medivault` using tha
 The Playwright suite creates an isolated database and MinIO bucket, applies every migration, registers synthetic accounts through the real UI, and tests real API/storage/model responses. It checks persistence across reload/login, role boundaries, booking conflicts/concurrency, status transitions, inbox suppression/read receipts, document sharing/download, interaction notes, profile saves, emergency access/expiry/consent, real local AI summary and cited RAG chat, and all dashboard tabs at desktop/mobile widths. It fails on application console errors or API 5xx responses. Test data and storage are removed in `finally`; logs, screenshots and a JSON report remain under the printed `/private/tmp/medivault_care_e2e_*` directory.
 
 The AI checks exercise the existing RAG path. Activation/evaluation of the optional multi-step agent remains covered separately by `AGENTIC_CHAT_RUNBOOK.md`.
+
+## Homepage and dashboard UI regressions
+
+Use `npm run test:e2e:homepage` against the running frontend (default `http://localhost:5177`; override `HOMEPAGE_E2E_BASE`). This headless suite clicks every homepage link, checks menu dismissal and breakpoint changes, skip-link focus, route scroll reset, all three preview tabs at twelve widths, keyboard tab selection, and the twelve-option logo comparison page. It creates no backend accounts or medical records.
+
+Use `npm run test:e2e:dashboard-ui` (`DASHBOARD_UI_E2E_BASE` overrides the same default) to compare patient, doctor, and hospital styling with populated UI fixtures at six widths. It checks long-view scroll reset, accessible AI controls, collapsed branding, the mobile focus trap, themes, and matching core tokens. These API fixtures deliberately isolate UI behavior and do not prove backend authentication or permissions; use `test:e2e:care` for real workflows.
+
+Both drivers print the private artifact directory containing their JSON reports. Optional `HOMEPAGE_E2E_COOKIE_JAR` / `DASHBOARD_UI_E2E_COOKIE_JAR` can supply an existing Vercel bypass cookie jar for protected deployment verification. Do not commit cookie jars or credentials.

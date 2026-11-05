@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { useLayoutEffect } from 'react';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
 import AuthRoleEntryPage from './pages/auth/AuthRoleEntryPage';
@@ -13,6 +14,10 @@ import DoctorDashboardPage from './pages/dashboard/DoctorDashboardPage';
 import HospitalDashboardPage from './pages/dashboard/HospitalDashboardPage';
 
 export default function App() {
+  const { pathname } = useLocation();
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [pathname]);
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />

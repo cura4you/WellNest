@@ -1,5 +1,5 @@
 // Shared dashboard shell for Patient, Doctor, and Hospital roles.
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import BrandLogo from '../components/brand/BrandLogo';
 import { useTheme } from '../theme/useTheme';
 import {
@@ -84,6 +84,10 @@ export function DashboardShell<V extends string>({
   const search = useDropdown<HTMLDivElement>();
   const profile = useDropdown<HTMLDivElement>();
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [activeView]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {

@@ -61,7 +61,7 @@ export function AiAssistantCard({ onOpenFullChat }: { onOpenFullChat: () => void
       <div className="mv-ai-head">
         <SparkleIcon size={15} filled />
         <span className="mv-card-title">AI Assistant</span>
-        <span className="mv-ai-tag">RAG</span>
+        <span className="mv-ai-tag">Your records</span>
       </div>
 
       {turns.length > 0 ? (
@@ -90,12 +90,13 @@ export function AiAssistantCard({ onOpenFullChat }: { onOpenFullChat: () => void
         <input
           className="mv-ai-input"
           placeholder="Ask about your records…"
+          aria-label="Ask about your records"
           value={input}
           disabled={sending}
           onChange={(event) => setInput(event.target.value)}
           onKeyDown={handleKeyDown}
         />
-        <button type="button" className="mv-ai-send" onClick={handleSend} disabled={sending || !input.trim()}>
+        <button type="button" className="mv-ai-send" aria-label="Send message" onClick={handleSend} disabled={sending || !input.trim()}>
           <SendIcon size={13} />
         </button>
       </div>
