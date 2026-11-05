@@ -1,0 +1,84 @@
+{
+  "verifiedAt": "2026-11-05T01:30:44.845Z",
+  "url": "https://medivault-roan-six.vercel.app",
+  "team": "mohammad-petiwalas-projects",
+  "sourceCommit": "fa80366",
+  "deploymentId": "dpl_457M8bC1gPS1EqsXXfSyNupgEnHH",
+  "candidateUiChecksPassed": 17,
+  "publicUiChecks": [
+    "patient: shared branding, typography and navigation",
+    "patient: collapsed sidebar keeps logo and labelled controls",
+    "patient: every tab fits desktop and phone",
+    "patient: mobile focus trap, Escape and inert background",
+    "patient: themes persist and logo stays visible",
+    "doctor: shared branding, typography and navigation",
+    "doctor: collapsed sidebar keeps logo and labelled controls",
+    "doctor: every tab fits desktop and phone",
+    "doctor: mobile focus trap, Escape and inert background",
+    "doctor: themes persist and logo stays visible",
+    "hospital: shared branding, typography and navigation",
+    "hospital: collapsed sidebar keeps logo and labelled controls",
+    "hospital: every tab fits desktop and phone",
+    "hospital: mobile focus trap, Escape and inert background",
+    "hospital: themes persist and logo stays visible",
+    "All three roles use identical core design tokens",
+    "Homepage, authentication and SVG assets use the new identity"
+  ],
+  "publicHomepageChecks": [
+    "Light homepage, single headline and labelled illustrative preview",
+    "Preview tabs show records, appointments and cited AI example",
+    "Preview tabs support arrows, Home and End; ARIA references resolve",
+    "All homepage internal links lead to existing routes or sections",
+    "Role registration cards and sign-in buttons navigate correctly",
+    "Phone, tablet and desktop layouts fit at 320/390/600/768/1024/1440px",
+    "Mobile menu toggles, Escape restores focus, and anchors close menu",
+    "Legacy auth-page section navigation reaches new homepage",
+    "Reduced-motion preference disables homepage smooth scrolling",
+    "Existing signed-in users see their role-specific dashboard links"
+  ],
+  "designTokens": [
+    {
+      "font": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+      "accent": "#84416c",
+      "canvas": "rgb(247, 246, 244)",
+      "sidebar": "rgb(253, 252, 251)",
+      "width": "252px",
+      "cardRadius": "12px"
+    },
+    {
+      "font": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+      "accent": "#84416c",
+      "canvas": "rgb(247, 246, 244)",
+      "sidebar": "rgb(253, 252, 251)",
+      "width": "252px",
+      "cardRadius": "12px"
+    },
+    {
+      "font": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+      "accent": "#84416c",
+      "canvas": "rgb(247, 246, 244)",
+      "sidebar": "rgb(253, 252, 251)",
+      "width": "252px",
+      "cardRadius": "12px"
+    }
+  ],
+  "localRealStackWorkflowGroups": 20,
+  "realStackReport": "docs/brand-care-verification.json",
+  "automatedTestsPassed": 36,
+  "staticChecks": [
+    "lint",
+    "TypeScript",
+    "production build",
+    "git diff --check"
+  ],
+  "health": {
+    "ok": true
+  },
+  "errors": [],
+  "scope": "Real care workflows tested locally with PostgreSQL/MinIO/Ollama and isolated synthetic accounts. Separate candidate/public browser tests use explicit UI API fixtures to verify every role tab, shared styling, logo, accessibility, collapsed sidebar, themes and phone layouts. Public UI fixtures do not validate production login/data permissions. Public homepage/auth forms and SVG assets are loaded from the live deployment. No production test accounts or medical records were created.",
+  "artifacts": {
+    "logo": "/private/tmp/medivault-logo-final.png",
+    "realDataOverviewScreenshots": "/private/tmp/medivault-brand-{patient,doctor,hospital}.png",
+    "themeScreenshots": "/private/tmp/medivault-brand-ui-{patient,doctor,hospital}-{light,dark}.png"
+  }
+}
