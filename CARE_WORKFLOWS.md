@@ -64,7 +64,7 @@ The AI checks exercise the existing RAG path. Activation/evaluation of the optio
 
 ## Homepage and dashboard UI regressions
 
-Use `npm run test:e2e:homepage` against the running frontend (default `http://localhost:5177`; override `HOMEPAGE_E2E_BASE`). This headless suite clicks every homepage link, checks menu dismissal and breakpoint changes, skip-link focus, route scroll reset, all three preview tabs at twelve widths, keyboard tab selection, and the twelve-option logo comparison page. It creates no backend accounts or medical records.
+Use `npm run test:e2e:homepage` against the running frontend (default `http://localhost:5177`; override `HOMEPAGE_E2E_BASE`). This headless suite clicks every homepage link, checks menu dismissal and breakpoint changes, skip-link focus, route scroll reset, all three preview tabs at thirteen widths (including 2560px), wide-screen layout density, keyboard tab selection, and the twelve-option logo comparison page. It creates no backend accounts or medical records.
 
 Use `npm run test:e2e:dashboard-ui` (`DASHBOARD_UI_E2E_BASE` overrides the same default) to compare patient, doctor, and hospital styling with populated UI fixtures at six widths. It checks long-view scroll reset, accessible AI controls, collapsed branding, the mobile focus trap, themes, and matching core tokens. These API fixtures deliberately isolate UI behavior and do not prove backend authentication or permissions; use `test:e2e:care` for real workflows.
 

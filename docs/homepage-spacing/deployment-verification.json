@@ -1,0 +1,63 @@
+{
+  "sourceCommit": "5d203a6",
+  "deploymentId": "dpl_EGmMcdzQY1sK27BexSNG9roiP7ev",
+  "project": "mohammad-petiwalas-projects/medivault",
+  "publicUrl": "https://medivault-roan-six.vercel.app",
+  "publicHealth": {
+    "ok": true
+  },
+  "scope": "Homepage spacing and responsive typography. Approved identity and existing homepage interactions retained. No backend or dashboard changes.",
+  "checks": {
+    "lint": "passed",
+    "typescript": "passed",
+    "productionBuild": "passed",
+    "diffCheck": "passed",
+    "candidateHomepage": {
+      "base": "https://medivault-82z68wpdu-mohammad-petiwalas-projects.vercel.app",
+      "verifiedAt": "2026-11-05T17:31:33.083Z",
+      "results": [
+        "19 homepage links individually exercised",
+        "Every visible homepage link is clicked and reaches its destination",
+        "Mobile menu closes on outside click, keyboard departure, Escape and logo click",
+        "Mobile menu state resets when crossing the desktop breakpoint",
+        "Homepage logo returns to top and registration starts at the top on mobile",
+        "All three preview tabs fit internally at 13 phone/tablet/desktop widths",
+        "Wide desktop uses the screen with a shorter hero and earlier role cards",
+        "Preview keyboard selection and accessible state stay synchronized",
+        "Reduced-motion preference and skip-to-content focus work",
+        "All 12 logo choices, four palettes, theme toggle and shortlist work"
+      ],
+      "errors": []
+    },
+    "publicHomepage": {
+      "base": "https://medivault-roan-six.vercel.app",
+      "verifiedAt": "2026-11-05T17:33:13.179Z",
+      "results": [
+        "19 homepage links individually exercised",
+        "Every visible homepage link is clicked and reaches its destination",
+        "Mobile menu closes on outside click, keyboard departure, Escape and logo click",
+        "Mobile menu state resets when crossing the desktop breakpoint",
+        "Homepage logo returns to top and registration starts at the top on mobile",
+        "All three preview tabs fit internally at 13 phone/tablet/desktop widths",
+        "Wide desktop uses the screen with a shorter hero and earlier role cards",
+        "Preview keyboard selection and accessible state stay synchronized",
+        "Reduced-motion preference and skip-to-content focus work",
+        "All 12 logo choices, four palettes, theme toggle and shortlist work"
+      ],
+      "errors": []
+    }
+  },
+  "wideScreenComparison": {
+    "viewport": 2560,
+    "containerWidthBefore": 1240,
+    "containerWidthAfter": 1760,
+    "heroHeightBefore": 905,
+    "heroHeightAfter": 741,
+    "rolesStartBefore": 1066,
+    "rolesStartAfter": 890
+  },
+  "limits": [
+    "Browser suite covers homepage interactions and responsive layout; backend and dashboard workflow suites were not rerun for this CSS-only application change.",
+    "Existing production bundle size warning remains."
+  ]
+}
