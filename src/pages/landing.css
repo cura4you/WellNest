@@ -1,11 +1,11 @@
 .medivault-home {
-  --home-ink: #29272e;
+  --home-ink: var(--brand-ink);
   --home-muted: #6d6873;
-  --home-plum: #84416c;
+  --home-plum: var(--brand-plum);
   --home-line: #e7e3e7;
   background: #fdfcfb;
   color: var(--home-ink);
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--brand-font);
   font-size: 15px;
   line-height: 1.7;
 }
@@ -20,10 +20,6 @@
 .home-skip:focus { top: 12px; }
 .home-header { position: sticky; top: 0; z-index: 30; background: #fdfcfbf5; border-bottom: 1px solid var(--home-line); backdrop-filter: blur(16px); }
 .home-nav { min-height: 86px; display: flex; align-items: center; gap: 44px; }
-.home-brand { display: inline-flex; align-items: center; font-size: 23px; font-weight: 700; letter-spacing: -.9px; color: #312331; line-height: 1; white-space: nowrap; }
-.home-brand-mark { width: 32px; height: 36px; display: inline-flex; align-items: center; margin-right: 10px; color: var(--home-plum); }
-.home-brand-mark svg { width: 100%; height: 100%; }
-.home-brand-dot { color: var(--home-plum); }
 .home-navigation { display: flex; align-items: center; justify-content: space-between; flex: 1; gap: 24px; }
 .home-nav-links, .home-nav-actions { display: flex; align-items: center; gap: 26px; }
 .home-nav-links { margin-inline: auto; }
@@ -52,8 +48,8 @@
 .home-live-dot { width: 5px; height: 5px; border-radius: 50%; background: #78987c; }
 .home-workspace { background: #fff; border: 1px solid #ded7e2; border-radius: 10px; overflow: hidden; box-shadow: 0 16px 36px #44304b0e; }
 .home-workspace-bar { display: flex; align-items: center; gap: 10px; padding: 16px; border-bottom: 1px solid #eeeaf0; }
-.home-workspace-bar .home-brand { font-size: 14px; letter-spacing: -.4px; }
-.home-workspace-bar .home-brand-mark { width: 18px; height: 20px; margin-right: 6px; }
+.home-workspace-bar .brand-logo { font-size: 14px; letter-spacing: -.4px; }
+.home-workspace-bar .brand-logo-mark { width: 18px; height: 20px; margin-right: 0; }
 .home-example-tag { font-size: 8px; margin-left: auto; color: #79717e; }
 .home-avatar { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #f1e9ef; color: var(--home-plum); font-size: 8px; }
 .home-workspace-body { padding: 24px 20px 0; }
@@ -166,8 +162,8 @@
 .home-cta > a { flex-shrink: 0; }
 .home-footer { padding-top: 64px; }
 .home-footer-top { display: flex; align-items: center; gap: 24px; padding-bottom: 30px; }
-.home-footer .home-brand { font-size: 19px; }
-.home-footer .home-brand-mark { width: 26px; height: 29px; }
+.home-footer .brand-logo { font-size: 19px; }
+.home-footer .brand-logo-mark { width: 26px; height: 29px; }
 .home-footer-top > p { font-size: 10px; color: #847b86; }
 .home-footer nav { display: flex; margin-left: auto; gap: 24px; font-size: 10px; color: #756b77; }
 .home-footer-bottom { display: flex; justify-content: space-between; gap: 15px; padding-block: 20px; border-top: 1px solid var(--home-line); font-size: 10px; color: #736a74; }
@@ -193,7 +189,7 @@
 }
 @media (max-width: 860px) {
   .home-nav { min-height: 74px; }
-  .home-brand { font-size: 21px; }
+  .home-nav .brand-logo { font-size: 21px; }
   .home-nav-links { gap: 17px; }
   .home-nav-links a { font-size: 10px; }
   .home-nav-cta { display: none; }
@@ -230,8 +226,8 @@
 @media (max-width: 600px) {
   .home-container { width: calc(100% - 40px); }
   .home-nav { min-height: 70px; justify-content: space-between; }
-  .home-brand { font-size: 21px; }
-  .home-brand-mark { width: 27px; height: 31px; }
+  .home-nav .brand-logo { font-size: 21px; }
+  .home-nav .brand-logo-mark { width: 27px; height: 31px; }
   .medivault-home .home-menu-toggle { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--home-line); border-radius: 7px; background: #fff; color: var(--home-plum); }
   .home-navigation { display: none; position: absolute; top: 100%; left: 0; right: 0; padding: 16px 20px 22px; background: #fdfcfb; border-bottom: 1px solid var(--home-line); box-shadow: 0 12px 15px #392a3708; }
   .home-navigation.is-open { display: flex; flex-direction: column; align-items: stretch; gap: 15px; }

@@ -198,7 +198,7 @@ export default function PatientDashboardPage() {
     },
     { key: 'audit' as const, label: 'Audit Log', icon: <ClipboardIcon size={16} /> },
     { key: 'chat' as const, label: 'AI Chat', icon: <MessageIcon size={16} /> },
-    { key: 'settings' as const, label: 'Settings', icon: <SettingsIcon size={16} /> },
+    { key: 'settings' as const, label: 'Profile & Settings', icon: <SettingsIcon size={16} /> },
     { key: 'notifications' as const, label: 'Notifications', icon: <BellIcon size={16} /> },
   ];
 

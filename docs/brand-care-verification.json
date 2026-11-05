@@ -1,0 +1,28 @@
+{
+  "passed": [
+    "Real registration and dashboard hydration for all three roles",
+    "Patient overview has no sample vitals or appointments",
+    "Vitals create, persist after reload, and appear on Overview",
+    "Vitals reject invalid measurements and cross-role access",
+    "Patient requests an appointment with doctor",
+    "Doctor confirms; patient sees persisted confirmation",
+    "Appointment permissions, stale versions and overlap checks",
+    "Patient reschedule requires renewed provider confirmation",
+    "Hospital schedules, reschedules and patient cancels",
+    "All roles persist notification preferences across reload and login",
+    "Preferences suppress new appointment notifications; inbox read state persists",
+    "Cross-patient isolation, concurrent scheduling and appointment completion",
+    "Vitals delete through UI persists",
+    "Hospital upload creates a real encrypted record in local MinIO",
+    "Doctor requests a document and patient approves via dashboard",
+    "Doctor interaction notes save and delete through UI",
+    "All roles save profile settings",
+    "Real local AI summary and cited RAG chat",
+    "Hospital revokes doctor access; emergency window permits document view",
+    "All dashboard tabs render in light/dark themes and mobile without overflow"
+  ],
+  "errors": [],
+  "artifacts": "/private/tmp/medivault_care_e2e_1793841778449",
+  "verifiedAt": "2026-11-05T01:28:22.181Z",
+  "scope": "Real local PostgreSQL, MinIO, Ollama and Playwright verification after the logo/dashboard refresh. Isolated synthetic fixtures were cleaned by the runner."
+}

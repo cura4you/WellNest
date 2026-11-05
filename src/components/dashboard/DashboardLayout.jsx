@@ -1,3 +1,4 @@
+import BrandLogo from '../brand/BrandLogo';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import './dashboard.css';
@@ -17,7 +18,7 @@ export default function DashboardLayout({ title, subtitle, navItems, activeView,
         {/* ── Sidebar (desktop) ── */}
         <aside className="dashboard-sidebar">
           <div className="dashboard-sidebar-brand">
-            <img src="/MEDIVAULT BG REMOVER.png" alt="MediVault" className="dashboard-sidebar-logo" />
+            <BrandLogo />
             <div>
               <h2>{title}</h2>
               <p>{subtitle}</p>

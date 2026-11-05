@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import BrandLogo from './brand/BrandLogo';
 import { useAuth } from '../hooks/useAuth';
 import { roleByKey } from '../utils/authRoles';
 
@@ -82,12 +83,7 @@ export default function Navbar() {
             <div className="nav-inner">
                 {/* Logo */}
                 <Link to="/" className="nav-logo" aria-label="MediVault Home" onClick={closeMenu}>
-                    <img
-                        src="/MEDIVAULT BG REMOVER.png"
-                        alt="MediVault Logo"
-                        className="nav-logo-img"
-                    />
-                    <span className="nav-logo-text">MediVault</span>
+                    <BrandLogo />
                 </Link>
 
                 {/* Hamburger */}

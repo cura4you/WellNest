@@ -257,7 +257,7 @@ export default function DoctorDashboardPage() {
     { key: 'activity' as const, label: 'Activity Log', icon: <ActivityIcon size={16} /> },
     { key: 'emergency' as const, label: 'Emergency Access', icon: <ShieldIcon size={16} /> },
     { key: 'drug-interactions' as const, label: 'Drug Interactions', icon: <PillIcon size={16} /> },
-    { key: 'chat' as const, label: 'Chat', icon: <MessageIcon size={16} /> },
+    { key: 'chat' as const, label: 'AI Chat', icon: <MessageIcon size={16} /> },
     { key: 'settings' as const, label: 'Profile & Settings', icon: <SettingsIcon size={16} /> },
     { key: 'notifications' as const, label: 'Notifications', icon: <BellIcon size={16} /> },
   ];
@@ -281,7 +281,7 @@ export default function DoctorDashboardPage() {
     activity: ['Activity Log', 'Recent activities on your account.'],
     emergency: ['Emergency Access', 'Open a consented, audited 24-hour record window.'],
     'drug-interactions': ['Drug Interactions', 'Record and manage drug interaction notes for patients.'],
-    chat: ['Chat', 'Ask questions about the documents you have access to.'],
+    chat: ['AI Chat', 'Ask questions about the documents you have access to.'],
     settings: ['Profile & Settings', 'Doctor profile details for interoperability and verification.'],
     notifications: ['Notifications', 'How you receive request and emergency alerts.'],
   };

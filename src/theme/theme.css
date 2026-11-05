@@ -7,78 +7,60 @@
    ===================================================== */
 
 [data-mv-theme='light'] {
-  --mv-canvas: #fbf3f8;
-  --mv-surface: #ffffff;
-  --mv-surface-elevated: #ffffff;
+  --mv-canvas: #f7f6f4;
+  --mv-surface: #fdfcfb;
+  --mv-surface-elevated: #f5f2f5;
   --mv-surface-card: #ffffff;
-  --mv-hairline: #f0d9e8;
-  --mv-hairline-strong: #e0b8d2;
-
-  --mv-text: #2b0f20;
-  --mv-text-body: #4a1f38;
-  --mv-text-muted: #7a4560;
-  --mv-text-faint: #ab7d95;
-
-  --mv-accent: #a8447f;
-  --mv-accent-text: #742959;
-  --mv-accent-soft: rgba(168, 68, 127, 0.12);
+  --mv-hairline: #e7e3e7;
+  --mv-hairline-strong: #ccc1cc;
+  --mv-text: var(--brand-ink);
+  --mv-text-body: #4d4651;
+  --mv-text-muted: #6d6873;
+  --mv-text-faint: #756d7b;
+  --mv-accent: var(--brand-plum);
+  --mv-accent-text: #783b63;
+  --mv-accent-soft: #f2eaf0;
   --mv-on-accent: #ffffff;
-
-  --mv-green: #2f8f5b;
-  --mv-green-soft: rgba(47, 143, 91, 0.1);
-  --mv-blue: #2f7fd6;
-  --mv-blue-soft: rgba(47, 127, 214, 0.1);
-  --mv-red: #d6432b;
-  --mv-red-soft: rgba(214, 67, 43, 0.09);
-
-  --mv-shadow-card: 0 1px 2px rgba(28, 24, 64, 0.04), 0 10px 28px rgba(28, 24, 64, 0.07);
-  --mv-shadow-toast: 0 10px 28px rgba(28, 24, 64, 0.16);
+  --mv-green: #39714e;
+  --mv-green-soft: #edf4ee;
+  --mv-blue: #346b9e;
+  --mv-blue-soft: #edf3f8;
+  --mv-red: #b63d3a;
+  --mv-red-soft: #fbefed;
+  --mv-shadow-card: 0 2px 8px rgba(41, 39, 46, .025);
+  --mv-shadow-toast: 0 8px 28px rgba(41, 39, 46, .1);
 }
 
 [data-mv-theme='dark'] {
-  --mv-canvas: #1f0f1a;
-  --mv-surface: #291521;
-  --mv-surface-elevated: #2f1826;
-  --mv-surface-card: #331a2a;
-  --mv-hairline: #4a2438;
-  --mv-hairline-strong: #6b3350;
-
-  --mv-text: #fbf3f8;
-  --mv-text-body: #e8cfe0;
-  --mv-text-muted: rgba(251, 243, 248, 0.72);
-  --mv-text-faint: rgba(251, 243, 248, 0.46);
-
-  --mv-accent: #d1689e;
-  --mv-accent-text: #e6a0c4;
-  --mv-accent-soft: rgba(209, 104, 158, 0.18);
-  --mv-on-accent: #2b0f20;
-
-  --mv-green: #7cc98f;
-  --mv-green-soft: rgba(124, 201, 143, 0.14);
-  --mv-blue: #6fa8dc;
-  --mv-blue-soft: rgba(111, 168, 220, 0.16);
-  --mv-red: #ff6a5b;
-  --mv-red-soft: rgba(255, 106, 91, 0.14);
-
-  --mv-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.2), 0 10px 28px rgba(0, 0, 0, 0.35);
-  --mv-shadow-toast: 0 10px 28px rgba(0, 0, 0, 0.5);
+  --mv-canvas: #19171d;
+  --mv-surface: #211e25;
+  --mv-surface-elevated: #302a33;
+  --mv-surface-card: #25212a;
+  --mv-hairline: #3c3440;
+  --mv-hairline-strong: #605167;
+  --mv-text: #f6f1f6;
+  --mv-text-body: #dfd6e1;
+  --mv-text-muted: #bdb0c2;
+  --mv-text-faint: #ad9db4;
+  --mv-accent: #d8a5c8;
+  --mv-accent-text: #dfb6d2;
+  --mv-accent-soft: #3d2c3b;
+  --mv-on-accent: #2b1828;
+  --mv-green: #91cda6;
+  --mv-green-soft: #23372c;
+  --mv-blue: #9abce2;
+  --mv-blue-soft: #263347;
+  --mv-red: #f29c98;
+  --mv-red-soft: #442b30;
+  --mv-shadow-card: 0 2px 8px rgba(0, 0, 0, .08);
+  --mv-shadow-toast: 0 8px 28px rgba(0, 0, 0, .3);
 }
 
 .mv-root {
   background: var(--mv-canvas);
   color: var(--mv-text);
-  font-family: 'Inter', system-ui, sans-serif;
-  font-feature-settings: 'calt' 1, 'kern' 1, 'liga' 1, 'ss03' 1;
-}
-
-/* Light theme only — echoes the sidebar's radial-sheen + linear-gradient
-   treatment across the main canvas instead of a flat fill. Dark theme is
-   untouched (falls back to the plain --mv-canvas fill above); it was
-   already working well and wasn't asked for. */
-[data-mv-theme='light'].mv-root {
-  background:
-    radial-gradient(140% 90% at 0% 0%, rgba(168, 68, 127, 0.06), transparent 60%),
-    linear-gradient(165deg, #fdf7fb 0%, #fbf3f8 50%, #f5e6ef 100%);
+  font-family: var(--brand-font);
+  font-feature-settings: 'calt' 1, 'kern' 1, 'liga' 1;
 }
 
 /* No blanket transition on theme switch: animating background/border/color

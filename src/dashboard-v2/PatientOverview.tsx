@@ -1,3 +1,4 @@
+import { WorkspaceHeading } from './WorkspaceHeading';
 import type { ReactNode } from 'react';
 import { VitalsSummary } from './VitalsPanel';
 import { AppointmentPreview } from './AppointmentsPanel';
@@ -43,6 +44,7 @@ export function PatientOverview({ data, onNavigate, onViewDocument }: PatientOve
 
   return (
     <>
+      <WorkspaceHeading role="patient" />
       {/* Real vault metrics */}
       <div className="mv-grid-4">
         {data.metrics.map((metric) => (
@@ -62,11 +64,11 @@ export function PatientOverview({ data, onNavigate, onViewDocument }: PatientOve
         ))}
       </div>
 
-      <VitalsSummary onOpen={() => onNavigate('vitals')} />
+      <AppointmentPreview role="patient" onOpen={() => onNavigate('appointments')} />
 
       <div className="mv-two-col">
         <div className="mv-col">
-          <AppointmentPreview role="patient" onOpen={() => onNavigate('appointments')} />
+          <VitalsSummary onOpen={() => onNavigate('vitals')} />
 
           {/* Real recent documents */}
           <div className="mv-card">

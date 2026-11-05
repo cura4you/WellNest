@@ -222,11 +222,11 @@ try {
     doctor.once('dialog', (dialog) => dialog.accept()); await doctor.locator('.di-delete-btn').click(); await expectText(doctor, 'Deleted.');
   });
   await check('All roles save profile settings', async () => {
-    await nav(patient, 'Settings'); await patient.locator('#emergencyContact').fill('Test Contact'); await patient.getByRole('button', { name: 'Save Profile', exact: true }).click(); await expectText(patient, 'Profile saved');
+    await nav(patient, 'Profile & Settings'); await patient.locator('#emergencyContact').fill('Test Contact'); await patient.getByRole('button', { name: 'Save Profile', exact: true }).click(); await expectText(patient, 'Profile saved');
     await nav(doctor, 'Profile & Settings'); await doctor.locator('#specialization').fill('Internal Medicine'); await doctor.getByRole('button', { name: 'Save Profile', exact: true }).click(); await expectText(doctor, 'Profile saved');
     await nav(hospital, 'Profile & Settings'); await hospital.locator('#contactPhone').fill('2125550198'); await hospital.getByRole('button', { name: 'Save Profile', exact: true }).click(); await expectText(hospital, 'Profile saved');
     await hospital.reload(); await nav(hospital, 'Profile & Settings'); assert.equal(await hospital.locator('#contactPhone').inputValue(), '2125550198');
-    await patient.reload(); await nav(patient, 'Settings'); assert.equal(await patient.locator('#emergencyContact').inputValue(), 'Test Contact');
+    await patient.reload(); await nav(patient, 'Profile & Settings'); assert.equal(await patient.locator('#emergencyContact').inputValue(), 'Test Contact');
     await doctor.reload(); await nav(doctor, 'Profile & Settings'); assert.equal(await doctor.locator('#specialization').inputValue(), 'Internal Medicine');
     const login = await fetch(`${api}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ role: 'patient', email: accounts.patient.email, password: 'CareTest2026' }) });
     assert.equal((await login.json()).user.profile.emergencyContactName, 'Test Contact');
@@ -240,7 +240,7 @@ try {
       if (i === 99) throw new Error('Document indexing did not finish.');
       await new Promise((r) => setTimeout(r, 1500));
     }
-    await nav(doctor, 'Chat'); await doctor.locator('.chat-input').fill('What HbA1c value is in my laboratory report? Cite the document.');
+    await nav(doctor, 'AI Chat'); await doctor.locator('.chat-input').fill('What HbA1c value is in my laboratory report? Cite the document.');
     await doctor.locator('.chat-input-row button').click();
     await doctor.locator('.chat-bubble-assistant .chat-bubble-content').last().waitFor({ timeout: 150000 });
     for (let i = 0; i < 100; i++) { if (await doctor.locator('.chat-input-row button').textContent() === 'Send') break; await new Promise((r) => setTimeout(r, 1000)); }
@@ -263,9 +263,9 @@ try {
   });
   // Existing workflows and every dashboard tab are checked below.
   await check('All dashboard tabs render in light/dark themes and mobile without overflow', async () => {
-    const tabs = { patient: ['Overview','Health Vitals','Appointments','Storage Vault','Access Requests','Audit Log','AI Chat','Settings','Notifications'],
-      doctor: ['Overview','Appointments','Shared Documents','Active Grants','Request Access','Request History','Activity Log','Emergency Access','Drug Interactions','Chat','Profile & Settings','Notifications'],
-      hospital: ['Overview','Appointments','Upload Queue','Staff Access','Compliance & Audit','Emergency Access','Chat','Profile & Settings','Notifications'] };
+    const tabs = { patient: ['Overview','Health Vitals','Appointments','Storage Vault','Access Requests','Audit Log','AI Chat','Profile & Settings','Notifications'],
+      doctor: ['Overview','Appointments','Shared Documents','Active Grants','Request Access','Request History','Activity Log','Emergency Access','Drug Interactions','AI Chat','Profile & Settings','Notifications'],
+      hospital: ['Overview','Appointments','Upload Queue','Staff Access','Compliance & Audit','Emergency Access','AI Chat','Profile & Settings','Notifications'] };
     for (const [role, { page }] of Object.entries(accounts)) {
       for (const label of tabs[role]) { await nav(page, label); await page.waitForTimeout(60); }
       for (const width of [1440, 390]) {

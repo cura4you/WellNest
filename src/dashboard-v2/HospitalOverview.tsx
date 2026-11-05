@@ -1,3 +1,4 @@
+import { WorkspaceHeading } from './WorkspaceHeading';
 import { AppointmentPreview } from './AppointmentsPanel';
 import type { ReactNode } from 'react';
 import { AiAssistantCard } from './AiAssistantCard';
@@ -37,6 +38,7 @@ export function HospitalOverview({ data, onNavigate, onOpenUpload }: HospitalOve
 
   return (
     <>
+      <WorkspaceHeading role="hospital" />
       <div className="mv-grid-4">
         {data.metrics.map((metric) => (
           <button

@@ -1,5 +1,6 @@
 // Shared dashboard shell for Patient, Doctor, and Hospital roles.
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import BrandLogo from '../components/brand/BrandLogo';
 import { useTheme } from '../theme/useTheme';
 import {
   BellIcon,
@@ -101,7 +102,7 @@ export function DashboardShell<V extends string>({
     document.body.style.overflow = 'hidden';
     sidebarRef.current?.querySelector('button')?.focus();
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') { setMobileOpen(false); menuRef.current?.focus(); }
+      if (event.key === 'Escape') setMobileOpen(false);
       if (event.key === 'Tab') {
         const buttons = sidebarRef.current?.querySelectorAll<HTMLButtonElement>('button:not([disabled])');
         if (!buttons?.length) return;
@@ -111,7 +112,12 @@ export function DashboardShell<V extends string>({
       }
     };
     window.addEventListener('keydown', onKey);
-    return () => { document.body.style.overflow = previous; window.removeEventListener('keydown', onKey); };
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener('keydown', onKey);
+      // Restore focus after React removes inert from the main content.
+      menuRef.current?.focus();
+    };
   }, [mobileOpen]);
 
   const results = useMemo(() => {
@@ -139,12 +145,11 @@ export function DashboardShell<V extends string>({
       <div className="mv-shell">
         {mobileOpen && <button className="mv-navigation-backdrop" aria-label="Dismiss navigation" onClick={() => setMobileOpen(false)} />}
         <aside ref={sidebarRef} id="mv-navigation" aria-label="Dashboard navigation" role={mobileOpen ? 'dialog' : undefined} aria-modal={mobileOpen || undefined} className={`mv-sidebar${collapsed ? ' is-collapsed' : ''}${mobileOpen ? ' is-mobile-open' : ''}`}>
-          <button type="button" className="mv-mobile-close mv-btn mv-btn-ghost" aria-label="Close navigation" onClick={() => { setMobileOpen(false); menuRef.current?.focus(); }}>Close navigation</button>
+          <button type="button" className="mv-mobile-close mv-btn mv-btn-ghost" aria-label="Close navigation" onClick={() => setMobileOpen(false)}>Close navigation</button>
           <div className="mv-sidebar-top">
             <div className="mv-brand">
               <button type="button" className="mv-brand-link" onClick={onHome} aria-label="Go to homepage">
-                {!collapsed && <img src="/MEDIVAULT BG REMOVER.png" alt="MediVault" />}
-                {!collapsed && <span>MediVault</span>}
+                <BrandLogo compact={collapsed} />
               </button>
               <button
                 type="button"
@@ -157,7 +162,8 @@ export function DashboardShell<V extends string>({
               </button>
             </div>
 
-            <nav className="mv-nav">
+            {!collapsed && <div className="mv-workspace-label">{roleLabel} workspace</div>}
+            <nav className="mv-nav" aria-label={`${roleLabel} workspace`}>
               {navGroups.map((group) => {
                 const items = group.keys
                   .map((key) => navItems.find((item) => item.key === key))
@@ -171,6 +177,7 @@ export function DashboardShell<V extends string>({
                         key={item.key}
                         type="button"
                         aria-label={item.label}
+                        aria-current={activeView === item.key ? 'page' : undefined}
                         className={`mv-nav-item${activeView === item.key ? ' is-active' : ''}`}
                         onClick={() => { onViewChange(item.key); setMobileOpen(false); }}
                         title={collapsed ? item.label : undefined}
@@ -210,11 +217,11 @@ export function DashboardShell<V extends string>({
           </div>
         </aside>
 
-        <div className="mv-main">
+        <div className="mv-main" inert={mobileOpen}>
           <div className="mv-topbar">
             <div className="mv-topbar-heading">
               <button ref={menuRef} type="button" className="mv-mobile-menu mv-icon-btn" aria-label="Open navigation" aria-expanded={mobileOpen} aria-controls="mv-navigation" onClick={() => { setCollapsed(false); setMobileOpen(true); }}><PanelLeftIcon size={18} /></button>
-              <div><div className="mv-topbar-title">{title}</div>
+              <div><h1 className="mv-topbar-title">{title}</h1>
               <div className="mv-topbar-sub">{subtitle}</div></div>
             </div>
             <div className="mv-search" ref={search.ref}>
@@ -224,6 +231,7 @@ export function DashboardShell<V extends string>({
                 type="text"
                 className="mv-search-input"
                 placeholder="Search records, requests…"
+                aria-label="Search your workspace"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 onFocus={() => search.setOpen(true)}
@@ -276,13 +284,15 @@ export function DashboardShell<V extends string>({
                   className="mv-profile-trigger"
                   onClick={() => profile.setOpen((o) => !o)}
                   aria-label="Account menu"
+                  aria-expanded={profile.open}
+                  aria-controls={profile.open ? "mv-account-panel" : undefined}
                 >
                   <div className="mv-avatar mv-avatar-lg">{userInitials}</div>
                   <ChevronDownIcon size={13} />
                 </button>
 
                 {profile.open && (
-                  <div className="mv-profile-dropdown">
+                  <div className="mv-profile-dropdown" id="mv-account-panel">
                     <div className="mv-profile-dropdown-head">
                       <div className="mv-avatar">{userInitials}</div>
                       <div style={{ minWidth: 0 }}>
@@ -308,7 +318,7 @@ export function DashboardShell<V extends string>({
             </div>
           </div>
 
-          <div className="mv-content">{children}</div>
+          <main className="mv-content" id="dashboard-content">{children}</main>
         </div>
       </div>
     </div>

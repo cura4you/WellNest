@@ -19,52 +19,23 @@
   padding: 2px 6px;
 }
 
-/* ---------- Sidebar ----------
-   Deliberately NOT theme-following: the sidebar is a fixed bold color
-   block (deep plum, always) regardless of light/dark mode, for contrast
-   and presence against the (lighter) content area. It works by
-   redeclaring the shared --mv-* tokens within this scope — every
-   existing rule below that reads var(--mv-surface), var(--mv-text-faint)
-   etc. picks up these values automatically for anything inside
-   .mv-sidebar, with zero changes to those rules. */
+/* Shared, theme-aware navigation for all workspaces. */
 .mv-sidebar {
-  --mv-surface: #2b0f20;
-  --mv-surface-elevated: #3d1830;
-  --mv-surface-card: #3d1830;
-  --mv-hairline: rgba(251, 243, 248, 0.12);
-  --mv-hairline-strong: rgba(251, 243, 248, 0.24);
-  --mv-text: #fbf3f8;
-  --mv-text-body: #f0dceb;
-  --mv-text-muted: rgba(251, 243, 248, 0.68);
-  --mv-text-faint: rgba(251, 243, 248, 0.48);
-  --mv-accent: #ffffff;
-  --mv-accent-text: #ffffff;
-  --mv-accent-soft: rgba(255, 255, 255, 0.14);
-  --mv-on-accent: #3d1230;
-  --mv-blue: #a9d4f5;
-  --mv-blue-soft: rgba(169, 212, 245, 0.18);
-  --mv-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.2), 0 24px 48px rgba(43, 15, 32, 0.35);
-  --mv-glass: rgba(255, 255, 255, 0.055);
-  --mv-glass-strong: rgba(255, 255, 255, 0.11);
-  --mv-glass-border: rgba(255, 255, 255, 0.1);
-
-  width: 264px;
+  width: 252px;
   flex-shrink: 0;
-  background:
-    radial-gradient(140% 90% at 0% 0%, rgba(255, 255, 255, 0.07), transparent 60%),
-    linear-gradient(165deg, #3d1230 0%, #2b0f20 55%, #200a18 100%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 20px;
-  box-shadow: var(--mv-shadow-card);
+  background: var(--mv-surface);
+  border: 1px solid var(--mv-hairline);
+  border-radius: 14px;
   color: var(--mv-text);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 24px 16px;
+  gap: 24px;
+  padding: 22px 14px 16px;
   position: sticky;
   top: 16px;
-  height: calc(100vh - 32px);
-  transition: width 0.18s ease, padding 0.18s ease;
+  height: calc(100dvh - 32px);
+  transition: width .18s ease, padding .18s ease;
 }
 
 .mv-sidebar.is-collapsed {
@@ -73,6 +44,8 @@
 }
 
 .mv-sidebar-top {
+  min-height: 0;
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -102,24 +75,8 @@
   text-align: left;
 }
 
-.mv-brand img {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.mv-brand span {
-  font-family: 'Unbounded', 'Inter', system-ui, sans-serif;
-  font-size: 15.5px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  flex: 1;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+.mv-brand .brand-logo { --brand-foreground: var(--mv-text); --brand-accent: var(--mv-accent); font-size: 20px; }
+.mv-workspace-label { color: var(--mv-text-faint); font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; padding: 0 12px; }
 
 .mv-collapse-btn {
   width: 24px;
@@ -151,6 +108,11 @@
 }
 
 .mv-nav {
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--mv-hairline-strong) transparent;
+  padding-bottom: 8px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -176,8 +138,8 @@
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
-  border-radius: 999px;
-  color: var(--mv-text-faint);
+  border-radius: 8px;
+  color: var(--mv-text-muted);
   font-weight: 500;
   font-size: 13.5px;
   background: transparent;
@@ -195,10 +157,10 @@
 }
 
 .mv-nav-item.is-active {
-  background: var(--mv-accent);
-  color: var(--mv-on-accent);
+  background: var(--mv-accent-soft);
+  color: var(--mv-accent-text);
   font-weight: 700;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  box-shadow: inset 3px 0 0 var(--mv-accent);
 }
 
 .mv-nav-badge {
@@ -237,9 +199,9 @@
   gap: 10px;
   padding: 10px 12px;
   margin-bottom: 8px;
-  border-radius: 16px;
-  background: var(--mv-glass);
-  border: 1px solid var(--mv-glass-border);
+  border-radius: 12px;
+  background: var(--mv-surface);
+  border: 1px solid var(--mv-hairline);
 }
 
 .mv-sidebar.is-collapsed .mv-profile-chip {
@@ -376,8 +338,8 @@
   font-size: 12.5px;
   font-weight: 600;
   color: var(--mv-text-muted);
-  background: var(--mv-glass);
-  border: 1px solid var(--mv-glass-border);
+  background: var(--mv-surface);
+  border: 1px solid var(--mv-hairline);
   border-radius: 999px;
   padding: 9px 14px;
   cursor: pointer;
@@ -394,9 +356,9 @@
 
 .mv-link-btn:hover {
   color: var(--mv-text);
-  background: var(--mv-glass-strong);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+  background: var(--mv-surface-elevated);
+  border-color: var(--mv-hairline-strong);
+  box-shadow: var(--mv-shadow-card);
 }
 
 .mv-link-btn:hover svg {
@@ -409,9 +371,9 @@
 }
 
 .mv-link-btn.is-logout:hover {
-  color: #ffb4a3;
-  background: rgba(255, 106, 91, 0.14);
-  border-color: rgba(255, 106, 91, 0.3);
+  color: var(--mv-red);
+  background: var(--mv-red-soft);
+  border-color: var(--mv-red);
 }
 
 .mv-link-btn.is-logout:hover svg {
@@ -431,10 +393,10 @@
 }
 
 .mv-topbar {
-  height: 72px;
+  min-height: 88px;
   flex-shrink: 0;
   display: grid;
-  grid-template-columns: 1fr minmax(0, 420px) 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 320px) auto;
   align-items: center;
   padding: 0 28px;
   border-bottom: 1px solid var(--mv-hairline);
@@ -442,13 +404,17 @@
 }
 
 .mv-topbar-title {
-  font-size: 20px;
+  font-family: inherit;
+  margin: 0;
+  line-height: 1.3;
+  font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.015em;
 }
 
 .mv-topbar-sub {
-  font-size: 11.5px;
+  margin-top: 6px;
+  font-size: 12px;
   color: var(--mv-text-faint);
 }
 
@@ -628,7 +594,7 @@
 .mv-tile {
   border: 1px solid var(--mv-hairline);
   background: var(--mv-surface-card);
-  border-radius: 16px;
+  border-radius: 12px;
   box-shadow: var(--mv-shadow-card);
   transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -725,7 +691,7 @@
 .mv-card {
   background: var(--mv-surface-card);
   border: 1px solid var(--mv-hairline);
-  border-radius: 16px;
+  border-radius: 12px;
   box-shadow: var(--mv-shadow-card);
   overflow: hidden;
 }
@@ -739,7 +705,7 @@
 }
 
 .mv-card-title {
-  font-size: 15.5px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.005em;
 }
@@ -833,8 +799,9 @@
   border-radius: 7px;
   padding: 9px 16px;
   font-family: inherit;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 13px;
+  min-height: 40px;
   cursor: pointer;
   border: none;
 }
@@ -1817,4 +1784,44 @@ button.mv-role-row-main { background: none; border: 0; color: inherit; font: inh
   .mv-drug-panel .di-drug-pair { flex-wrap: wrap; }
   .mv-toast-stack { right: 16px; left: 16px; bottom: 16px; }
   .mv-toast { max-width: 100%; }
+}
+
+/* Shared brand, typography and interaction details across every dashboard. */
+.mv-root h1, .mv-root h2, .mv-root h3, .mv-root h4 { font-family: inherit; color: var(--mv-text); }
+.mv-root { --brand-foreground: var(--mv-text); --brand-accent: var(--mv-accent); --brand-cutout: var(--mv-on-accent); }
+.mv-brand-link { min-height: 34px; }
+.mv-sidebar.is-collapsed .mv-brand { flex-direction: column; gap: 12px; padding: 0; }
+.mv-sidebar.is-collapsed .mv-brand-link { flex: none; justify-content: center; width: 100%; }
+.mv-sidebar.is-collapsed .brand-logo { font-size: 20px; }
+.mv-sidebar .mv-profile-chip { border: 0; border-top: 1px solid var(--mv-hairline); border-radius: 0; padding-top: 18px; }
+.mv-nav-item { min-height: 40px; }
+.mv-overview-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-bottom: 4px; }
+.mv-overview-heading h2 { font-size: 27px; font-weight: 600; line-height: 1.3; letter-spacing: -.8px; margin-bottom: 7px; }
+.mv-overview-heading p { font-size: 13px; color: var(--mv-text-muted); margin: 0; }
+.mv-workspace-pill { display: flex; align-items: center; gap: 7px; padding: 7px 12px; border: 1px solid var(--mv-hairline); border-radius: 7px; color: var(--mv-accent-text); background: var(--mv-surface); font-size: 11px; white-space: nowrap; }
+.mv-workspace-pill > span { width: 6px; height: 6px; border-radius: 50%; background: var(--mv-accent); }
+.mv-form-field .mv-form-input { min-height: 44px; }
+.mv-search-input { width: 100%; }
+.mv-search input:focus-visible { outline: none; }
+.mv-search:focus-within { outline: 2px solid var(--mv-accent); outline-offset: 2px; }
+.mv-quick-tile { min-height: 92px; }
+@media (max-width: 1100px) and (min-width: 761px) {
+  .mv-topbar { grid-template-columns: minmax(0, 1fr) auto; padding-block: 16px; row-gap: 12px; }
+  .mv-topbar .mv-search { grid-column: 1 / -1; grid-row: 2; }
+  .mv-topbar-heading { align-self: center; }
+  .mv-content { padding-inline: 24px; }
+}
+@media (max-width: 760px) {
+  .mv-topbar { min-height: auto; }
+  .mv-sidebar.is-mobile-open .mv-sidebar-top { min-height: 0; }
+  .mv-overview-heading { align-items: flex-start; }
+  .mv-overview-heading h2 { font-size: 23px; }
+  .mv-overview-heading p { font-size: 12px; }
+  .mv-workspace-pill { display: none; }
+  .mv-brand .brand-logo { font-size: 22px; }
+  .mv-content { gap: 20px; }
+  .mv-stat-tile { padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mv-root *, .mv-root *::before, .mv-root *::after { transition: none !important; animation: none !important; }
 }

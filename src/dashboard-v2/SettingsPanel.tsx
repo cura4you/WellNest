@@ -20,7 +20,7 @@ export function SettingsPanel({ profile, busy, feedback, onChange, onSave }: Set
   const isSuccess = feedback.toLowerCase().includes('success');
 
   return (
-    <div className="mv-card mv-card-pad">
+    <div className="mv-card mv-card-pad mv-role-form">
       <div className="mv-form-grid">
         <div className="mv-form-field">
           <label className="mv-form-label" htmlFor="fullName">Full Name</label>

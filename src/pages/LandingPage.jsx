@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { roleByKey } from '../utils/authRoles';
+import BrandLogo from '../components/brand/BrandLogo';
 import './landing.css';
 
 const paths = {
@@ -18,9 +19,6 @@ const paths = {
 };
 function Icon({ name, size = 20 }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[name]} /></svg>;
-}
-function Brand() {
-  return <span className="home-brand"><span className="home-brand-mark"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M13 5a3 3 0 0 1 6 0v8h8a3 3 0 1 1 0 6h-8v8a3 3 0 1 1-6 0v-8H5a3 3 0 0 1 0-6h8Z" stroke="currentColor" strokeWidth="2" /><path d="m10 16 4 4 8-8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg></span>MediVault<span className="home-brand-dot">.</span></span>;
 }
 const previewTabs = ['Records', 'Appointments', 'AI assistant'];
 function WorkspacePreview() {
@@ -39,7 +37,7 @@ function WorkspacePreview() {
     <div className="home-preview-wrap">
       <div className="home-preview-caption"><span className="home-live-dot" /> A little look inside <span>ILLUSTRATIVE PREVIEW</span></div>
       <div className="home-workspace">
-        <div className="home-workspace-bar"><Brand /><span className="home-example-tag">Sample patient</span><span className="home-avatar">JD</span></div>
+        <div className="home-workspace-bar"><BrandLogo /><span className="home-example-tag">Sample patient</span><span className="home-avatar">JD</span></div>
         <div className="home-workspace-body">
           <div className="home-preview-greeting"><div><span>YOUR PERSONAL HEALTH SPACE</span><h2>Good morning, Jamie<span>.</span></h2><p>Everything you need, a little closer.</p></div><span className="home-greeting-symbol"><Icon name="spark" size={25} /></span></div>
           <div className="home-preview-metrics"><div><Icon name="file" /><strong>12<span>Health records</span></strong></div><div><Icon name="calendar" /><strong>02<span>Appointments</span></strong></div><div><Icon name="shield" /><strong>You<span>Control access</span></strong></div></div>
@@ -82,7 +80,7 @@ export default function LandingPage() {
       <a className="home-skip" href="#home-main">Skip to content</a>
       <header className="home-header" onKeyDown={onMenuKeyDown}>
         <div className="home-container home-nav">
-          <Link to="/" aria-label="MediVault home"><Brand /></Link>
+          <Link to="/" aria-label="MediVault home"><BrandLogo /></Link>
           <button className="home-menu-toggle" type="button" ref={menuButton} aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="home-navigation" onClick={() => setMenuOpen(!menuOpen)}><Icon name={menuOpen ? 'close' : 'menu'} size={24} /></button>
           <nav className={`home-navigation${menuOpen ? ' is-open' : ''}`} id="home-navigation" aria-label="Main navigation">
             <div className="home-nav-links"><a href="#flow" onClick={closeMenu}>How it works</a><a href="#patients" onClick={closeMenu}>For patients</a><a href="#providers" onClick={closeMenu}>For providers</a></div>
@@ -115,7 +113,7 @@ export default function LandingPage() {
         <section className="home-access home-container" aria-labelledby="home-access-title"><div className="home-access-art" aria-hidden="true"><div className="home-access-orbit"><span className="home-orbit-icon home-orbit-file"><Icon name="file" size={24} /></span><span className="home-orbit-icon home-orbit-doctor"><Icon name="doctor" size={24} /></span><span className="home-orbit-icon home-orbit-hospital"><Icon name="hospital" size={24} /></span><div className="home-access-center"><Icon name="shield" size={48} /></div></div><span className="home-access-label"><Icon name="check" size={15} /> Shared on your terms</span></div><div className="home-access-copy"><span className="home-kicker">BUILT AROUND YOUR SAY</span><h2 id="home-access-title">Your care is personal.<br />Your access should be, too.</h2><p>Sharing records should be a choice you can see and manage.</p><ul><li><Icon name="check" /> Review and approve access requests.</li><li><Icon name="check" /> Revoke access when you need to.</li><li><Icon name="check" /> Check who accessed your records and when.</li></ul><Link className="home-text-link" to="/register/patient">Start with your own workspace <Icon name="arrow" size={18} /></Link></div></section>
         <section className="home-cta home-container" id="cta" aria-labelledby="home-cta-title"><div><span className="home-kicker">A CLEARER PLACE TO START</span><h2 id="home-cta-title">Make room for better care.</h2><p>Your records, your appointments, your next step. Together.</p></div><Link className="home-button home-button-primary" to={isAuthenticated ? dashboardPath : '/register'}>{isAuthenticated ? 'Go to dashboard' : 'Find your workspace'}<Icon name="arrow" size={18} /></Link></section>
       </main>
-      <footer className="home-footer home-container"><div className="home-footer-top"><Link to="/" aria-label="MediVault home"><Brand /></Link><p>A clearer connection to your health.</p><nav aria-label="Footer navigation"><Link to="/login">Sign in</Link><Link to="/register/patient">Patients</Link><Link to="/register/doctor">Doctors</Link><Link to="/register/hospital">Hospitals</Link></nav></div><div className="home-footer-bottom"><span>© {new Date().getFullYear()} MediVault</span><span>Built with care. Designed around you.</span></div></footer>
+      <footer className="home-footer home-container"><div className="home-footer-top"><Link to="/" aria-label="MediVault home"><BrandLogo /></Link><p>A clearer connection to your health.</p><nav aria-label="Footer navigation"><Link to="/login">Sign in</Link><Link to="/register/patient">Patients</Link><Link to="/register/doctor">Doctors</Link><Link to="/register/hospital">Hospitals</Link></nav></div><div className="home-footer-bottom"><span>© {new Date().getFullYear()} MediVault</span><span>Built with care. Designed around you.</span></div></footer>
     </div>
   );
 }

@@ -170,7 +170,7 @@ export default function HospitalDashboardPage() {
     { key: 'access' as const, label: 'Staff Access', icon: <BuildingIcon size={16} /> },
     { key: 'compliance' as const, label: 'Compliance & Audit', icon: <ClipboardIcon size={16} /> },
     { key: 'emergency' as const, label: 'Emergency Access', icon: <ShieldIcon size={16} /> },
-    { key: 'chat' as const, label: 'Chat', icon: <MessageIcon size={16} /> },
+    { key: 'chat' as const, label: 'AI Chat', icon: <MessageIcon size={16} /> },
     { key: 'settings' as const, label: 'Profile & Settings', icon: <SettingsIcon size={16} /> },
     { key: 'notifications' as const, label: 'Notifications', icon: <BellIcon size={16} /> },
   ];
@@ -191,7 +191,7 @@ export default function HospitalDashboardPage() {
     access: ['Staff Access', 'Manage doctor-level access to patient records.'],
     compliance: ['Compliance & Audit', 'Review compliance and audit events.'],
     emergency: ['Emergency Access', 'Open a consented, audited 24-hour record window.'],
-    chat: ['Chat', 'Ask questions about the documents you have access to.'],
+    chat: ['AI Chat', 'Ask questions about the documents you have access to.'],
     settings: ['Profile & Settings', 'Institution identity and communication settings.'],
     notifications: ['Notifications', 'Control institution alert channels.'],
   };
