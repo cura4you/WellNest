@@ -1,0 +1,57 @@
+{
+  "verifiedAt": "2026-11-05T16:37:08.709Z",
+  "sourceCommit": "8a32835",
+  "deploymentId": "dpl_67RvsZaDN6d75STXWcEpXAG7V2dT",
+  "url": "https://medivault-roan-six.vercel.app",
+  "focusedUxChecks": [
+    "patient: failed or incomplete responses recover without false counts; 401 offers sign-in",
+    "doctor: failed or incomplete responses recover without false counts; 401 offers sign-in",
+    "hospital: failed or incomplete responses recover without false counts; 401 offers sign-in",
+    "Patient overview prioritizes requests, offers booking, and explains appointment state",
+    "Patient sees access reasons and can retry a failed document detail lookup",
+    "patient: record search, type/date filters, reset, and visible actions",
+    "doctor: record search, type/date filters, reset, and visible actions",
+    "Doctor can search with Enter, choose records, give a reason, and submit",
+    "Patient and doctor overviews stay usable with populated data in light/dark and phone/tablet/desktop"
+  ],
+  "sharedDashboardChecks": [
+    "patient: shared branding, typography and navigation",
+    "patient: switching a long view resets scrolling; AI controls are labelled",
+    "patient: collapsed sidebar keeps logo and labelled controls",
+    "patient: every tab fits desktop and phone",
+    "patient: mobile focus trap, Escape and inert background",
+    "patient: themes persist and logo stays visible",
+    "doctor: shared branding, typography and navigation",
+    "doctor: switching a long view resets scrolling; AI controls are labelled",
+    "doctor: collapsed sidebar keeps logo and labelled controls",
+    "doctor: every tab fits desktop and phone",
+    "doctor: mobile focus trap, Escape and inert background",
+    "doctor: themes persist and logo stays visible",
+    "hospital: shared branding, typography and navigation",
+    "hospital: switching a long view resets scrolling; AI controls are labelled",
+    "hospital: collapsed sidebar keeps logo and labelled controls",
+    "hospital: every tab fits desktop and phone",
+    "hospital: mobile focus trap, Escape and inert background",
+    "hospital: themes persist and logo stays visible",
+    "All three roles use identical core design tokens",
+    "Homepage, authentication and SVG assets use the new identity"
+  ],
+  "homepageChecks": [
+    "19 homepage links individually exercised",
+    "Every visible homepage link is clicked and reaches its destination",
+    "Mobile menu closes on outside click, keyboard departure, Escape and logo click",
+    "Mobile menu state resets when crossing the desktop breakpoint",
+    "Homepage logo returns to top and registration starts at the top on mobile",
+    "All three preview tabs fit internally at 12 phone/tablet/desktop widths",
+    "Preview keyboard selection and accessible state stay synchronized",
+    "Reduced-motion preference and skip-to-content focus work",
+    "All 12 logo choices, four palettes, theme toggle and shortlist work"
+  ],
+  "localRealWorkflowGroups": 20,
+  "localEvidence": "docs/dashboard-ux/local-verification.json",
+  "health": {
+    "ok": true
+  },
+  "errors": [],
+  "scope": "Candidate and public browser checks use controlled API fixtures for dashboard interaction, layout and injected failure cases. Homepage checks exercise actual links and assets. Real API/database/storage/model workflows were separately tested locally with isolated synthetic accounts. No production test accounts or records were created."
+}
