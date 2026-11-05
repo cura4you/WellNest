@@ -1,0 +1,245 @@
+{
+  "verifiedAt": "2026-11-05T17:29:32.024Z",
+  "before": [
+    {
+      "viewport": 390,
+      "hero": {
+        "x": 20,
+        "y": 71,
+        "width": 350,
+        "height": 1129
+      },
+      "preview": {
+        "x": 20,
+        "y": 479,
+        "width": 350,
+        "height": 685
+      },
+      "roles": {
+        "x": 20,
+        "y": 1308,
+        "width": 350,
+        "height": 1174
+      },
+      "principles": {
+        "x": 20,
+        "y": 1200,
+        "width": 350,
+        "height": 108
+      },
+      "pageHeight": 5250
+    },
+    {
+      "viewport": 1440,
+      "hero": {
+        "x": 100,
+        "y": 87,
+        "width": 1240,
+        "height": 905
+      },
+      "preview": {
+        "x": 739,
+        "y": 167,
+        "width": 601,
+        "height": 743
+      },
+      "roles": {
+        "x": 100,
+        "y": 1066,
+        "width": 1240,
+        "height": 644
+      },
+      "principles": {
+        "x": 100,
+        "y": 992,
+        "width": 1240,
+        "height": 74
+      },
+      "pageHeight": 3449
+    },
+    {
+      "viewport": 1920,
+      "hero": {
+        "x": 340,
+        "y": 87,
+        "width": 1240,
+        "height": 905
+      },
+      "preview": {
+        "x": 979,
+        "y": 167,
+        "width": 601,
+        "height": 743
+      },
+      "roles": {
+        "x": 340,
+        "y": 1066,
+        "width": 1240,
+        "height": 644
+      },
+      "principles": {
+        "x": 340,
+        "y": 992,
+        "width": 1240,
+        "height": 74
+      },
+      "pageHeight": 3449
+    },
+    {
+      "viewport": 2560,
+      "hero": {
+        "x": 660,
+        "y": 87,
+        "width": 1240,
+        "height": 905
+      },
+      "preview": {
+        "x": 1299,
+        "y": 167,
+        "width": 601,
+        "height": 743
+      },
+      "roles": {
+        "x": 660,
+        "y": 1066,
+        "width": 1240,
+        "height": 644
+      },
+      "principles": {
+        "x": 660,
+        "y": 992,
+        "width": 1240,
+        "height": 74
+      },
+      "pageHeight": 3449
+    }
+  ],
+  "after": [
+    {
+      "viewport": 390,
+      "hero": {
+        "x": 20,
+        "y": 71,
+        "width": 350,
+        "height": 1079
+      },
+      "preview": {
+        "x": 20,
+        "y": 479,
+        "width": 350,
+        "height": 635
+      },
+      "roles": {
+        "x": 20,
+        "y": 1258,
+        "width": 350,
+        "height": 1174
+      },
+      "principles": {
+        "x": 20,
+        "y": 1150,
+        "width": 350,
+        "height": 108
+      },
+      "pageHeight": 5200
+    },
+    {
+      "viewport": 1440,
+      "hero": {
+        "x": 58,
+        "y": 87,
+        "width": 1325,
+        "height": 728
+      },
+      "preview": {
+        "x": 739,
+        "y": 131,
+        "width": 643,
+        "height": 640
+      },
+      "roles": {
+        "x": 58,
+        "y": 877,
+        "width": 1325,
+        "height": 537
+      },
+      "principles": {
+        "x": 58,
+        "y": 815,
+        "width": 1325,
+        "height": 62
+      },
+      "pageHeight": 3012
+    },
+    {
+      "viewport": 1920,
+      "hero": {
+        "x": 80,
+        "y": 87,
+        "width": 1760,
+        "height": 741
+      },
+      "preview": {
+        "x": 986,
+        "y": 131,
+        "width": 854,
+        "height": 653
+      },
+      "roles": {
+        "x": 80,
+        "y": 890,
+        "width": 1760,
+        "height": 552
+      },
+      "principles": {
+        "x": 80,
+        "y": 828,
+        "width": 1760,
+        "height": 62
+      },
+      "pageHeight": 3060
+    },
+    {
+      "viewport": 2560,
+      "hero": {
+        "x": 400,
+        "y": 87,
+        "width": 1760,
+        "height": 741
+      },
+      "preview": {
+        "x": 1308,
+        "y": 131,
+        "width": 852,
+        "height": 653
+      },
+      "roles": {
+        "x": 400,
+        "y": 890,
+        "width": 1760,
+        "height": 552
+      },
+      "principles": {
+        "x": 400,
+        "y": 828,
+        "width": 1760,
+        "height": 62
+      },
+      "pageHeight": 3060
+    }
+  ],
+  "checks": [
+    "19 homepage links individually exercised",
+    "Every visible homepage link is clicked and reaches its destination",
+    "Mobile menu closes on outside click, keyboard departure, Escape and logo click",
+    "Mobile menu state resets when crossing the desktop breakpoint",
+    "Homepage logo returns to top and registration starts at the top on mobile",
+    "All three preview tabs fit internally at 13 phone/tablet/desktop widths",
+    "Wide desktop uses the screen with a shorter hero and earlier role cards",
+    "Preview keyboard selection and accessible state stay synchronized",
+    "Reduced-motion preference and skip-to-content focus work",
+    "All 12 logo choices, four palettes, theme toggle and shortlist work"
+  ],
+  "errors": [],
+  "scope": "Homepage-only CSS density refinement. Same content, logo, interaction behavior, and palette. Measurements compare the previous live layout with the updated local layout."
+}
