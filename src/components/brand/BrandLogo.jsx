@@ -1,14 +1,21 @@
 import './brand.css';
 
-/** Shared vector identity. The M folds into a V inside a protective vault shield. */
+/** Approved identity: P8 tonal care petals with the W1 modern wordmark. */
 export default function BrandLogo({ compact = false, className = '' }) {
   return (
     <span className={`brand-logo${compact ? ' is-compact' : ''} ${className}`.trim()}>
-      <svg className="brand-logo-mark" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-        <path d="M24 3.5c5.2 3.5 10.7 5.5 17 6.5v12.4c0 9.5-6.1 17-17 22.1C13.1 39.4 7 31.9 7 22.4V10c6.3-1 11.8-3 17-6.5Z" fill="currentColor" />
-        <path d="M15 29V17l9 8 9-8v12" stroke="var(--brand-cutout, #fff)" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+      <svg className="brand-logo-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        {[0, 90, 180, 270].map((angle, index) => (
+          <path
+            key={angle}
+            d="M29.5 28.5C18 29 10.5 23 12.5 14.5C14.5 6 23 8 26.5 15C28.5 19.5 29.5 24 29.5 28.5Z"
+            transform={`rotate(${angle} 32 32)`}
+            fill="currentColor"
+            opacity={index % 2 ? 0.58 : 1}
+          />
+        ))}
       </svg>
-      {!compact && <span className="brand-logo-wordmark">MediVault<span className="brand-logo-period">.</span></span>}
+      {!compact && <span className="brand-logo-wordmark">Medi<span className="brand-logo-vault">Vault</span></span>}
     </span>
   );
 }

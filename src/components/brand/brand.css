@@ -1,8 +1,8 @@
 :root { --brand-plum: #84416c; --brand-ink: #29272e; --brand-font: 'Plus Jakarta Sans', system-ui, sans-serif; }
 
-.brand-logo { display: inline-flex; align-items: center; gap: .42em; color: var(--brand-foreground, var(--brand-ink)); font-family: var(--brand-font); font-size: 23px; font-weight: 700; letter-spacing: -.9px; line-height: 1; white-space: nowrap; }
+.brand-logo { display: inline-flex; align-items: center; gap: .375em; color: var(--brand-foreground, var(--brand-ink)); font-family: Arial, sans-serif; font-size: 23px; font-weight: 600; letter-spacing: -.04em; line-height: 1; white-space: nowrap; }
 .brand-logo .brand-logo-mark { display: block; width: 1.5em; height: 1.5em; flex-shrink: 0; color: var(--brand-accent, var(--brand-plum)); }
 .brand-logo .brand-logo-wordmark { font: inherit; letter-spacing: inherit; }
-.brand-logo .brand-logo-period { color: var(--brand-accent, var(--brand-plum)); }
+.brand-logo .brand-logo-vault { color: var(--brand-accent, var(--brand-plum)); }
 .brand-logo.is-compact { gap: 0; }
-.navbar .brand-logo, .footer .brand-logo, .auth-shell-brand .brand-logo, .dashboard-sidebar .brand-logo { --brand-foreground: #fbf3f8; --brand-accent: #d8a5c8; --brand-cutout: #2b1828; }
+.navbar .brand-logo, .footer .brand-logo, .auth-shell-brand .brand-logo, .dashboard-sidebar .brand-logo { --brand-foreground: #fbf3f8; --brand-accent: #d8a5c8; }

@@ -1788,7 +1788,7 @@ button.mv-role-row-main { background: none; border: 0; color: inherit; font: inh
 
 /* Shared brand, typography and interaction details across every dashboard. */
 .mv-root h1, .mv-root h2, .mv-root h3, .mv-root h4 { font-family: inherit; color: var(--mv-text); }
-.mv-root { --brand-foreground: var(--mv-text); --brand-accent: var(--mv-accent); --brand-cutout: var(--mv-on-accent); }
+.mv-root { --brand-foreground: var(--mv-text); --brand-accent: var(--mv-accent); }
 .mv-brand-link { min-height: 34px; }
 .mv-sidebar.is-collapsed .mv-brand { flex-direction: column; gap: 12px; padding: 0; }
 .mv-sidebar.is-collapsed .mv-brand-link { flex: none; justify-content: center; width: 100%; }

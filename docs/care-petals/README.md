@@ -1,6 +1,6 @@
 # Care petals · round two
 
-The user selected option 06 from the first logo board. This review page explores eight refinements of that direction and four wordmark treatments. The live application logo remains unchanged while a final choice is pending.
+The user selected option 06 from the first logo board. This review page explores eight refinements of that direction and four wordmark treatments. The user approved **P8 Tonal petals + W1 Modern** on 2026-11-05. This is now the shared application identity.
 
 [Open the comparison](https://medivault-roan-six.vercel.app/care-petals/index.html)
 

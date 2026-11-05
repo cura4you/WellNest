@@ -1,12 +1,12 @@
 # MediVault identity
 
-The mark combines a protective shield with an M whose central fold forms a V. Use the plum symbol and charcoal wordmark on light surfaces; dark application surfaces use the same vector with a lighter accent and wordmark.
+The approved identity is **P8 Tonal petals + W1 Modern**, selected by the user on 2026-11-05. Four rotationally balanced petals form a subtle healthcare cross. Opposite petals use 58% opacity. The wordmark has charcoal “Medi” and plum “Vault”, with no trailing period. Dark surfaces use lighter versions of the same colors.
 
 - Primary: `#84416c` (plum); text: `#29272e` (charcoal).
-- Typeface: Plus Jakarta Sans. Keep the wordmark on one line.
+- Logo wordmark: W1 Modern, Arial/sans-serif at weight 600 with tight spacing. Keep it on one line. Application typography remains Plus Jakarta Sans.
 - Shared React component: `src/components/brand/BrandLogo.jsx`. Use `compact` for icon-only placements and provide an accessible name on its parent link/button.
 - Shared brand colors/type live in `src/components/brand/brand.css`. Homepage and dashboard tokens reference these variables.
-- Standalone SVGs: `public/brand/medivault-mark.svg` and `public/brand/medivault-logo.svg`. The mark is also the favicon. The lockup uses live text with an Arial fallback when Plus Jakarta Sans is unavailable.
+- Standalone SVGs: `public/brand/medivault-mark.svg` and `public/brand/medivault-logo.svg`. The mark is also the favicon. The lockup uses live Arial text matching the approved W1 treatment. Keep both the mark geometry and alternating 0.58 opacity in sync with the React component.
 - Leave at least half the symbol's width clear around the lockup. Use the symbol at 24px or larger in navigation; the simplified vector remains usable at favicon sizes. Do not stretch or add shadows to the logo.
 
 ## Dashboard consistency
