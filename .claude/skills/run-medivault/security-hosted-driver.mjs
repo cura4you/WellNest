@@ -8,7 +8,9 @@ import assert from 'node:assert/strict';
 import { deleteFile } from '../../../server/src/storage.js';
 const base = process.env.SECURITY_HOSTED_BASE;
 assert.ok(base?.startsWith('https://'), 'Set SECURITY_HOSTED_BASE explicitly.');
+assert.ok(!['localhost', '127.0.0.1', '[::1]'].includes(new URL(process.env.DATABASE_URL).hostname), 'Hosted cleanup requires the hosted database URL.');
 const db = new pg.Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: true } });
+await db.query('SELECT 1'); // Verify cleanup access before creating any hosted accounts.
 const artifacts = process.env.SECURITY_HOSTED_ARTIFACTS || `/private/tmp/medivault-security-hosted-${Date.now()}`;
 fs.mkdirSync(artifacts, { recursive: true, mode: 0o700 });
 const browser = await chromium.launch(); const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });

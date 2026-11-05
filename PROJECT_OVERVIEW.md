@@ -41,8 +41,8 @@ Healthcare records are typically fragmented across hospitals and providers, whic
 - S3-compatible object storage via `@aws-sdk/client-s3` (`server/src/storage.js`); MinIO in Docker locally
 
 ### AI
-- Any OpenAI-compatible chat completions endpoint (`AI_BASE_URL`), default local Ollama at `http://localhost:11434/v1`
-- Model from `AI_MODEL` (default local: `qwen2.5vl:7b`; OpenRouter: `openai/gpt-4o`)
+- Configurable OpenAI-compatible endpoint (`AI_BASE_URL`); hosted Gemini in production and optional Ollama for local development.
+- Separate configurable summary, chat, planner and embedding models; see the current deployment and agent runbooks.
 - Optional bearer key from `AI_API_KEY` (legacy `GEMINI_API_KEY` still implies OpenRouter)
 
 ### Tooling
@@ -107,7 +107,7 @@ Healthcare records are typically fragmented across hospitals and providers, whic
 
 ## 6) Demo Links, Hosted URLs, or Screenshots
 ### Hosted/demo URL
-- No explicit deployed production URL found in current repo content.
+- Production: https://medivault-roan-six.vercel.app/
 
 ### Local demo assets/docs present
 - `public/carousel/slide-1.png`
@@ -132,8 +132,8 @@ Healthcare records are typically fragmented across hospitals and providers, whic
 1. **Storage scale migration path**
    - Move blob payloads from DB storage to object storage via backfill when scaling.
 
-2. **Session revocation enhancement**
-   - Add a `revoked_tokens` table for immediate token invalidation.
+2. **Account security operations**
+   - Session revocation, password change and recovery flows are implemented. Configure recovery email delivery; see SECURITY_OPERATIONS.md.
 
 3. **Legacy-path cleanup opportunities**
    - Some code comments indicate legacy compatibility branches that can be retired after full migration.
@@ -142,4 +142,4 @@ Healthcare records are typically fragmented across hospitals and providers, whic
 
 ## Notes on Source Accuracy
 - This overview is based on currently available repository files and code paths.
-- The main `README.md` is still a generic Vite template and does not reflect current MediVault functionality.
+- Historical sections may predate current releases. Current security behavior is documented in SECURITY_OPERATIONS.md; rollout evidence is under docs/account-security.
