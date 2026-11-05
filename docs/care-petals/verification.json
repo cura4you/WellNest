@@ -1,0 +1,17 @@
+{
+  "verifiedAt": "2026-11-05T14:40:27.532Z",
+  "sourceCommit": "afe0ba4",
+  "deploymentId": "dpl_CAU7DXyX7ATiyGSPxsdao8mJaeSn",
+  "url": "https://medivault-roan-six.vercel.app/care-petals/index.html",
+  "checks": [
+    "8 petal selections update the preview",
+    "4 wordmark treatments update the preview and SVG text",
+    "4 palette buttons and dark background toggle",
+    "Selected mark matches SVG download",
+    "Actual combined SVG download filename and contents",
+    "No document or component clipping at 320, 390, 768, 1320 and 1600 pixels",
+    "No captured browser page errors",
+    "Public deployment identity and health endpoint"
+  ],
+  "scope": "Static design-review page. Headless Chromium checks passed locally, on the protected Vercel candidate and on the public URL. No application branding, dashboard workflows, backend settings or data were changed."
+}
