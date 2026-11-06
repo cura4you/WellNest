@@ -32,7 +32,7 @@ try{
   });
   await check('Sharing works across the visitor’s own patient and doctor roles',async()=>{
     const request=(await call('/api/dashboard/patient',null,a.token)).data.accessRequests[0];assert.equal((await call(`/api/access-requests/${request.id}`,{action:'approve'},a.token,'PATCH')).status,200);
-    const docs=(await call('/api/dashboard/doctor',null,doctor.token)).data.sharedDocuments;assert.equal(docs.length,3);
+    const docs=(await call('/api/dashboard/doctor',null,doctor.token)).data.sharedDocuments;assert.equal(docs.length,3);assert.equal((await call('/api/dashboard/patient',null,b.token)).data.accessRequests[0].status,'pending');
     const r=await fetch(base+`/api/documents/${docs[0].id}/download`,{headers:{Authorization:`Bearer ${doctor.token}`}});assert.equal(r.status,200);assert.ok((await r.text()).includes('FICTIONAL PORTFOLIO RECORD'));
   });
   await check('Multipart upload targets are scoped after parsing and files stay in encrypted expiring storage',async()=>{
@@ -48,7 +48,14 @@ try{
     const r=await call('/demo/reset',{},a.token);assert.equal(r.status,200,JSON.stringify(r.data));const old=a;a=r.data;
     assert.notEqual(a.user.email,old.user.email);assert.equal((await call('/api/dashboard/doctor',null,doctor.token)).status,401);assert.equal((await call('/api/dashboard/hospital',null,hospital.token)).status,401);
     assert.equal((await call('/api/dashboard/patient',null,a.token)).data.documents.length,3);assert.equal(a.user.demo.usage.aiRequests,4);assert.equal(a.user.demo.usage.uploads,1);assert.equal((await call('/api/chat',{message:'What is the sample HbA1c?'},a.token)).status,429);
+    assert.equal((await call('/api/dashboard/patient',null,b.token)).status,200);
     const next=await call('/demo/reset',{},a.token);assert.equal(next.status,200);a=next.data;assert.equal((await call('/demo/reset',{},a.token)).status,429);
+  });
+  await check('Workspace request, daily capacity and provider-call caps fail closed without spending on AI',async()=>{
+    const workspace=(await pool.query('SELECT demo_workspace_id FROM users WHERE id=$1',[a.user.id])).rows[0].demo_workspace_id;
+    await pool.query('UPDATE demo_workspaces SET api_calls_used=499 WHERE id=$1',[workspace]);assert.equal((await call('/api/dashboard/patient',null,a.token)).status,200);assert.equal((await call('/demo/switch',{role:'doctor'},a.token)).status,429);
+    await pool.query('UPDATE demo_daily_usage SET workspaces_created=100,provider_calls=79 WHERE day=current_date');assert.equal((await call('/demo/start',{role:'patient'})).status,429);
+    const {consumeDemoProviderCall}=await import('../src/demoAccess.js');await consumeDemoProviderCall();await assert.rejects(consumeDemoProviderCall(),e=>e.status===429);
   });
   await check('Expiry immediately blocks sessions; authenticated cleanup and exit remove only guest data',async()=>{
     await pool.query('UPDATE demo_workspaces SET expires_at=now()-interval \'1 second\' WHERE id=(SELECT demo_workspace_id FROM users WHERE id=$1)',[b.user.id]);
