@@ -1,5 +1,7 @@
 import crypto from 'crypto';
 import { pool } from './db.js';
+import { guardDemoRequest, consumeDemoProviderCall } from './demoAccess.js';
+import { getDemoContext, runDemoContext } from './demoContext.js';
 
 export function normalizeEmail(email = '') {
   return String(email).trim().toLowerCase();
@@ -42,6 +44,11 @@ export async function fetchWithRetry(url, options, { retries = 3, retryDelayMs =
  * when to give up on it.
  */
 export async function callAIChatCompletion({ url, headers, buildBody, primaryModel, fallbackModel, signal, retryOptions }) {
+  if(getDemoContext()){
+    await consumeDemoProviderCall();
+    primaryModel=process.env.DEMO_AI_MODEL||fallbackModel||primaryModel;fallbackModel='';retryOptions={retries:0};
+    signal=signal?AbortSignal.any([signal,AbortSignal.timeout(20000)]):AbortSignal.timeout(20000);
+  }
   const attempt = (model) => fetchWithRetry(url, {
     method: 'POST',
     headers,
@@ -65,7 +72,8 @@ export async function callAIChatCompletion({ url, headers, buildBody, primaryMod
  * this only shapes what reaches the client.
  */
 export function describeAiFailure(err) {
-  if (err?.name === 'AbortError') {
+  if(err?.status===429)return {status:429,message:err.message};
+  if (err?.name === 'AbortError' || err?.name === 'TimeoutError') {
     return {
       status: 504,
       message: 'The AI service took too long to respond. If it just started up, the model may still be loading into memory — please try again in a moment.',
@@ -141,14 +149,14 @@ if (!TOKEN_SECRET) {
 
 const TOKEN_TTL_MS = 8 * 60 * 60 * 1000; // 8 hours
 
-export function issueToken(userId, role, authVersion = 0) {
+export function issueToken(userId, role, authVersion = 0, ttlMs = TOKEN_TTL_MS) {
   const payload = Buffer.from(JSON.stringify({
     sub: userId,
     ver: authVersion,
     jti: crypto.randomUUID(),
     role,
     iat: Date.now(),
-    exp: Date.now() + TOKEN_TTL_MS,
+    exp: Date.now() + Math.min(TOKEN_TTL_MS, ttlMs),
   })).toString('base64url');
   const sig = crypto.createHmac('sha256', TOKEN_SECRET).update(payload).digest('base64url');
   return `${payload}.${sig}`;
@@ -180,11 +188,12 @@ export function tokenHash(token) {
 export async function resolveSession(token) {
   const session = decodeSession(token);
   if (!session || !/^[a-f0-9-]{36}$/i.test(session.userId || '')) return null;
-  const { rows } = await pool.query(`SELECT u.role, u.auth_version FROM users u
+  const { rows } = await pool.query(`SELECT u.role,u.auth_version,u.demo_workspace_id,w.expires_at AS demo_expires_at FROM users u LEFT JOIN demo_workspaces w ON w.id=u.demo_workspace_id
     WHERE u.id = $1 AND NOT EXISTS (SELECT 1 FROM revoked_tokens WHERE token_hash = $2)`,
   [session.userId, tokenHash(token)]);
   if (!rows[0] || rows[0].role !== session.role || rows[0].auth_version !== session.authVersion) return null;
-  return session;
+  if (rows[0].demo_workspace_id && (process.env.DEMO_ENABLED!=='true' || !rows[0].demo_expires_at || new Date(rows[0].demo_expires_at).getTime()<=Date.now())) return null;
+  return {...session,demoWorkspaceId:rows[0].demo_workspace_id||null};
 }
 
 export async function revokeToken(token, userId) {
@@ -201,7 +210,8 @@ export function makeSafeUser(userRow, profile = {}) {
     role: userRow.role,
     profile,
     emailVerified: Boolean(userRow.email_verified),
-    isAdmin: Boolean(userRow.is_admin),
+    isAdmin: !userRow.demo_workspace_id && Boolean(userRow.is_admin),
+    isGuest: Boolean(userRow.demo_workspace_id),
   };
 }
 
@@ -209,6 +219,7 @@ export function makeSafeUser(userRow, profile = {}) {
 export async function requireAuth(req, res, next) {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : header;
+  if (req.authToken===token && req.userId) return next();
   let session;
   try { session = await resolveSession(token); } catch {
     return res.status(503).json({ message: 'Unable to verify your session. Please try again.' });
@@ -216,7 +227,9 @@ export async function requireAuth(req, res, next) {
   if (!session) {
     return res.status(401).json({ message: 'Unauthorized. Please log in.' });
   }
-  if (process.env.PROVIDER_APPROVAL_REQUIRED === 'true' && req.originalUrl.startsWith('/api/') && ['doctor','hospital'].includes(session.role)) {
+  req.demoWorkspaceId=session.demoWorkspaceId;
+  try { if(!await guardDemoRequest(req,res))return; } catch(error) { return res.status(error.status||503).json({message:error.status?error.message:'Unable to check the workspace. Please try again.'}); }
+  if (!session.demoWorkspaceId && process.env.PROVIDER_APPROVAL_REQUIRED === 'true' && req.originalUrl.startsWith('/api/') && ['doctor','hospital'].includes(session.role)) {
     try {
       const r = await pool.query(`SELECT u.email_verified,a.status FROM users u LEFT JOIN provider_applications a ON a.user_id=u.id WHERE u.id=$1`,[session.userId]);
       if (!r.rows[0]?.email_verified || r.rows[0]?.status !== 'approved') return res.status(403).json({ message: 'Verify your email and obtain provider approval before accessing clinical features.', code: 'PROVIDER_APPROVAL_REQUIRED' });
@@ -225,5 +238,5 @@ export async function requireAuth(req, res, next) {
   req.authToken = token;
   req.userId = session.userId;
   req.userRole = session.role;
-  next();
+  return runDemoContext(session.demoWorkspaceId?{workspaceId:session.demoWorkspaceId}:null,()=>next());
 }

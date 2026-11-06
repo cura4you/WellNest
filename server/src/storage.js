@@ -1,3 +1,7 @@
+import { pool,withTransaction } from './db.js';
+import { getDemoContext } from './demoContext.js';
+import { DEMO_LIMITS } from './demoPolicy.js';
+import { randomUUID } from 'node:crypto';
 // Object storage for encrypted document blobs. S3-compatible, so it works with
 // MinIO (docker-compose.yml), AWS S3, Cloudflare R2, etc. Configure via .env:
 //   S3_ENDPOINT   e.g. http://localhost:9000 (MinIO)
@@ -52,6 +56,17 @@ export async function ensureBucket() {
  * @param {string} filename  Caller already prefixes a UUID; we only sanitize.
  */
 export async function uploadFile(buffer, filename) {
+  const demo=getDemoContext();
+  if(demo){
+    const key=`demo/${demo.workspaceId}/${randomUUID()}`;
+    const write=async client=>{
+      if(!demo.seed){const r=await client.query('UPDATE demo_workspaces SET uploads_used=uploads_used+1 WHERE id=$1 AND expires_at>now() AND uploads_used<$2 RETURNING id',[demo.workspaceId,DEMO_LIMITS.uploads]);if(!r.rowCount)throw Object.assign(new Error('Your guest upload allowance is used.'),{status:429});}
+      if(buffer.length>DEMO_LIMITS.uploadBytes+128)throw Object.assign(new Error('Guest files must be 1 MB or smaller.'),{status:400});
+      await client.query('INSERT INTO demo_files(object_key,workspace_id,ciphertext) VALUES($1,$2,$3)',[key,demo.workspaceId,buffer]);
+    };
+    if(demo.client)await write(demo.client);else await withTransaction(write);
+    return key;
+  }
   const key = filename.replace(/[^\w.-]+/g, '_');
   await s3.send(new PutObjectCommand({
     Bucket: BUCKET,
@@ -64,10 +79,12 @@ export async function uploadFile(buffer, filename) {
 
 /** @returns {Promise<Buffer>} */
 export async function downloadFile(key) {
+  if(key.startsWith('demo/')){const demo=getDemoContext();if(!demo||!key.startsWith(`demo/${demo.workspaceId}/`))throw new Error('Workspace file unavailable.');const r=await pool.query('SELECT ciphertext FROM demo_files WHERE object_key=$1 AND workspace_id=$2',[key,demo.workspaceId]);if(!r.rows[0])throw new Error('Workspace file unavailable.');return r.rows[0].ciphertext;}
   const res = await s3.send(new GetObjectCommand({ Bucket: BUCKET, Key: key }));
   return Buffer.from(await res.Body.transformToByteArray());
 }
 
 export async function deleteFile(key) {
+  if(key.startsWith('demo/')){const demo=getDemoContext();if(!demo||!key.startsWith(`demo/${demo.workspaceId}/`))throw new Error('Workspace file unavailable.');await pool.query('DELETE FROM demo_files WHERE object_key=$1 AND workspace_id=$2',[key,demo.workspaceId]);return;}
   await s3.send(new DeleteObjectCommand({ Bucket: BUCKET, Key: key }));
 }

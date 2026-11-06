@@ -29,7 +29,7 @@ router.post('/forgot-password', async (req, res) => {
   const token = crypto.randomBytes(32).toString('hex');
   const hash = tokenHash(token);
   const { rows } = await pool.query(`INSERT INTO password_reset_tokens (token_hash, user_id, expires_at)
-    SELECT $1, id, now() + interval '30 minutes' FROM users WHERE email = $2 AND role = $3 RETURNING user_id`, [hash, email, role]);
+    SELECT $1, id, now() + interval '30 minutes' FROM users WHERE email = $2 AND role = $3 AND demo_workspace_id IS NULL RETURNING user_id`, [hash, email, role]);
   if (rows.length) {
     const delivery = sendRecoveryEmail({ to: email, token }).catch(async () => {
       console.error('Password recovery delivery failed.'); // Never log tokens/provider responses.

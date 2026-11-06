@@ -19,7 +19,8 @@ export function identifiers(values) {
   return {ids:[...ids],emails:[...emails]};
 }
 export function guestPathAllowed(method,path){
-  if(path.startsWith('/demo/'))return ['GET','POST'].includes(method);
+  if(path==='/demo/status')return method==='GET';
+  if(['/demo/switch','/demo/reset','/demo/end'].includes(path))return method==='POST';
   if(['/auth/account-status','/auth/session'].includes(path))return method==='GET';
   if(path==='/auth/logout')return method==='POST';
   if(!path.startsWith('/api/'))return false;

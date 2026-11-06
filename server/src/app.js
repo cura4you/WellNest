@@ -15,6 +15,8 @@ import chatRouter from './chat.js';
 import careRouter from './care.js';
 import securityRouter from './security.js';
 import identityRouter from './identity.js';
+import { checkDemoIdentifiers } from './demoAccess.js';
+import { DEMO_LIMITS } from './demoPolicy.js';
 import { proofMime } from './identityValidation.js';
 import { getPreferences, notifyUser } from './notifications.js';
 import { waitUntil } from '@vercel/functions';
@@ -224,7 +226,7 @@ app.post('/auth/login', loginLimiter, async (req, res) => {
     }
 
     const { rows, rowCount } = await pool.query(
-      'SELECT id, email, role, password_hash, auth_version, email_verified, is_admin FROM users WHERE email = $1 AND role = $2',
+      'SELECT id, email, role, password_hash, auth_version, email_verified, is_admin, demo_workspace_id FROM users WHERE email = $1 AND role = $2',
       [normalizedEmail, role]
     );
 
@@ -233,6 +235,7 @@ app.post('/auth/login', loginLimiter, async (req, res) => {
     }
 
     const user = rows[0];
+    if(user.demo_workspace_id)return res.status(401).json({message:'Use Try live demo to enter a guest workspace.'});
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
       return res.status(401).json({ message: 'Invalid credentials.' });
@@ -493,6 +496,8 @@ app.post('/api/documents/upload', requireAuth, upload.single('file'), async (req
     const { documentType, description, visitDate, patientId: patientIdInput } = req.body;
     const file = req.file;
     if (!file) return res.status(400).json({ message: 'No file provided.' });
+    if(req.demoWorkspaceId&&file.size>DEMO_LIMITS.uploadBytes)return res.status(400).json({message:'Guest files must be 1 MB or smaller.'});
+    if(!await checkDemoIdentifiers(req,req.body))return res.status(404).json({message:'This resource is not part of your workspace.'});
     if (!documentType) return res.status(400).json({ message: 'Document type is required.' });
 
     let patientId;
@@ -557,7 +562,7 @@ app.post('/api/documents/upload', requireAuth, upload.single('file'), async (req
     // waitUntil (not a bare un-awaited call) because on Vercel the serverless
     // function can be frozen the instant res.json() above resolves — without
     // it, this promise silently never finishes and nothing gets indexed.
-    if (isEmbeddingConfigured()) {
+    if (isEmbeddingConfigured() || req.demoWorkspaceId) {
       waitUntil(
         indexDocument(result).catch((err) => {
           console.error(`Background indexing failed for document ${result}:`, err.message);
@@ -566,7 +571,7 @@ app.post('/api/documents/upload', requireAuth, upload.single('file'), async (req
     }
   } catch (err) {
     console.error('Upload error:', err.message);
-    res.status(500).json({ message: 'Upload failed.' });
+    res.status(err.status||500).json({ message:err.status?err.message:'Upload failed.' });
   }
 });
 
