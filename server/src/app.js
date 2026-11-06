@@ -283,12 +283,12 @@ app.get('/api/dashboard/patient', requireAuth, async (req, res) => {
       pool.query("SELECT COUNT(*)::int AS c FROM document_access_grants WHERE patient_id = $1 AND revoked_at IS NULL AND (expires_at IS NULL OR expires_at > NOW())", [patientId]),
       pool.query('SELECT COUNT(*)::int AS c FROM audit_logs WHERE patient_id = $1', [patientId]),
       pool.query(`SELECT d.id, d.original_filename AS name, d.document_type AS type,
-                    COALESCE(u.email, 'You') AS uploaded_by,
+                    CASE WHEN u.demo_workspace_id IS NOT NULL THEN COALESCE((SELECT hospital_name FROM hospitals WHERE user_id=u.id),(SELECT full_name FROM doctors WHERE user_id=u.id),u.email) ELSE COALESCE(u.email,'You') END AS uploaded_by,
                     TO_CHAR(d.created_at, 'YYYY-MM-DD') AS date,
                     CASE WHEN d.encrypted THEN 'encrypted' ELSE 'stored' END AS status
                   FROM documents d LEFT JOIN users u ON u.id = d.uploaded_by_user_id
                   WHERE d.patient_id = $1 ORDER BY d.created_at DESC LIMIT 50`, [patientId]),
-      pool.query(`SELECT ar.id, u.email AS requester, u.role,
+      pool.query(`SELECT ar.id, CASE WHEN u.demo_workspace_id IS NOT NULL THEN COALESCE((SELECT full_name FROM doctors WHERE user_id=u.id),(SELECT hospital_name FROM hospitals WHERE user_id=u.id),u.email) ELSE u.email END AS requester, u.role,
                     ar.reason, ar.requested_scope AS scope, ar.status, ar.document_ids
                   FROM access_requests ar JOIN users u ON u.id = ar.requester_user_id
                   WHERE ar.patient_id = $1 ORDER BY ar.created_at DESC LIMIT 50`, [patientId]),
@@ -386,13 +386,13 @@ app.get('/api/dashboard/hospital', requireAuth, async (req, res) => {
       pool.query(`SELECT COUNT(*)::int AS c FROM access_requests
                   WHERE patient_id IN (SELECT p.id FROM patients p JOIN documents d ON d.patient_id = p.id WHERE d.hospital_id = $1) AND status = 'pending'`, [hospitalId]),
       pool.query("SELECT COUNT(*)::int AS c FROM audit_logs WHERE actor_user_id = $1 AND action::text LIKE '%compliance%'", [userId]),
-      pool.query(`SELECT d.id, u.email AS patient, d.original_filename AS file,
+      pool.query(`SELECT d.id, CASE WHEN u.demo_workspace_id IS NOT NULL THEN p.full_name ELSE u.email END AS patient, d.original_filename AS file,
                     TO_CHAR(d.created_at, 'YYYY-MM-DD HH24:MI') AS submitted_at,
                     CASE WHEN d.encrypted THEN 'encrypted' ELSE 'pending' END AS status
                   FROM documents d LEFT JOIN patients p ON p.id = d.patient_id
                   LEFT JOIN users u ON u.id = p.user_id
                   WHERE d.uploaded_by_user_id = $1 ORDER BY d.created_at DESC LIMIT 50`, [userId]),
-      pool.query(`SELECT u.id AS id, u.email AS doctor, u.id AS grantee_user_id, 'General' AS department,
+      pool.query(`SELECT u.id AS id, CASE WHEN u.demo_workspace_id IS NOT NULL THEN COALESCE((SELECT full_name FROM doctors WHERE user_id=u.id),u.email) ELSE u.email END AS doctor, u.id AS grantee_user_id, 'General' AS department,
                     COUNT(g.id)::int AS grants, 'active' AS status
                   FROM document_access_grants g
                   JOIN documents d ON d.id = g.document_id JOIN users u ON u.id = g.grantee_user_id

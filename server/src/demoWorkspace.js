@@ -62,10 +62,10 @@ async function seed(client,workspace){
   return accounts;
 }
 async function session(client,workspace,role){
-  const users=(await client.query('SELECT * FROM users WHERE demo_workspace_id=$1',[workspace.id])).rows;
+  const users=(await client.query('SELECT u.*,COALESCE(p.full_name,d.full_name,h.hospital_name) AS demo_name FROM users u LEFT JOIN patients p ON p.user_id=u.id LEFT JOIN doctors d ON d.user_id=u.id LEFT JOIN hospitals h ON h.user_id=u.id WHERE u.demo_workspace_id=$1',[workspace.id])).rows;
   const user=users.find(u=>u.role===role);if(!user)throw fault(409,'The demo changed. Start a fresh guest session.');
   const profile=(await client.query(`SELECT * FROM ${role==='patient'?'patients':role==='doctor'?'doctors':'hospitals'} WHERE user_id=$1`,[user.id])).rows[0];
-  const contacts=users.map(u=>({role:u.role,email:u.email,name:u.role==='patient'?'Jamie Morgan':u.role==='doctor'?'Dr. Avery Patel':'Willow Care Hospital'}));
+  const contacts=users.map(u=>({role:u.role,email:u.email,name:u.demo_name}));
   const demo={expiresAt:workspace.expires_at,contacts,limits:DEMO_LIMITS,usage:{resets:workspace.resets_used,uploads:workspace.uploads_used,aiRequests:workspace.ai_requests_used}};
   return {token:issueToken(user.id,role,user.auth_version,new Date(workspace.expires_at).getTime()-Date.now()),user:{...makeSafeUser(user,camelRow(profile)),demo}};
 }
