@@ -1,0 +1,134 @@
+{
+  "verifiedAt": "2026-11-06T20:48:10.222Z",
+  "sourceCommit": "fc9d6a3",
+  "deploymentId": "dpl_J8ntyNd1Cgb5dAQn7S3vhhcqCRdV",
+  "url": "https://medivault-roan-six.vercel.app",
+  "project": "mohammad-petiwalas-projects/medivault",
+  "migration": "0013_identity_review.sql",
+  "health": {
+    "ok": true
+  },
+  "configuration": {
+    "providerApprovalRequired": false,
+    "mode": "Portfolio demonstration; actual email and application status remain visible, strict clinical gates disabled by explicit configuration",
+    "emailRecipientRestriction": "User-selected burner inbox only",
+    "sender": "Resend testing sender configured; account-owner recipient restriction applies",
+    "emailCredentialConfigured": false
+  },
+  "inventory": {
+    "administratorProvisioned": true,
+    "administratorRole": "patient",
+    "administratorEmailVerified": false,
+    "synthetic_accounts_remaining": 0,
+    "historical_proofs_requiring_replacement": 6
+  },
+  "candidate": {
+    "base": "https://medivault-1lymoh1ob-mohammad-petiwalas-projects.vercel.app",
+    "verifiedAt": "2026-11-06T20:45:20.823Z",
+    "results": [
+      "Provisioned administrator signs in through the dedicated review login",
+      "Portfolio mode reports real draft/unverified state and denies ordinary accounts admin access",
+      "Both provider roles upload wrapped evidence, download identical bytes and submit applications",
+      "Administrator approves the current synthetic application through the live UI",
+      "Rejection, stale revision protection, resubmission and historical license evidence persist",
+      "Missing email credential is visible and malformed confirmation links fail safely"
+    ],
+    "errors": [],
+    "passed": true,
+    "syntheticUsersRemoved": 2,
+    "scope": "Actual administrator login and real hosted database/object storage. Provider accounts use explicit seeded synthetic email-verification fixtures; external inbox delivery is not verified. Synthetic accounts/proofs removed; administrator account retained."
+  },
+  "public": {
+    "base": "https://medivault-roan-six.vercel.app",
+    "verifiedAt": "2026-11-06T20:46:55.136Z",
+    "results": [
+      "Provisioned administrator signs in through the dedicated review login",
+      "Portfolio mode reports real draft/unverified state and denies ordinary accounts admin access",
+      "Both provider roles upload wrapped evidence, download identical bytes and submit applications",
+      "Administrator approves the current synthetic application through the live UI",
+      "Rejection, stale revision protection, resubmission and historical license evidence persist",
+      "Missing email credential is visible and malformed confirmation links fail safely"
+    ],
+    "errors": [],
+    "passed": true,
+    "syntheticUsersRemoved": 2,
+    "scope": "Actual administrator login and real hosted database/object storage. Provider accounts use explicit seeded synthetic email-verification fixtures; external inbox delivery is not verified. Synthetic accounts/proofs removed; administrator account retained."
+  },
+  "dashboardUiFixtures": {
+    "base": "https://medivault-1lymoh1ob-mohammad-petiwalas-projects.vercel.app",
+    "verifiedAt": "2026-11-06T20:45:41.845Z",
+    "results": [
+      "patient: shared branding, typography and navigation",
+      "patient: switching a long view resets scrolling; AI controls are labelled",
+      "patient: collapsed sidebar keeps logo and labelled controls",
+      "patient: every tab fits desktop and phone",
+      "patient: mobile focus trap, Escape and inert background",
+      "patient: themes persist and logo stays visible",
+      "doctor: shared branding, typography and navigation",
+      "doctor: switching a long view resets scrolling; AI controls are labelled",
+      "doctor: collapsed sidebar keeps logo and labelled controls",
+      "doctor: every tab fits desktop and phone",
+      "doctor: mobile focus trap, Escape and inert background",
+      "doctor: themes persist and logo stays visible",
+      "hospital: shared branding, typography and navigation",
+      "hospital: switching a long view resets scrolling; AI controls are labelled",
+      "hospital: collapsed sidebar keeps logo and labelled controls",
+      "hospital: every tab fits desktop and phone",
+      "hospital: mobile focus trap, Escape and inert background",
+      "hospital: themes persist and logo stays visible",
+      "All three roles use identical core design tokens",
+      "Homepage, authentication and SVG assets use the new identity"
+    ],
+    "errors": [],
+    "designTokens": [
+      {
+        "font": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+        "accent": "#84416c",
+        "canvas": "rgb(247, 246, 244)",
+        "sidebar": "rgb(253, 252, 251)",
+        "width": "252px",
+        "cardRadius": "12px"
+      },
+      {
+        "font": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+        "accent": "#84416c",
+        "canvas": "rgb(247, 246, 244)",
+        "sidebar": "rgb(253, 252, 251)",
+        "width": "252px",
+        "cardRadius": "12px"
+      },
+      {
+        "font": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+        "accent": "#84416c",
+        "canvas": "rgb(247, 246, 244)",
+        "sidebar": "rgb(253, 252, 251)",
+        "width": "252px",
+        "cardRadius": "12px"
+      }
+    ],
+    "scope": "Populated UI fixtures isolate styling, navigation, scrolling and accessibility checks at six widths. The real-stack care-driver separately verifies actual workflows."
+  },
+  "homepage": {
+    "base": "https://medivault-1lymoh1ob-mohammad-petiwalas-projects.vercel.app",
+    "verifiedAt": "2026-11-06T20:45:56.695Z",
+    "results": [
+      "19 homepage links individually exercised",
+      "Every visible homepage link is clicked and reaches its destination",
+      "Mobile menu closes on outside click, keyboard departure, Escape and logo click",
+      "Mobile menu state resets when crossing the desktop breakpoint",
+      "Homepage logo returns to top and registration starts at the top on mobile",
+      "All three preview tabs fit internally at 13 phone/tablet/desktop widths",
+      "Wide desktop uses the screen with a shorter hero and earlier role cards",
+      "Preview keyboard selection and accessible state stay synchronized",
+      "Reduced-motion preference and skip-to-content focus work",
+      "All 12 logo choices, four palettes, theme toggle and shortlist work"
+    ],
+    "errors": []
+  },
+  "limits": [
+    "External verification/recovery email delivery awaits RESEND_API_KEY and has not been verified.",
+    "Strict email/provider approval enforcement was verified with real isolated local services; live portfolio mode deliberately keeps clinical dashboard access available.",
+    "Hosted provider smoke tests use explicit synthetic verified-email fixtures; they do not establish external email delivery. All temporary provider accounts/proofs were removed.",
+    "Six historical proofs without keys remain unreadable until actual replacement; the owner replacement workflow is now implemented."
+  ]
+}
