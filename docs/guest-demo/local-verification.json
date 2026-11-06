@@ -1,0 +1,198 @@
+{
+  "verifiedAt": "2026-11-06T21:34:49.106Z",
+  "unitTests": 50,
+  "api": {
+    "passed": [
+      "Start creates three populated roles without verified identity or administrator privilege",
+      "Visitors cannot target another workspace or ordinary accounts by email or UUID",
+      "Guest identity, privileged actions, arbitrary roles and unsupported routes stay closed",
+      "Sharing works across the visitor’s own patient and doctor roles",
+      "Multipart upload targets are scoped after parsing and files stay in encrypted expiring storage",
+      "Reset restores samples, revokes old role tokens and preserves AI/upload budgets",
+      "Workspace request, daily capacity and provider-call caps fail closed without spending on AI",
+      "Expiry immediately blocks sessions; authenticated cleanup and exit remove only guest data"
+    ],
+    "scope": "Isolated real PostgreSQL and HTTP. No hosted database, external AI call or permanent object storage used."
+  },
+  "browser": {
+    "passed": [
+      "Homepage opens the three-role guest chooser and starts a populated patient workspace",
+      "Guest role survives reload and the contact helper exposes only this workspace’s fictional addresses",
+      "Approve access as patient, then switch to doctor and open the newly shared sample record",
+      "Scheduling uses the visitor’s demo contacts and persists across patient/doctor roles",
+      "Hospital workspace is populated and all guest role tabs fit mobile screens",
+      "Two visitors cannot search, share, schedule or read across their isolated workspaces",
+      "Live guest AI answers from synthetic records with a persisted citation and summarizes a sample PDF",
+      "Reset restores sample state, remounts the dashboard, invalidates old tokens and preserves allowances",
+      "Guest chooser and toolbar work with keyboard, dark theme and tablet/phone widths",
+      "An ordinary signed-in account can explore a guest workspace and recover its original session on exit"
+    ],
+    "errors": [],
+    "liveAi": true,
+    "scope": "Real isolated PostgreSQL/API and headless Chromium; guest files use encrypted expiring database storage. Live Gemini calls are opt-in and use synthetic records only."
+  },
+  "care": {
+    "passed": [
+      "Real registration and dashboard hydration for all three roles",
+      "Patient overview has no sample vitals or appointments",
+      "Vitals create, persist after reload, and appear on Overview",
+      "Vitals reject invalid measurements and cross-role access",
+      "Patient requests an appointment with doctor",
+      "Doctor confirms; patient sees persisted confirmation",
+      "Appointment permissions, stale versions and overlap checks",
+      "Patient reschedule requires renewed provider confirmation",
+      "Hospital schedules, reschedules and patient cancels",
+      "All roles persist notification preferences across reload and login",
+      "Preferences suppress new appointment notifications; inbox read state persists",
+      "Cross-patient isolation, concurrent scheduling and appointment completion",
+      "Vitals delete through UI persists",
+      "Hospital upload creates a real encrypted record in local MinIO",
+      "Doctor requests a document and patient approves via dashboard",
+      "Doctor interaction notes save and delete through UI",
+      "All roles save profile settings",
+      "Real hosted AI summary and cited RAG chat",
+      "Hospital revokes doctor access; emergency window permits document view",
+      "All dashboard tabs render in light/dark themes and mobile without overflow"
+    ],
+    "errors": [],
+    "artifacts": "/private/tmp/medivault_care_e2e_1793999996055"
+  },
+  "security": {
+    "passed": [
+      "All three roles register and hydrate through real APIs; hospital proof key is wrapped",
+      "Encrypted upload/download is byte-identical; legacy keys and grant copies rewrap idempotently",
+      "Logout revokes only that token for every role; separately issued sessions remain valid",
+      "Recovery response is identical for existing, missing and mismatched-role accounts; only token hashes persist",
+      "Patient resets through browser; URL secret is removed, old password and all old sessions fail",
+      "Expired and invalid links fail; weak passwords fail; concurrent reset has exactly one winner",
+      "Doctor changes password in shared account security; current password required and all sessions revoked",
+      "Hospital signs out all devices through shared security screen",
+      "Failed server logout stays signed in with an error; retry revokes token",
+      "Recovery pages fit phone widths and all login roles expose recovery links",
+      "Authentication fails closed during a database verification outage and recovers",
+      "Database-backed recovery throttle rejects repeated requests"
+    ],
+    "errors": [],
+    "scope": "Isolated real PostgreSQL, MinIO, API and headless Chromium. Email captured to a private local file; no external mail sent."
+  },
+  "identity": {
+    "passed": [
+      "Unverified providers land on verification; strict server gates reject clinical requests",
+      "Accounts created during an older deployment are adopted without losing their existing proof",
+      "Administrator access is CLI-only; last-admin revocation is refused and old sessions invalidate",
+      "Dedicated admin sign-in redirects guests and authenticates only privileged accounts",
+      "All three roles verify through captured mail and browser confirmation; hashes persist without URL secrets",
+      "Expired, malformed and replaced-email links cannot verify an address; simultaneous use has one winner",
+      "Providers can update license details; invalid and stale edits are refused",
+      "Proof uploads validate bytes, wrap keys, isolate owners and preserve optimistic concurrency",
+      "Doctor submits through UI; administrator downloads proof, records approval and unlocks dashboard",
+      "Legacy unreadable hospital proof is replaced; rejection reasons are visible and resubmission is supported",
+      "Concurrent review decisions serialize; stale decisions and self-review are denied",
+      "Replacing approved proof immediately removes approval and gates clinical access; review history remains",
+      "Portfolio mode preserves dashboard access while accurately reporting unverified review state",
+      "Review and verification pages remain usable at phone and tablet widths; filters and empty states work",
+      "Verification request throttles persist in the database"
+    ],
+    "errors": [],
+    "scope": "Strict approval mode tested against isolated real PostgreSQL/MinIO/API and headless Chromium. Email captured locally and deleted; no external email sent."
+  },
+  "dashboardUi": {
+    "base": "http://localhost:5177",
+    "verifiedAt": "2026-11-06T21:25:02.134Z",
+    "results": [
+      "patient: shared branding, typography and navigation",
+      "patient: switching a long view resets scrolling; AI controls are labelled",
+      "patient: collapsed sidebar keeps logo and labelled controls",
+      "patient: every tab fits desktop and phone",
+      "patient: mobile focus trap, Escape and inert background",
+      "patient: themes persist and logo stays visible",
+      "doctor: shared branding, typography and navigation",
+      "doctor: switching a long view resets scrolling; AI controls are labelled",
+      "doctor: collapsed sidebar keeps logo and labelled controls",
+      "doctor: every tab fits desktop and phone",
+      "doctor: mobile focus trap, Escape and inert background",
+      "doctor: themes persist and logo stays visible",
+      "hospital: shared branding, typography and navigation",
+      "hospital: switching a long view resets scrolling; AI controls are labelled",
+      "hospital: collapsed sidebar keeps logo and labelled controls",
+      "hospital: every tab fits desktop and phone",
+      "hospital: mobile focus trap, Escape and inert background",
+      "hospital: themes persist and logo stays visible",
+      "All three roles use identical core design tokens",
+      "Homepage, authentication and SVG assets use the new identity"
+    ],
+    "errors": [],
+    "designTokens": [
+      {
+        "font": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+        "accent": "#84416c",
+        "canvas": "rgb(247, 246, 244)",
+        "sidebar": "rgb(253, 252, 251)",
+        "width": "252px",
+        "cardRadius": "12px"
+      },
+      {
+        "font": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+        "accent": "#84416c",
+        "canvas": "rgb(247, 246, 244)",
+        "sidebar": "rgb(253, 252, 251)",
+        "width": "252px",
+        "cardRadius": "12px"
+      },
+      {
+        "font": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+        "accent": "#84416c",
+        "canvas": "rgb(247, 246, 244)",
+        "sidebar": "rgb(253, 252, 251)",
+        "width": "252px",
+        "cardRadius": "12px"
+      }
+    ],
+    "scope": "Populated UI fixtures isolate styling, navigation, scrolling and accessibility checks at six widths. The real-stack care-driver separately verifies actual workflows."
+  },
+  "dashboardUx": {
+    "base": "http://localhost:5177",
+    "verifiedAt": "2026-11-06T21:24:53.559Z",
+    "results": [
+      "patient: failed or incomplete responses recover without false counts; 401 offers sign-in",
+      "doctor: failed or incomplete responses recover without false counts; 401 offers sign-in",
+      "hospital: failed or incomplete responses recover without false counts; 401 offers sign-in",
+      "Patient overview prioritizes requests, offers booking, and explains appointment state",
+      "Patient sees access reasons and can retry a failed document detail lookup",
+      "patient: record search, type/date filters, reset, and visible actions",
+      "doctor: record search, type/date filters, reset, and visible actions",
+      "Doctor can search with Enter, choose records, give a reason, and submit",
+      "Patient and doctor overviews stay usable with populated data in light/dark and phone/tablet/desktop"
+    ],
+    "errors": [],
+    "scope": "Controlled UI fixtures cover new interactions and injected service failures. Real workflows are verified by care-driver.mjs."
+  },
+  "homepage": {
+    "base": "http://localhost:5177",
+    "verifiedAt": "2026-11-06T21:25:14.729Z",
+    "results": [
+      "20 homepage links individually exercised",
+      "Every visible homepage link is clicked and reaches its destination",
+      "Mobile menu closes on outside click, keyboard departure, Escape and logo click",
+      "Mobile menu state resets when crossing the desktop breakpoint",
+      "Homepage logo returns to top and registration starts at the top on mobile",
+      "All three preview tabs fit internally at 13 phone/tablet/desktop widths",
+      "Wide desktop uses the screen with a shorter hero and earlier role cards",
+      "Preview keyboard selection and accessible state stay synchronized",
+      "Reduced-motion preference and skip-to-content focus work",
+      "All 12 logo choices, four palettes, theme toggle and shortlist work"
+    ],
+    "errors": []
+  },
+  "checks": {
+    "lint": "passed",
+    "typescript": "passed",
+    "build": "passed",
+    "diff": "passed"
+  },
+  "limits": [
+    "Scheduled cleanup configuration is verified separately during deployment; its future scheduled invocation has not been observed.",
+    "Ordinary dashboard layout suites use explicit API fixtures; real normal-account workflows are separately exercised in the care/security/identity suites.",
+    "Initial guest browser run used stale selectors after a successful live answer; corrected release suite passed."
+  ]
+}

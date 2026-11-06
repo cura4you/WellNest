@@ -85,3 +85,7 @@ If the local Ollama models are not installed, run the same care suite with `CARE
 ## Identity and provider approval
 
 `npm run test:e2e:identity` tests verification links, administrator sign-in/permissions, license edits, encrypted proof upload/download/replacement, rejection/resubmission, historical evidence, concurrent/stale decisions, strict clinical-access gates, portfolio mode and responsive review pages. It uses real isolated local services and private mail capture, not external delivery. It shares ports 3003/5179 with the security suite; run them sequentially. See IDENTITY_REVIEW.md.
+
+## Guest showcase
+
+`npm run test:demo:api` checks the real isolated HTTP/database lifecycle without external services. `DEMO_E2E_LIVE_AI=true npm run test:e2e:demo` drives the three guest roles and live AI through Chromium; omitting the flag skips provider calls. It shares ports 3003/5179 with security/identity tests and runs without local object storage or Ollama. Normal care workflows remain separate. See GUEST_DEMO.md.

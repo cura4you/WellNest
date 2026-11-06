@@ -279,6 +279,10 @@ An optional read-only agent can gather evidence across several document lookups 
 
 Run `npm run test:e2e:agent` for live local model/API/browser evaluation and `npm test` for deterministic agent/tool tests. These use injected data/model fixtures and do not replace testing against the real database and model.
 
+## Guest showcase
+
+Visitors can use **Try live demo** on the homepage or open `/demo` to explore populated patient, doctor and hospital dashboards. Each visitor gets a separate, expiring workspace with role switching and reset. See [GUEST_DEMO.md](GUEST_DEMO.md) for limits, isolation and verification.
+
 ## 🧭 Project Status
 
 The Patient, Doctor, and Hospital dashboards share the plum/berry TypeScript design system in `src/dashboard-v2/`. Patient tabs were migrated first; Doctor and Hospital now use matching cards, lists, forms, and notifications throughout. The shared emergency access screen uses the same visual system and describes the actual consented, audited access flow. Patient Health Vitals now use patient-entered measurements, appointments support patient requests and provider scheduling across all roles, and notification preferences persist per account. See [CARE_WORKFLOWS.md](CARE_WORKFLOWS.md) for permissions, setup and browser verification.
