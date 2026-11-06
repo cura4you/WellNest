@@ -174,9 +174,9 @@ router.post('/chat', requireAuth, async (req, res) => {
     const { rows: historyRows } = await pool.query(
       `SELECT role, content FROM chat_messages WHERE session_id = $1
        ORDER BY created_at DESC LIMIT $2`,
-      [sessionId, HISTORY_LIMIT]
+      [sessionId, req.demoWorkspaceId?6:HISTORY_LIMIT]
     );
-    const history = historyRows.reverse().map((row) => ({ ...row, content: row.content.slice(-8000) })); // chronological order
+    const history = historyRows.reverse().map((row) => ({ ...row, content: row.content.slice(req.demoWorkspaceId?-2000:-8000) })); // chronological order
 
     res.setHeader('Content-Type', 'application/x-ndjson; charset=utf-8');
     res.setHeader('Cache-Control', 'no-cache');
@@ -207,7 +207,7 @@ router.post('/chat', requireAuth, async (req, res) => {
       status(isConversationalMessage(message) ? 'Preparing a response…' : 'Looking through your records…');
       agent = await runAgentLoop({
         records, history: history.map(({ role, content }) => ({ role, content })),
-        signal: controller.signal, onStatus: status, maxSteps: CHAT_AGENT_MAX_STEPS, timeoutMs: AI_TIMEOUT_MS,
+        signal: controller.signal, onStatus: status, maxSteps: req.demoWorkspaceId?2:CHAT_AGENT_MAX_STEPS, timeoutMs: AI_TIMEOUT_MS,
         complete: async (messages, tools, signal) => {
           const response = await callAIChatCompletion({
             url: `${AI_BASE_URL}/chat/completions`,
@@ -288,7 +288,7 @@ router.post('/chat', requireAuth, async (req, res) => {
         buildBody: (model) => ({
           model,
           messages: upstreamMessages,
-          max_tokens: 1500,
+          max_tokens: req.demoWorkspaceId?700:1500,
           temperature: 0.3,
           stream: true,
         }),

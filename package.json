@@ -22,7 +22,8 @@
     "test:e2e:security": "node .claude/skills/run-medivault/security-driver.mjs",
     "keys:rewrap": "node scripts/rewrap-document-keys.mjs",
     "admin": "node scripts/admin.mjs",
-    "test:e2e:identity": "node .claude/skills/run-medivault/identity-driver.mjs"
+    "test:e2e:identity": "node .claude/skills/run-medivault/identity-driver.mjs",
+    "test:demo:api": "node server/integration/demo.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1131.0",

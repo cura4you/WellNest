@@ -3,6 +3,7 @@
 // AI_API_KEY/AI_TIMEOUT_MS pattern already used by the /api/ai/summarize/:id
 // endpoint in app.js, but with its own EMBEDDING_* env vars — a chat-completions
 // endpoint doesn't necessarily also serve embeddings.
+import { getDemoContext } from './demoContext.js';
 import { pool } from './db.js';
 import { downloadFile } from './storage.js';
 import { decryptFile } from './crypto.js';
@@ -26,7 +27,7 @@ const AI_FALLBACK_MODEL = process.env.AI_FALLBACK_MODEL || '';
 const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS) || 60000;
 
 export function isEmbeddingConfigured() {
-  return Boolean(EMBEDDING_BASE_URL && EMBEDDING_MODEL);
+  return Boolean(EMBEDDING_BASE_URL && EMBEDDING_MODEL) || Boolean(getDemoContext());
 }
 
 /**
@@ -201,7 +202,7 @@ export async function indexDocument(documentId) {
   const chunks = chunkText(text);
   if (chunks.length === 0) return { chunkCount: 0, skipped: 'Extracted text was empty after chunking.' };
 
-  const embeddings = await embedBatch(chunks);
+  const embeddings = getDemoContext() ? chunks.map(()=>null) : await embedBatch(chunks);
 
   const client = await pool.connect();
   try {
@@ -211,7 +212,7 @@ export async function indexDocument(documentId) {
       await client.query(
         `INSERT INTO document_chunks (document_id, chunk_index, content, embedding)
          VALUES ($1, $2, $3, $4::vector)`,
-        [documentId, i, chunks[i], toVectorLiteral(embeddings[i])]
+        [documentId, i, chunks[i], embeddings[i] ? toVectorLiteral(embeddings[i]) : null]
       );
     }
     await client.query('COMMIT');
@@ -239,6 +240,10 @@ export async function indexDocument(documentId) {
 export async function retrieveRelevantChunks(query, documentIds, topK = RAG_TOP_K, signal) {
   if (documentIds.length === 0) return [];
 
+  if(getDemoContext()){
+    const {rows}=await pool.query(`SELECT document_id,chunk_index,content,0 AS distance FROM document_chunks WHERE document_id=ANY($1::uuid[]) ORDER BY ts_rank_cd(to_tsvector('english',content),websearch_to_tsquery('english',$2)) DESC,document_id,chunk_index LIMIT $3`,[documentIds,query,topK]);
+    return rows.map(r=>({documentId:r.document_id,chunkIndex:r.chunk_index,content:r.content,distance:0}));
+  }
   const [queryEmbedding] = await embedBatch([query], signal);
   const { rows } = await pool.query(
     `SELECT document_id, chunk_index, content, embedding <=> $1::vector AS distance

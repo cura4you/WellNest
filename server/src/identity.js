@@ -32,6 +32,7 @@ async function ensureProvider(req, _res, next) {
 }
 router.use((req, res, next) => { req.body ??= {}; res.set('Cache-Control','no-store'); next(); });
 router.get('/account-status', requireAuth, async (req, res) => {
+  if(req.demoWorkspaceId)return res.json({email:'Guest workspace',emailVerified:false,isAdmin:false,emailAvailable:false,approvalRequired:false,application:null,demo:true});
   const user = (await pool.query('SELECT email,email_verified,is_admin FROM users WHERE id=$1', [req.userId])).rows[0];
   let app = (await pool.query(`${applicationSql} WHERE a.user_id=$1`, [req.userId])).rows[0];
   if (!app && ['doctor','hospital'].includes(req.userRole)) {
@@ -151,7 +152,7 @@ router.get('/credential-proofs/:id/download', requireAuth, async (req, res) => {
 router.get('/admin/applications', requireAuth, requireAdmin, async (req, res) => {
   const status = req.query.status || 'pending';
   if (!['draft','pending','approved','rejected','all'].includes(status)) throw fault(400,'Invalid review status.');
-  const rows = await pool.query(`${applicationSql} WHERE ($1='all' OR a.status=$1) ORDER BY a.updated_at DESC LIMIT 200`,[status]);
+  const rows = await pool.query(`${applicationSql} WHERE u.demo_workspace_id IS NULL AND ($1='all' OR a.status=$1) ORDER BY a.updated_at DESC LIMIT 200`,[status]);
   res.json({ applications:camelRows(rows.rows) });
 });
 router.get('/admin/applications/:id/events', requireAuth, requireAdmin, async (req, res) => {

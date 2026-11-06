@@ -15,6 +15,7 @@ import chatRouter from './chat.js';
 import careRouter from './care.js';
 import securityRouter from './security.js';
 import identityRouter from './identity.js';
+import demoRouter,{demoCleanupHandler} from './demo.js';
 import { checkDemoIdentifiers } from './demoAccess.js';
 import { DEMO_LIMITS } from './demoPolicy.js';
 import { proofMime } from './identityValidation.js';
@@ -73,6 +74,8 @@ app.use((req, _res, next) => {
 
 app.use('/auth', securityRouter);
 app.use('/auth', identityRouter);
+app.use('/demo',demoRouter);
+app.get('/api/internal/demo-cleanup',demoCleanupHandler);
 
 // ════════════════════════════════════════
 //  Health
@@ -1091,7 +1094,7 @@ RULES:
             : `Analyze this medical document named "${doc.original_filename}" (${mimeType}).\n\nDocument content:\n"""\n${extractedText}\n"""\n\nProvide a comprehensive analysis in the format specified above, based on the document content.`,
         },
       ],
-      max_tokens: 1500,
+      max_tokens: req.demoWorkspaceId?700:1500,
       temperature: 0.7,
     });
 
