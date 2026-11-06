@@ -216,5 +216,8 @@ export function secureAccountAction(action, token, body = {}) {
 }
 
 export function demoAction(action, body = {}, token = '') {
-  return request(`/demo/${action}`, { method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : {}, body: JSON.stringify(body), signal: AbortSignal.timeout(30000) });
+  return request(`/demo/${action}`, { method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : {}, body: JSON.stringify(body), signal: AbortSignal.timeout(30000) }).catch(error => {
+    if (!error.status || error.status >= 500) { const friendly = new Error('The guest demo is temporarily unavailable. Please retry in a moment.'); friendly.status = error.status; throw friendly; }
+    throw error;
+  });
 }
