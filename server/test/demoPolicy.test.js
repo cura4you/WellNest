@@ -11,3 +11,7 @@ test('guest async contexts stay isolated during concurrent requests',async()=>{
   const values=await Promise.all(['one','two'].map(workspaceId=>runDemoContext({workspaceId},async()=>{await new Promise(r=>setTimeout(r,5));return getDemoContext().workspaceId;})));
   assert.deepEqual(values,['one','two']);assert.equal(getDemoContext(),null);assert.ok(DEMO_LIMITS.uploadBytes<=1024*1024);
 });
+test('sample PDFs have correct object offsets and escape document text',async()=>{
+  const {samplePdf}=await import('../src/demoPdf.js');const pdf=samplePdf('FICTIONAL record (sample) \\ data. HbA1c: 5.6%.').toString();assert.ok(pdf.startsWith('%PDF-1.4'));assert.ok(pdf.includes('\\(sample\\)'));
+  const xref=Number(pdf.match(/startxref\n(\d+)/)[1]);assert.equal(pdf.slice(xref,xref+4),'xref');for(const match of pdf.matchAll(/(\d{10}) 00000 n/g)){const offset=Number(match[1]);assert.match(pdf.slice(offset,offset+9),/^[1-5] 0 obj/);}
+});

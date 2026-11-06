@@ -1,6 +1,8 @@
 // Shared dashboard shell for Patient, Doctor, and Hospital roles.
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import DemoToolbar from '../pages/demo/DemoToolbar';
 import AccountStatusBanner from '../pages/identity/AccountStatusBanner';
 import BrandLogo from '../components/brand/BrandLogo';
 import { useTheme } from '../theme/useTheme';
@@ -79,6 +81,7 @@ export function DashboardShell<V extends string>({
   children,
 }: DashboardShellProps<V>) {
   const { theme, toggleTheme } = useTheme();
+  const {user}=useAuth() as {user:{isGuest?:boolean}|null};
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const sidebarRef = useRef<HTMLElement>(null);
@@ -212,15 +215,15 @@ export function DashboardShell<V extends string>({
               )}
             </div>
             <div className="mv-sidebar-actions">
-              <Link className="mv-link-btn" to="/account/verification" aria-label="Account verification" title="Account verification"><ShieldIcon size={14} />{!collapsed && <span>Verification</span>}</Link>
-              <Link className="mv-link-btn" to="/account/security" aria-label="Account security" title="Account security"><ShieldIcon size={14} />{!collapsed && <span>Account security</span>}</Link>
+              {!user?.isGuest && <><Link className="mv-link-btn" to="/account/verification" aria-label="Account verification" title="Account verification"><ShieldIcon size={14} />{!collapsed && <span>Verification</span>}</Link>
+              <Link className="mv-link-btn" to="/account/security" aria-label="Account security" title="Account security"><ShieldIcon size={14} />{!collapsed && <span>Account security</span>}</Link></>}
               <button type="button" className="mv-link-btn" onClick={onHome} title={collapsed ? 'Home' : undefined}>
                 <HomeIcon size={14} />
                 {!collapsed && <span>Home</span>}
               </button>
-              <button type="button" className="mv-link-btn is-logout" onClick={onLogout} title={collapsed ? 'Logout' : undefined}>
+              <button type="button" className="mv-link-btn is-logout" onClick={onLogout} title={collapsed ? (user?.isGuest?'Exit demo':'Logout') : undefined}>
                 <LogoutIcon size={14} />
-                {!collapsed && <span>Logout</span>}
+                {!collapsed && <span>{user?.isGuest?'Exit demo':'Logout'}</span>}
               </button>
             </div>
           </div>
@@ -327,7 +330,7 @@ export function DashboardShell<V extends string>({
             </div>
           </div>
 
-          <main className="mv-content" id="dashboard-content"><AccountStatusBanner />
+          <main className="mv-content" id="dashboard-content"><DemoToolbar /><AccountStatusBanner />
             {children}</main>
         </div>
       </div>

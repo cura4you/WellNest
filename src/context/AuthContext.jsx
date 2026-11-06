@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { loginUser, registerUser, validateStoredAuthSession, secureAccountAction } from '../services/authApi';
+import { loginUser, registerUser, validateStoredAuthSession, secureAccountAction, demoAction } from '../services/authApi';
 import { AuthContext } from './authContextObject';
 
 const STORAGE_KEY = 'medivault.auth';
@@ -62,6 +62,7 @@ export function AuthProvider({ children }) {
       setUser(result.user);
       setToken(result.token);
       persistSession(result.user, result.token);
+      sessionStorage.removeItem('medivault.pre-demo-auth');
       return result.user;
     } catch (err) {
       const nextError = err.message || 'Login failed.';
@@ -81,6 +82,7 @@ export function AuthProvider({ children }) {
         setUser(result.user);
         setToken(result.token);
         persistSession(result.user, result.token);
+      sessionStorage.removeItem('medivault.pre-demo-auth');
       }
       return result;
     } catch (err) {
@@ -92,9 +94,47 @@ export function AuthProvider({ children }) {
     }
   }, [persistSession]);
 
+  const acceptSession = useCallback((session) => {
+    setUser(session.user); setToken(session.token); persistSession(session.user, session.token);
+    return session.user;
+  }, [persistSession]);
+
+  const enterDemo = useCallback(async (role) => {
+    setLoading(true); setError('');
+    try {
+      let session;
+      if (user?.isGuest && token) {
+        try { session = await demoAction('switch', { role }, token); }
+        catch (err) { if (![401,409].includes(err.status)) throw err; }
+      }
+      if (!session) session = await demoAction('start', { role });
+      if (user && token && !user.isGuest) sessionStorage.setItem('medivault.pre-demo-auth', JSON.stringify({ user, token }));
+      return acceptSession(session);
+    } catch (err) { setError(err.message); throw err; } finally { setLoading(false); }
+  }, [user, token, acceptSession]);
+
+  const resetDemo = useCallback(async () => {
+    setLoading(true);setError('');
+    try { return acceptSession(await demoAction('reset', {}, token)); }
+    catch (err) { setError(err.message);throw err; } finally { setLoading(false); }
+  }, [token, acceptSession]);
+
+  const exitDemo = useCallback(async () => {
+    setLoading(true);setError('');
+    try {
+      try { await demoAction('end', {}, token); } catch (err) { if (err.status !== 401) throw err; }
+      let previous;
+      try { previous=JSON.parse(sessionStorage.getItem('medivault.pre-demo-auth')||'null'); } catch { /* No prior ordinary session. */ }
+      sessionStorage.removeItem('medivault.pre-demo-auth');
+      if (previous?.token && previous?.user && !previous.user.isGuest) acceptSession(previous); else clearSession();
+      return true;
+    } catch (err) { setError(err.message);throw err; } finally { setLoading(false); }
+  }, [token, acceptSession, clearSession]);
+
   const logout = useCallback(async () => {
     setLogoutError('');
     try {
+      if (user?.isGuest) return await exitDemo();
       await secureAccountAction('logout', token);
       clearSession();
       return true;
@@ -103,7 +143,7 @@ export function AuthProvider({ children }) {
       setLogoutError('Unable to sign out on the server. Check your connection and try again.');
       return false;
     }
-  }, [clearSession, token]);
+  }, [clearSession, token, user, exitDemo]);
 
   const updateSessionProfile = useCallback((profile) => {
     if (!user) return;
@@ -128,9 +168,10 @@ export function AuthProvider({ children }) {
       logout,
       clearError,
       clearLocalSession: clearSession,
+      enterDemo, resetDemo, exitDemo,
       updateSessionProfile,
     }),
-    [user, token, initializing, loading, error, login, register, logout, clearError, clearSession, updateSessionProfile]
+    [user, token, initializing, loading, error, login, register, logout, clearError, clearSession, updateSessionProfile, enterDemo, resetDemo, exitDemo]
   );
 
   return <AuthContext.Provider value={value}>{logoutError && <div className="auth-session-error" role="alert">{logoutError}<button type="button" onClick={() => setLogoutError('')}>Dismiss</button></div>}{children}</AuthContext.Provider>;

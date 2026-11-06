@@ -115,7 +115,7 @@ export default function LandingPage() {
           <button className="home-menu-toggle" type="button" ref={menuButton} aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="home-navigation" onClick={() => setMenuOpen(!menuOpen)}><Icon name={menuOpen ? 'close' : 'menu'} size={24} /></button>
           <nav className={`home-navigation${menuOpen ? ' is-open' : ''}`} id="home-navigation" aria-label="Main navigation">
             <div className="home-nav-links"><a href="#flow" onClick={closeMenu}>How it works</a><a href="#patients" onClick={closeMenu}>For patients</a><a href="#providers" onClick={closeMenu}>For providers</a></div>
-            <div className="home-nav-actions">{isAuthenticated ? <Link className="home-button home-button-primary" to={dashboardPath}>Go to dashboard <Icon name="arrow" size={16} /></Link> : <><Link className="home-sign-in" to="/login">Sign in</Link><Link className="home-button home-button-primary home-nav-cta" to="/register">Create an account <Icon name="arrow" size={16} /></Link></>}</div>
+            <div className="home-nav-actions">{isAuthenticated ? <Link className="home-button home-button-primary" to={dashboardPath}>Go to dashboard <Icon name="arrow" size={16} /></Link> : <><Link className="home-sign-in" to="/login">Sign in</Link><Link className="home-button home-button-primary home-nav-cta" to="/demo">Try live demo <Icon name="arrow" size={16} /></Link></>}</div>
           </nav>
         </div>
       </header>
@@ -125,7 +125,8 @@ export default function LandingPage() {
             <div className="home-eyebrow"><span /> YOUR HEALTH, CONNECTED</div>
             <h1 id="home-title">Your health records.<br /><span>One clear place.</span></h1>
             <p>Less searching. More understanding. Keep your medical records together, connect with your care team, and make sense of what comes next.</p>
-            <div className="home-hero-actions"><Link className="home-button home-button-primary" to={isAuthenticated ? dashboardPath : '/register'}>{isAuthenticated ? 'Open your dashboard' : 'Create an account'}<Icon name="arrow" size={18} /></Link><a className="home-text-link" href="#flow">See how it works <span>↗</span></a></div>
+            <div className="home-hero-actions"><Link className="home-button home-button-primary" to={isAuthenticated ? dashboardPath : '/demo'}>{isAuthenticated ? 'Open your dashboard' : 'Try live demo'}<Icon name="arrow" size={18} /></Link><a className="home-text-link" href="#flow">See how it works <span>↗</span></a></div>
+            {isAuthenticated ? <p className="home-demo-registration"><Link to="/demo">Explore a guest workspace</Link></p> : <p className="home-demo-registration">Prefer your own workspace? <Link to="/register">Create an account</Link></p>}
             <div className="home-hero-assurance"><Icon name="shield" size={17} /><span>Your information belongs in your hands.</span></div>
           </div>
           <WorkspacePreview />

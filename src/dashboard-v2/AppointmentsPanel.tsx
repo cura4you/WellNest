@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 import { careRequest, localDateTime, type Appointment } from '../services/careApi';
 const emptyForm = () => ({ participantEmail: '', startsAt: localDateTime(new Date(Date.now() + 86400000)), durationMinutes: 30, reason: '', location: '' });
 export function AppointmentsPanel({ role }: { role: 'patient' | 'doctor' | 'hospital' }) {
+  const {user}=useAuth() as {user:{isGuest?:boolean,demo?:{contacts:{role:string,email:string,name:string}[]}}|null};
   const [items, setItems] = useState<Appointment[]>([]), [form, setForm] = useState(emptyForm);
   const [editing, setEditing] = useState<Appointment | null>(null), [filter, setFilter] = useState('upcoming');
   const [loading, setLoading] = useState(true), [busy, setBusy] = useState(false);
@@ -27,8 +29,9 @@ export function AppointmentsPanel({ role }: { role: 'patient' | 'doctor' | 'hosp
     }}>
       <h2 className="mv-card-title">{editing ? 'Reschedule appointment' : role === 'patient' ? 'Request an appointment' : 'Schedule an appointment'}</h2>
       <p className="mv-care-note">Use an existing account’s email. Patient requests require provider confirmation and reserve that time until cancelled. Times are shown in {Intl.DateTimeFormat().resolvedOptions().timeZone}. Scheduling does not grant access to medical records.</p>
+      {user?.isGuest && <div className="mv-role-actions" aria-label="Choose a demo participant">{user.demo?.contacts.filter(c=>role==='patient'?c.role!=='patient':c.role==='patient').map(c=><button className="mv-card-link" type="button" key={c.role} disabled={Boolean(editing)} onClick={()=>setForm({...form,participantEmail:c.email})}>Use {c.name}</button>)}</div>}
       <div className="mv-form-grid">
-        <div className="mv-form-field"><label className="mv-form-label" htmlFor="participantEmail">{role === 'patient' ? 'Doctor or hospital email' : 'Patient email'}</label><input className="mv-form-input" id="participantEmail" type="email" required disabled={Boolean(editing)} value={form.participantEmail} onChange={(e) => setForm({ ...form, participantEmail: e.target.value })} /></div>
+        <div className="mv-form-field"><label className="mv-form-label" htmlFor="participantEmail">{role === 'patient' ? 'Doctor or hospital email' : 'Patient email'}</label><input className="mv-form-input" id="participantEmail" list={user?.isGuest?(role==='patient'?'demo-provider-emails':'demo-patient-emails'):undefined} type="email" required disabled={Boolean(editing)} value={form.participantEmail} onChange={(e) => setForm({ ...form, participantEmail: e.target.value })} /></div>
         <div className="mv-form-field"><label className="mv-form-label" htmlFor="appointmentTime">Appointment time</label><input className="mv-form-input" id="appointmentTime" type="datetime-local" required min={localDateTime()} value={form.startsAt} onChange={(e) => setForm({ ...form, startsAt: e.target.value })} /></div>
         <div className="mv-form-field"><label className="mv-form-label" htmlFor="appointmentDuration">Duration (minutes)</label><input className="mv-form-input" id="appointmentDuration" type="number" min={15} max={120} required value={form.durationMinutes} onChange={(e) => setForm({ ...form, durationMinutes: Number(e.target.value) })} /></div>
         <div className="mv-form-field"><label className="mv-form-label" htmlFor="appointmentLocation">Location (optional)</label><input className="mv-form-input" id="appointmentLocation" maxLength={300} value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} /></div>

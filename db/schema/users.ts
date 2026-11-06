@@ -1,3 +1,4 @@
+import { demoWorkspaces } from './demo';
 import { boolean, integer, pgEnum, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
 
 export const roleEnum = pgEnum('role', ['patient', 'doctor', 'hospital']);
@@ -9,6 +10,7 @@ export const users = pgTable('users', {
   role: roleEnum('role').notNull(),
   emailVerified: boolean('email_verified').default(false).notNull(),
   isAdmin: boolean('is_admin').default(false).notNull(),
+  demoWorkspaceId: uuid('demo_workspace_id').references(()=>demoWorkspaces.id),
   authVersion: integer('auth_version').default(0).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),

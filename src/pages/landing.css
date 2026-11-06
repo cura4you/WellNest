@@ -345,3 +345,5 @@
   .home-panel-heading > span { max-width: 90px; text-align: right; }
   .home-workspace-foot { flex-wrap: wrap; }
 }
+
+.home-hero-copy .home-demo-registration {font-size:12px;line-height:1.7;margin:18px 0 0;}.home-demo-registration a {color:var(--home-accent,#773f67);text-decoration:underline;text-underline-offset:3px;}

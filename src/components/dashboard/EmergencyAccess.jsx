@@ -47,7 +47,7 @@ export default function EmergencyAccess({ onViewDocument }) {
           <p>Access lasts 24 hours, requires the patient’s emergency consent, and is recorded in the audit log.</p>
           <form onSubmit={initiateEmergency} className="mv-form-field">
             <label className="mv-form-label" htmlFor="emergencyPatientEmail">Patient Email</label>
-            <input id="emergencyPatientEmail" type="email" className="mv-form-input" value={patientEmail}
+            <input id="emergencyPatientEmail" list="demo-patient-emails" type="email" className="mv-form-input" value={patientEmail}
               onChange={(event) => setPatientEmail(event.target.value)} placeholder="patient@example.com" required />
             <button type="submit" className="mv-btn mv-btn-emergency" disabled={busy || !patientEmail.trim()}>
               {busy ? 'Requesting access…' : 'Start emergency access'}

@@ -3,6 +3,7 @@ import { encryptFile } from './crypto.js';
 import { uploadFile } from './storage.js';
 import { runDemoContext } from './demoContext.js';
 import { DEMO_LIMITS,demoRole } from './demoPolicy.js';
+import { samplePdf } from './demoPdf.js';
 import { issueToken,makeSafeUser,camelRow } from './utils.js';
 const fault=(status,message)=>Object.assign(new Error(message),{status});
 export async function deleteDemoData(client,workspaceIds){
@@ -36,16 +37,16 @@ async function seed(client,workspace){
   const hospital=(await client.query('INSERT INTO hospitals(user_id,hospital_name,license_number,phone,address) VALUES($1,$2,$3,$4,$5) RETURNING id',[h.id,h.name,`DEMO-H-${id}-g${generation}`,'2125550100','100 Sample Lane, Demo City'])).rows[0].id;
   await client.query('INSERT INTO provider_applications(user_id) VALUES($1),($2)',[d.id,h.id]);
   const templates=[
-    {name:'Sample blood test results.txt',type:'lab_report',days:-7,text:'FICTIONAL PORTFOLIO RECORD. Patient: Jamie Morgan. Laboratory report. HbA1c: 5.6%. Hemoglobin: 13.8 g/dL. LDL cholesterol: 96 mg/dL. These are synthetic values for demonstrating record retrieval, not an actual patient result.'},
-    {name:'Sample prescription.txt',type:'prescription',days:-14,text:'FICTIONAL PORTFOLIO RECORD. Patient: Jamie Morgan. Sample prescription: Vitamin D3 1000 IU, one capsule daily. This is a synthetic example for the application demonstration, not a real prescription or a treatment recommendation.'},
-    {name:'Sample annual health review.txt',type:'diagnosis',days:-30,text:'FICTIONAL PORTFOLIO RECORD. Patient: Jamie Morgan. Annual health review. Recorded blood pressure: 118/76 mmHg. Pulse: 72 bpm. No allergies recorded in this fictional visit. Follow-up recorded for six months. This document is synthetic sample content.'},
+    {name:'Sample blood test results.pdf',type:'lab_report',days:-7,text:'FICTIONAL PORTFOLIO RECORD. Patient: Jamie Morgan. Laboratory report. HbA1c: 5.6%. Hemoglobin: 13.8 g/dL. LDL cholesterol: 96 mg/dL. These are synthetic values for demonstrating record retrieval, not an actual patient result.'},
+    {name:'Sample prescription.pdf',type:'prescription',days:-14,text:'FICTIONAL PORTFOLIO RECORD. Patient: Jamie Morgan. Sample prescription: Vitamin D3 1000 IU, one capsule daily. This is a synthetic example for the application demonstration, not a real prescription or a treatment recommendation.'},
+    {name:'Sample annual health review.pdf',type:'diagnosis',days:-30,text:'FICTIONAL PORTFOLIO RECORD. Patient: Jamie Morgan. Annual health review. Recorded blood pressure: 118/76 mmHg. Pulse: 72 bpm. No allergies recorded in this fictional visit. Follow-up recorded for six months. This document is synthetic sample content.'},
   ];
   const docs=[];
   for(const t of templates){
-    const text=`${t.text}\nReport date: ${sampleDate(t.days).toISOString().slice(0,10)}\n`,bytes=Buffer.from(text),encrypted=encryptFile(bytes);
+    const text=`${t.text}\nReport date: ${sampleDate(t.days).toISOString().slice(0,10)}\n`,bytes=samplePdf(text),encrypted=encryptFile(bytes);
     const object=await runDemoContext({workspaceId:id,client,seed:true},()=>uploadFile(encrypted.blob,t.name));
     const doc=(await client.query(`INSERT INTO documents(patient_id,uploaded_by_user_id,hospital_id,document_type,original_filename,mime_type,file_size_bytes,total_chunks,file_checksum_sha256,dek_wrapped,dek_iv,visit_date,description,appwrite_file_id)
-      VALUES($1,$2,$3,$4,$5,'text/plain',$6,1,$7,$8,$9,$10,'Synthetic portfolio sample',$11) RETURNING id,dek_wrapped`,[patient,h.id,hospital,t.type,t.name,bytes.length,encrypted.checksum,encrypted.dekWrapped,encrypted.dekIv,sampleDate(t.days),object])).rows[0];docs.push(doc);
+      VALUES($1,$2,$3,$4,$5,'application/pdf',$6,1,$7,$8,$9,$10,'Synthetic portfolio sample',$11) RETURNING id,dek_wrapped`,[patient,h.id,hospital,t.type,t.name,bytes.length,encrypted.checksum,encrypted.dekWrapped,encrypted.dekIv,sampleDate(t.days),object])).rows[0];docs.push(doc);
     await client.query('INSERT INTO document_chunks(document_id,chunk_index,content) VALUES($1,0,$2)',[doc.id,text]);
     await client.query("INSERT INTO audit_logs(patient_id,document_id,actor_user_id,action,status,reason) VALUES($1,$2,$3,'upload','success','Sample record added to your guest workspace')",[patient,doc.id,h.id]);
   }

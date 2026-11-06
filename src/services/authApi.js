@@ -214,3 +214,7 @@ export function secureAccountAction(action, token, body = {}) {
   }
   return request(`/auth/${action}`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: JSON.stringify(body), signal: AbortSignal.timeout(15000) });
 }
+
+export function demoAction(action, body = {}, token = '') {
+  return request(`/demo/${action}`, { method: 'POST', headers: token ? { Authorization: `Bearer ${token}` } : {}, body: JSON.stringify(body), signal: AbortSignal.timeout(30000) });
+}

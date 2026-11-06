@@ -150,6 +150,7 @@ export default function UploadModal({ onUpload, onClose, busy }) {
                 <input
                   id="uploadPatientEmail"
                   placeholder="patient@example.com"
+                  list="demo-patient-emails"
                   value={form.patientId}
                   onChange={(e) => setForm((p) => ({ ...p, patientId: e.target.value }))}
                 />

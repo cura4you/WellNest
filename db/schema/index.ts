@@ -6,3 +6,4 @@ export * from './chat';
 
 export * from './security';
 export * from './identity';
+export * from './demo';

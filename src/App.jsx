@@ -1,6 +1,8 @@
 import { useLayoutEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import DemoEntryPage from './pages/demo/DemoEntryPage';
+import DashboardRoute from './pages/dashboard/DashboardRoute';
 import LandingPage from './pages/LandingPage';
 import ProviderGate from './pages/identity/ProviderGate';
 import AccountVerificationPage from './pages/identity/AccountVerificationPage';
@@ -16,9 +18,6 @@ import HospitalLoginPage from './pages/auth/HospitalLoginPage';
 import PatientRegisterPage from './pages/auth/PatientRegisterPage';
 import DoctorRegisterPage from './pages/auth/DoctorRegisterPage';
 import HospitalRegisterPage from './pages/auth/HospitalRegisterPage';
-import PatientDashboardPage from './pages/dashboard/PatientDashboardPage';
-import DoctorDashboardPage from './pages/dashboard/DoctorDashboardPage';
-import HospitalDashboardPage from './pages/dashboard/HospitalDashboardPage';
 
 export default function App() {
   const { pathname } = useLocation();
@@ -28,6 +27,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path="/demo" element={<DemoEntryPage />} />
 
       <Route path="/verify-email" element={<VerifyEmailPage />} />
       <Route element={<ProtectedRoute />}><Route path="/account/verification" element={<AccountVerificationPage />} /></Route>
@@ -48,13 +48,13 @@ export default function App() {
       <Route path="/register/hospital" element={<HospitalRegisterPage />} />
 
       <Route element={<ProtectedRoute allowedRole="patient" />}>
-        <Route path="/dashboard/patient" element={<PatientDashboardPage />} />
+        <Route path="/dashboard/patient" element={<DashboardRoute role="patient" />} />
       </Route>
       <Route element={<ProtectedRoute allowedRole="doctor" />}>
-        <Route element={<ProviderGate />}><Route path="/dashboard/doctor" element={<DoctorDashboardPage />} /></Route>
+        <Route element={<ProviderGate />}><Route path="/dashboard/doctor" element={<DashboardRoute role="doctor" />} /></Route>
       </Route>
       <Route element={<ProtectedRoute allowedRole="hospital" />}>
-        <Route element={<ProviderGate />}><Route path="/dashboard/hospital" element={<HospitalDashboardPage />} /></Route>
+        <Route element={<ProviderGate />}><Route path="/dashboard/hospital" element={<DashboardRoute role="hospital" />} /></Route>
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

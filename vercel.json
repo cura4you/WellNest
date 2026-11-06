@@ -16,6 +16,10 @@
       "destination": "/api/server"
     },
     {
+      "source": "/demo/(.*)",
+      "destination": "/api/server"
+    },
+    {
       "source": "/health",
       "destination": "/api/server"
     },
@@ -59,6 +63,12 @@
           "value": "no-store"
         }
       ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/internal/demo-cleanup",
+      "schedule": "0 8 * * *"
     }
   ]
 }

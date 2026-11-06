@@ -33,10 +33,11 @@ export async function checkDemoIdentifiers(req,values){
 }
 export async function guardDemoRequest(req,res){
   const url=new URL(req.originalUrl,'http://internal');
+  if(req.demoWorkspaceId && Buffer.byteLength(JSON.stringify(req.body||{}))>8192){res.status(413).json({message:'Please keep guest demo entries short.'});return false;}
   if(req.demoWorkspaceId&&!guestPathAllowed(req.method,url.pathname)){res.status(403).json({message:'This account action is not available in a guest demo.'});return false;}
   const parts=url.pathname.split('/').map(p=>decodeURIComponent(p));
   if(!await checkDemoIdentifiers(req,[parts,Object.fromEntries(url.searchParams),req.body])){res.status(404).json({message:'This resource is not part of your workspace.'});return false;}
-  if(req.demoWorkspaceId && url.pathname.startsWith('/api/')){
+  if(req.demoWorkspaceId && !['/demo/end','/demo/reset','/auth/logout'].includes(url.pathname)){
     const ai=req.method==='POST'&&(url.pathname==='/api/chat'||url.pathname.startsWith('/api/ai/summarize/'));
     if(ai&&typeof req.body?.message==='string'&&req.body.message.length>2000){res.status(400).json({message:'Keep guest AI messages within 2000 characters.'});return false;}
     const {rows}=await pool.query(`UPDATE demo_workspaces SET api_calls_used=api_calls_used+1,ai_requests_used=ai_requests_used+$2

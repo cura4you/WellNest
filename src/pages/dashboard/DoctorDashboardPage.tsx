@@ -322,7 +322,7 @@ export default function DoctorDashboardPage() {
               <form onSubmit={event => { event.preventDefault(); void handleSearchPatient(); }}>
                 <div className="mv-form-field"><label className="mv-form-label" htmlFor="patientEmail">Patient Email</label>
                   <p id="patient-email-hint" className="mv-field-hint">Use the email the patient registered with.</p>
-                  <div className="mv-role-input-action"><input id="patientEmail" name="patientEmail" type="email" required aria-describedby="patient-email-hint" className="mv-form-input" value={requestForm.patientEmail} onChange={handleRequestChange} disabled={searching || busy} placeholder="patient@example.com" />
+                  <div className="mv-role-input-action"><input id="patientEmail" list="demo-patient-emails" name="patientEmail" type="email" required aria-describedby="patient-email-hint" className="mv-form-input" value={requestForm.patientEmail} onChange={handleRequestChange} disabled={searching || busy} placeholder="patient@example.com" />
                     <button type="submit" className="mv-btn mv-btn-ghost" disabled={searching || busy}>{searching ? 'Searching…' : 'Search'}</button></div>
                 </div>
               </form>
