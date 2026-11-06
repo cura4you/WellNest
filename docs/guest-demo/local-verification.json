@@ -194,5 +194,9 @@
     "Scheduled cleanup configuration is verified separately during deployment; its future scheduled invocation has not been observed.",
     "Ordinary dashboard layout suites use explicit API fixtures; real normal-account workflows are separately exercised in the care/security/identity suites.",
     "Initial guest browser run used stale selectors after a successful live answer; corrected release suite passed."
-  ]
+  ],
+  "networkRecovery": {
+    "passed": true,
+    "scope": "Real frontend with an injected gateway failure; role chooser remains usable and creates no guest workspace."
+  }
 }

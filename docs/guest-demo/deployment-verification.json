@@ -1,0 +1,180 @@
+{
+  "verifiedAt": "2026-11-06T21:52:26.670Z",
+  "sourceCommit": "ab4ef54",
+  "deploymentId": "dpl_C8xSvfaMX4zEYnRB3pMYzFpp9iTB",
+  "url": "https://medivault-roan-six.vercel.app/demo",
+  "project": "mohammad-petiwalas-projects/medivault",
+  "migrations": [
+    "0014_guest_workspaces.sql",
+    "0015_guest_relation_boundaries.sql"
+  ],
+  "health": {
+    "ok": true
+  },
+  "configuration": {
+    "enabled": true,
+    "model": "gemini-3.1-flash-lite",
+    "sessionHours": 2,
+    "aiRequestsPerWorkspace": 4,
+    "uploadsPerWorkspace": 2,
+    "maxUploadBytes": 1048576,
+    "resetsPerWorkspace": 2,
+    "maxActiveWorkspaces": 30,
+    "dailyNewWorkspaces": 100,
+    "dailyGuestProviderCalls": 80,
+    "cleanupSchedule": [
+      {
+        "path": "/api/internal/demo-cleanup",
+        "schedule": "0 8 * * *"
+      }
+    ],
+    "cleanupSecret": "Configured as a private server secret"
+  },
+  "inventory": {
+    "guest_workspaces": 0,
+    "guest_accounts": 0,
+    "guest_files": 0,
+    "ordinary_documents": 18,
+    "guest_workspaces_started_today": 6,
+    "guest_provider_calls_today": 15
+  },
+  "candidateFunctionalCheck": {
+    "deploymentId": "dpl_2v6SyeDZUEGSUjj2xijpSqAXxwnF",
+    "report": {
+      "base": "https://medivault-lm84d5kd0-mohammad-petiwalas-projects.vercel.app",
+      "verifiedAt": "2026-11-06T21:40:45.978Z",
+      "results": [
+        "Public entry starts an isolated populated patient workspace without registration",
+        "Patient approval becomes visible after switching to doctor, with hospital data available too",
+        "A second visitor cannot search or download another workspace’s records or use admin actions",
+        "Hosted AI retrieves the synthetic lab value with a citation and summarizes its PDF",
+        "Reset renews sample accounts while retaining expiry and limits; mobile controls and exit work",
+        "Protected cleanup endpoint rejects anonymous requests and accepts its configured secret"
+      ],
+      "errors": [],
+      "passed": true,
+      "liveAi": true,
+      "additionalWorkspacesClosed": 0,
+      "scope": "Actual public guest UI/API, isolated visitor workspaces and hosted AI over synthetic records. All owned guest sessions are closed; no ordinary account is modified. Protected cleanup is exercised only if explicitly configured."
+    }
+  },
+  "finalCandidateRecoveryUi": {
+    "passed": true,
+    "guestSessionsCreated": 0,
+    "health": {
+      "ok": true
+    }
+  },
+  "public": {
+    "base": "https://medivault-roan-six.vercel.app",
+    "verifiedAt": "2026-11-06T21:50:17.791Z",
+    "results": [
+      "Guest connection failures show a recoverable visitor-facing message without provisioning",
+      "Public entry starts an isolated populated patient workspace without registration",
+      "Patient approval becomes visible after switching to doctor, with hospital data available too",
+      "A second visitor cannot search or download another workspace’s records or use admin actions",
+      "Hosted AI retrieves the synthetic lab value with a citation and summarizes its PDF",
+      "Reset renews sample accounts while retaining expiry and limits; mobile controls and exit work",
+      "Protected cleanup endpoint rejects anonymous requests and accepts its configured secret"
+    ],
+    "errors": [],
+    "passed": true,
+    "liveAi": true,
+    "additionalWorkspacesClosed": 0,
+    "scope": "Actual public guest UI/API, isolated visitor workspaces and hosted AI over synthetic records. All owned guest sessions are closed; no ordinary account is modified. Protected cleanup is exercised only if explicitly configured."
+  },
+  "dashboardUiFixtures": {
+    "base": "https://medivault-lm84d5kd0-mohammad-petiwalas-projects.vercel.app",
+    "verifiedAt": "2026-11-06T21:41:41.247Z",
+    "results": [
+      "patient: shared branding, typography and navigation",
+      "patient: switching a long view resets scrolling; AI controls are labelled",
+      "patient: collapsed sidebar keeps logo and labelled controls",
+      "patient: every tab fits desktop and phone",
+      "patient: mobile focus trap, Escape and inert background",
+      "patient: themes persist and logo stays visible",
+      "doctor: shared branding, typography and navigation",
+      "doctor: switching a long view resets scrolling; AI controls are labelled",
+      "doctor: collapsed sidebar keeps logo and labelled controls",
+      "doctor: every tab fits desktop and phone",
+      "doctor: mobile focus trap, Escape and inert background",
+      "doctor: themes persist and logo stays visible",
+      "hospital: shared branding, typography and navigation",
+      "hospital: switching a long view resets scrolling; AI controls are labelled",
+      "hospital: collapsed sidebar keeps logo and labelled controls",
+      "hospital: every tab fits desktop and phone",
+      "hospital: mobile focus trap, Escape and inert background",
+      "hospital: themes persist and logo stays visible",
+      "All three roles use identical core design tokens",
+      "Homepage, authentication and SVG assets use the new identity"
+    ],
+    "errors": [],
+    "designTokens": [
+      {
+        "font": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+        "accent": "#84416c",
+        "canvas": "rgb(247, 246, 244)",
+        "sidebar": "rgb(253, 252, 251)",
+        "width": "252px",
+        "cardRadius": "12px"
+      },
+      {
+        "font": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+        "accent": "#84416c",
+        "canvas": "rgb(247, 246, 244)",
+        "sidebar": "rgb(253, 252, 251)",
+        "width": "252px",
+        "cardRadius": "12px"
+      },
+      {
+        "font": "\"Plus Jakarta Sans\", system-ui, sans-serif",
+        "accent": "#84416c",
+        "canvas": "rgb(247, 246, 244)",
+        "sidebar": "rgb(253, 252, 251)",
+        "width": "252px",
+        "cardRadius": "12px"
+      }
+    ],
+    "scope": "Populated UI fixtures isolate styling, navigation, scrolling and accessibility checks at six widths. The real-stack care-driver separately verifies actual workflows."
+  },
+  "homepage": {
+    "base": "https://medivault-lm84d5kd0-mohammad-petiwalas-projects.vercel.app",
+    "verifiedAt": "2026-11-06T21:41:56.709Z",
+    "results": [
+      "20 homepage links individually exercised",
+      "Every visible homepage link is clicked and reaches its destination",
+      "Mobile menu closes on outside click, keyboard departure, Escape and logo click",
+      "Mobile menu state resets when crossing the desktop breakpoint",
+      "Homepage logo returns to top and registration starts at the top on mobile",
+      "All three preview tabs fit internally at 13 phone/tablet/desktop widths",
+      "Wide desktop uses the screen with a shorter hero and earlier role cards",
+      "Preview keyboard selection and accessible state stay synchronized",
+      "Reduced-motion preference and skip-to-content focus work",
+      "All 12 logo choices, four palettes, theme toggle and shortlist work"
+    ],
+    "errors": []
+  },
+  "cron": {
+    "configuration": [
+      {
+        "path": "/api/internal/demo-cleanup",
+        "schedule": "0 8 * * *"
+      }
+    ],
+    "authenticatedHandlerVerified": true,
+    "anonymousRequestRejected": true,
+    "naturalScheduledExecutionObserved": false,
+    "projectMetadata": {
+      "metadataAvailable": true,
+      "enabled": null,
+      "definitions": null
+    }
+  },
+  "limits": [
+    "Real hosted guest flows use synthetic data and close their own sessions. Inventory is a snapshot and can include legitimate active visitors after publication.",
+    "The final frontend recovery improvement was checked on its protected candidate without creating sessions; seven complete public checks passed on the final release.",
+    "Scheduled cleanup is configured and its secured handler verified; its future natural scheduled execution has not been observed.",
+    "Guest retrieval uses scoped full-text sample chunks; ordinary account pgvector retrieval is unchanged.",
+    "Headless tests use Chromium viewport emulation, not every physical device/browser."
+  ]
+}
