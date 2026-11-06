@@ -228,6 +228,7 @@ export async function requireAuth(req, res, next) {
     return res.status(401).json({ message: 'Unauthorized. Please log in.' });
   }
   req.demoWorkspaceId=session.demoWorkspaceId;
+  if(session.demoWorkspaceId)res.set('Cache-Control','no-store');
   try { if(!await guardDemoRequest(req,res))return; } catch(error) { return res.status(error.status||503).json({message:error.status?error.message:'Unable to check the workspace. Please try again.'}); }
   if (!session.demoWorkspaceId && process.env.PROVIDER_APPROVAL_REQUIRED === 'true' && req.originalUrl.startsWith('/api/') && ['doctor','hospital'].includes(session.role)) {
     try {

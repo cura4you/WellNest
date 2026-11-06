@@ -179,7 +179,7 @@ router.post('/chat', requireAuth, async (req, res) => {
     const history = historyRows.reverse().map((row) => ({ ...row, content: row.content.slice(req.demoWorkspaceId?-2000:-8000) })); // chronological order
 
     res.setHeader('Content-Type', 'application/x-ndjson; charset=utf-8');
-    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Cache-Control', req.demoWorkspaceId?'no-store':'no-cache');
     res.setHeader('X-Chat-Session-Id', sessionId);
     res.flushHeaders();
     const status = (text) => {

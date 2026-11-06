@@ -13,6 +13,7 @@ try{
   await check('Start creates three populated roles without verified identity or administrator privilege',async()=>{
     const r=await call('/demo/start',{role:'patient'});assert.equal(r.status,201,JSON.stringify(r.data));a=r.data;assert.equal(a.user.isGuest,true);assert.equal(a.user.isAdmin,false);assert.equal(a.user.emailVerified,false);assert.equal(a.user.demo.contacts.length,3);
     doctor=(await call('/demo/switch',{role:'doctor'},a.token)).data;hospital=(await call('/demo/switch',{role:'hospital'},a.token)).data;
+    const headers=await fetch(base+'/api/dashboard/patient',{headers:{Authorization:`Bearer ${a.token}`}});assert.equal(headers.headers.get('cache-control'),'no-store');
     for(const s of [a,doctor,hospital])assert.equal((await call(`/api/dashboard/${s.user.role}`,null,s.token)).status,200);
     const data=(await call('/api/dashboard/patient',null,a.token)).data;assert.equal(data.documents.length,3);assert.equal(data.accessRequests.length,1);
     b=(await call('/demo/start',{role:'patient'})).data;assert.notEqual(a.user.email,b.user.email);
