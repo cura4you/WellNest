@@ -200,6 +200,8 @@ export function makeSafeUser(userRow, profile = {}) {
     email: userRow.email,
     role: userRow.role,
     profile,
+    emailVerified: Boolean(userRow.email_verified),
+    isAdmin: Boolean(userRow.is_admin),
   };
 }
 
@@ -213,6 +215,12 @@ export async function requireAuth(req, res, next) {
   }
   if (!session) {
     return res.status(401).json({ message: 'Unauthorized. Please log in.' });
+  }
+  if (process.env.PROVIDER_APPROVAL_REQUIRED === 'true' && req.originalUrl.startsWith('/api/') && ['doctor','hospital'].includes(session.role)) {
+    try {
+      const r = await pool.query(`SELECT u.email_verified,a.status FROM users u LEFT JOIN provider_applications a ON a.user_id=u.id WHERE u.id=$1`,[session.userId]);
+      if (!r.rows[0]?.email_verified || r.rows[0]?.status !== 'approved') return res.status(403).json({ message: 'Verify your email and obtain provider approval before accessing clinical features.', code: 'PROVIDER_APPROVAL_REQUIRED' });
+    } catch { return res.status(503).json({ message: 'Unable to verify provider approval. Please try again.' }); }
   }
   req.authToken = token;
   req.userId = session.userId;

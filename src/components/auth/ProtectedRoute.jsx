@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
-export default function ProtectedRoute({ allowedRole }) {
+export default function ProtectedRoute({ allowedRole, loginPath }) {
   const { isAuthenticated, role, initializing } = useAuth();
 
   // AuthContext hasn't finished reading the stored session from localStorage
@@ -13,7 +13,7 @@ export default function ProtectedRoute({ allowedRole }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to={allowedRole ? `/login/${allowedRole}` : '/login'} replace />;
+    return <Navigate to={loginPath || (allowedRole ? `/login/${allowedRole}` : '/login')} replace />;
   }
 
   if (allowedRole && role !== allowedRole) {

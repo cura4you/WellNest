@@ -8,7 +8,7 @@ const apply = process.argv.includes('--apply');
 try {
   await withTransaction(async (client) => {
     // Serialize against document/grant writers while copying authoritative keys.
-    if (apply) await client.query('LOCK TABLE documents, document_access_grants, hospitals IN SHARE ROW EXCLUSIVE MODE');
+    if (apply) await client.query('LOCK TABLE documents, document_access_grants, hospitals, provider_proofs IN SHARE ROW EXCLUSIVE MODE');
     const { rows } = await client.query('SELECT id, dek_wrapped FROM documents WHERE encrypted = true');
     let changed = 0;
     for (const row of rows) {
@@ -27,6 +27,13 @@ try {
       for (const row of proofs.rows) {
         const dek = unwrapDocumentKey(row.proof_dek_wrapped, { allowLegacy: true });
         try { await client.query('UPDATE hospitals SET proof_dek_wrapped = $1 WHERE id = $2', [wrapDocumentKey(dek), row.id]); } finally { dek.fill(0); }
+      }
+    }
+    if (apply) {
+      const credentials = await client.query('SELECT id,dek_wrapped FROM provider_proofs WHERE dek_wrapped IS NOT NULL');
+      for (const row of credentials.rows) {
+        const dek=unwrapDocumentKey(row.dek_wrapped,{allowLegacy:true});
+        try { await client.query('UPDATE provider_proofs SET dek_wrapped=$1 WHERE id=$2',[wrapDocumentKey(dek),row.id]); } finally { dek.fill(0); }
       }
     }
     const proofs = await client.query('SELECT count(*)::int AS count FROM hospitals WHERE proof_file_id IS NOT NULL AND proof_dek_wrapped IS NULL');

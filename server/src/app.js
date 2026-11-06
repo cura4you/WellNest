@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 import rateLimit from 'express-rate-limit';
 import { pool, withTransaction } from './db.js';
 import { issueToken, makeSafeUser, normalizeEmail, requireAuth, camelRow, camelRows, calculateAge, callAIChatCompletion, describeAiFailure } from './utils.js';
-import { uploadFile, downloadFile } from './storage.js';
+import { uploadFile, downloadFile, deleteFile } from './storage.js';
 import { getPatientId, getDoctorId, getHospitalId, isAuthorizedForDocument } from './authz.js';
 import { encryptFile, decryptFile } from './crypto.js';
 import { logAudit } from './audit.js';
@@ -14,6 +14,8 @@ import { indexDocument, isEmbeddingConfigured, extractPdfText } from './embeddin
 import chatRouter from './chat.js';
 import careRouter from './care.js';
 import securityRouter from './security.js';
+import identityRouter from './identity.js';
+import { proofMime } from './identityValidation.js';
 import { getPreferences, notifyUser } from './notifications.js';
 import { waitUntil } from '@vercel/functions';
 
@@ -68,6 +70,7 @@ app.use((req, _res, next) => {
 });
 
 app.use('/auth', securityRouter);
+app.use('/auth', identityRouter);
 
 // ════════════════════════════════════════
 //  Health
@@ -122,7 +125,7 @@ function ensureRole(role) {
   }
 }
 
-async function createUserWithRole(role, payload) {
+async function createUserWithRole(role, payload, credential = null) {
   return withTransaction(async (client) => {
     const email = normalizeEmail(payload.email || payload.officialEmail);
     if (!email || !payload.password) {
@@ -150,6 +153,15 @@ async function createUserWithRole(role, payload) {
     else if (role === 'doctor') profile = await insertDoctorProfile(client, user.id, payload);
     else profile = await insertHospitalProfile(client, user.id, payload);
 
+    if (role !== 'patient') {
+      await client.query('INSERT INTO provider_applications(user_id) VALUES($1)', [user.id]);
+      if (credential) {
+        const p = (await client.query('INSERT INTO provider_proofs(user_id,object_key,filename,mime_type,file_size_bytes,dek_wrapped,dek_iv) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id', [user.id,credential.objectKey,credential.filename,credential.mime,credential.size,credential.dekWrapped,credential.dekIv])).rows[0];
+        await client.query('UPDATE provider_applications SET proof_id=$1,revision=1 WHERE user_id=$2',[p.id,user.id]);
+        await client.query("INSERT INTO provider_review_events(user_id,actor_user_id,action,revision,proof_id,license_number) VALUES($1,$1,'proof_uploaded',1,$2,$3)",[user.id,p.id,payload.licenseNumber||null]);
+        if (role === 'hospital') await client.query('UPDATE hospitals SET proof_file_id=$1,proof_filename=$2,proof_dek_wrapped=$3,proof_dek_iv=$4 WHERE user_id=$5',[credential.objectKey,credential.filename,credential.dekWrapped,credential.dekIv,user.id]);
+      }
+    }
     console.log(`✅  Registered ${role}: ${email}`);
     return {
       token: issueToken(user.id, role),
@@ -183,31 +195,21 @@ app.post('/auth/register/doctor', registerLimiter, async (req, res) => {
 });
 
 app.post('/auth/register/hospital', registerLimiter, upload.single('proofDocument'), async (req, res) => {
+  let credential;
   try {
-    const result = await createUserWithRole('hospital', req.body);
-
-    // Store proof document in Appwrite if provided
     if (req.file) {
-      try {
-        const { blob, dekWrapped, dekIv } = encryptFile(req.file.buffer);
-        const appwriteFileId = await uploadFile(blob, `${crypto.randomUUID()}_${req.file.originalname}`);
-
-        // Save Appwrite file reference on the hospital profile
-        await pool.query(
-          `UPDATE hospitals SET proof_file_id = $1, proof_filename = $2, proof_dek_wrapped = $4, proof_dek_iv = $5, updated_at = NOW()
-           WHERE user_id = (SELECT id FROM users WHERE email = $3)`,
-          [appwriteFileId, req.file.originalname, normalizeEmail(req.body.officialEmail || req.body.email), dekWrapped, dekIv]
-        );
-        console.log(`✅  Hospital proof document stored in object storage: ${appwriteFileId}`);
-      } catch (proofErr) {
-        console.warn('⚠️  Hospital proof document upload failed (registration still succeeded):', proofErr.message);
-      }
+      if (req.file.size>4*1024*1024) throw Object.assign(new Error('Choose one proof file up to 4 MB.'),{status:400});
+      const mime=proofMime(req.file.buffer);
+      const encrypted=encryptFile(req.file.buffer);
+      const objectKey=await uploadFile(encrypted.blob, `credential_${crypto.randomUUID()}`);
+      credential={objectKey,filename:req.file.originalname.slice(0,255),mime,size:req.file.size,dekWrapped:encrypted.dekWrapped,dekIv:encrypted.dekIv};
     }
-
+    const result=await createUserWithRole('hospital',req.body,credential);
     res.status(201).json(result);
   } catch (err) {
-    console.error('Register hospital error:', err.message);
-    res.status(err.status || 500).json({ message: err.message || 'Registration failed.' });
+    if (credential) await deleteFile(credential.objectKey).catch(()=>console.error('Unused registration proof cleanup failed.'));
+    console.error('Register hospital failed.');
+    res.status(err.status||500).json({message:err.status?err.message:'Registration failed. Please try again.'});
   }
 });
 
@@ -222,7 +224,7 @@ app.post('/auth/login', loginLimiter, async (req, res) => {
     }
 
     const { rows, rowCount } = await pool.query(
-      'SELECT id, email, role, password_hash, auth_version FROM users WHERE email = $1 AND role = $2',
+      'SELECT id, email, role, password_hash, auth_version, email_verified, is_admin FROM users WHERE email = $1 AND role = $2',
       [normalizedEmail, role]
     );
 

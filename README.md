@@ -283,12 +283,13 @@ Run `npm run test:e2e:agent` for live local model/API/browser evaluation and `np
 
 The Patient, Doctor, and Hospital dashboards share the plum/berry TypeScript design system in `src/dashboard-v2/`. Patient tabs were migrated first; Doctor and Hospital now use matching cards, lists, forms, and notifications throughout. The shared emergency access screen uses the same visual system and describes the actual consented, audited access flow. Patient Health Vitals now use patient-entered measurements, appointments support patient requests and provider scheduling across all roles, and notification preferences persist per account. See [CARE_WORKFLOWS.md](CARE_WORKFLOWS.md) for permissions, setup and browser verification.
 
-The latest dashboard, care workflow and homepage changes are deployed at https://medivault-roan-six.vercel.app/. Account security setup and rollout are documented in SECURITY_OPERATIONS.md. See `CLAUDE.md` for implementation history and local setup notes.
+The latest dashboard, care workflow and homepage changes are deployed at https://medivault-roan-six.vercel.app/. Account security setup and rollout are documented in SECURITY_OPERATIONS.md. Email verification and administrator provider review are described in IDENTITY_REVIEW.md; the live portfolio mode displays review state while preserving dashboard access. See `CLAUDE.md` for implementation history and local setup notes.
 
 ---
 
 ## 🗺️ Roadmap
 
+- [x] **Email verification and provider review workflow** — Encrypted proof replacement, administrator decisions and strict-mode gates; external email delivery still needs its API credential.
 - [ ] **Legacy storage audit** — New uploads already use object storage; inventory any older DB-only records before retiring compatibility paths.
 - [x] **Session revocation and password recovery** — Server-side logout, sign-out-all, password change and single-use recovery links; production email delivery needs provider configuration.
 - [ ] **Legacy path cleanup** — Retire compatibility branches post-migration

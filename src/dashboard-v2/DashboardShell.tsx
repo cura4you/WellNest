@@ -1,6 +1,7 @@
 // Shared dashboard shell for Patient, Doctor, and Hospital roles.
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import AccountStatusBanner from '../pages/identity/AccountStatusBanner';
 import BrandLogo from '../components/brand/BrandLogo';
 import { useTheme } from '../theme/useTheme';
 import {
@@ -211,6 +212,7 @@ export function DashboardShell<V extends string>({
               )}
             </div>
             <div className="mv-sidebar-actions">
+              <Link className="mv-link-btn" to="/account/verification" aria-label="Account verification" title="Account verification"><ShieldIcon size={14} />{!collapsed && <span>Verification</span>}</Link>
               <Link className="mv-link-btn" to="/account/security" aria-label="Account security" title="Account security"><ShieldIcon size={14} />{!collapsed && <span>Account security</span>}</Link>
               <button type="button" className="mv-link-btn" onClick={onHome} title={collapsed ? 'Home' : undefined}>
                 <HomeIcon size={14} />
@@ -325,7 +327,8 @@ export function DashboardShell<V extends string>({
             </div>
           </div>
 
-          <main className="mv-content" id="dashboard-content">{children}</main>
+          <main className="mv-content" id="dashboard-content"><AccountStatusBanner />
+            {children}</main>
         </div>
       </div>
     </div>

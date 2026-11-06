@@ -4,21 +4,12 @@ import bcrypt from 'bcryptjs';
 import { waitUntil } from '@vercel/functions';
 import { pool, withTransaction } from './db.js';
 import { normalizeEmail, requireAuth, revokeToken, tokenHash } from './utils.js';
+import { limited } from './securityLimits.js';
 import { recoveryConfiguration, sendRecoveryEmail } from './recoveryMail.js';
 const router = express.Router();
 const generic = { message: 'If an account matches, a password reset link will be emailed. Check your inbox and spam folder.' };
 const validPassword = (value) => typeof value === 'string' && Buffer.byteLength(value, 'utf8') <= 72 && /^(?=.*[A-Za-z])(?=.*\d).{8,}$/s.test(value);
 
-// Database-backed throttles survive Vercel cold starts and multiple instances.
-async function limited(key, max, seconds) {
-  const hash = crypto.createHmac('sha256', process.env.SESSION_SECRET).update(key).digest('hex');
-  const { rows } = await pool.query(`INSERT INTO auth_rate_limits (key_hash, window_start, attempts) VALUES ($1, now(), 1)
-    ON CONFLICT (key_hash) DO UPDATE SET
-    attempts = CASE WHEN auth_rate_limits.window_start < now() - $2 * interval '1 second' THEN 1 ELSE auth_rate_limits.attempts + 1 END,
-    window_start = CASE WHEN auth_rate_limits.window_start < now() - $2 * interval '1 second' THEN now() ELSE auth_rate_limits.window_start END
-    RETURNING attempts`, [hash, seconds]);
-  return rows[0].attempts > max;
-}
 router.use((req, res, next) => { req.body ??= {}; res.set('Cache-Control', 'no-store'); next(); });
 router.get('/session', requireAuth, (_req, res) => res.json({ authenticated: true }));
 router.post('/logout', requireAuth, async (req, res) => {

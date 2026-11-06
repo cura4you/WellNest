@@ -8,6 +8,7 @@ export const users = pgTable('users', {
   passwordHash: text('password_hash').notNull(),
   role: roleEnum('role').notNull(),
   emailVerified: boolean('email_verified').default(false).notNull(),
+  isAdmin: boolean('is_admin').default(false).notNull(),
   authVersion: integer('auth_version').default(0).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),

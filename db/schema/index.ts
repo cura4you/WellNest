@@ -5,3 +5,4 @@ export * from './embeddings';
 export * from './chat';
 
 export * from './security';
+export * from './identity';

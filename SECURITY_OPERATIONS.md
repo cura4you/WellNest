@@ -49,4 +49,4 @@ Expired revoked-token rows, expired/used reset rows, and old throttle windows ca
 
 ## Validation
 
-`npm test`, `npm run lint`, `npx tsc --noEmit`, `npm run build`, `npm run test:e2e:security`, and `npm run test:e2e:care`. Security tests use isolated real PostgreSQL/MinIO and Chromium, with local email capture. Provider request/failure contracts are unit-tested, but actual external delivery requires a configured account and inbox. Broader release work (email verification, provider credential approval, monitored restores, CI) remains separate.
+`npm test`, `npm run lint`, `npx tsc --noEmit`, `npm run build`, `npm run test:e2e:security`, and `npm run test:e2e:care`. Security tests use isolated real PostgreSQL/MinIO and Chromium, with local email capture. Provider request/failure contracts are unit-tested, but actual external delivery requires a configured account and inbox. Email verification and provider credential review are now implemented; see IDENTITY_REVIEW.md for portfolio mode, strict enforcement, administrator bootstrap and pending email activation. Monitored restores and CI remain separate.

@@ -37,6 +37,6 @@ export default function AccountSecurityPage() {
       <AuthInput id="password" label="New password" type="password" autoComplete="new-password" value={form.password} onChange={change} />
       <AuthInput id="confirmPassword" label="Confirm new password" type="password" autoComplete="new-password" value={form.confirmPassword} onChange={change} />
       <AuthSubmitButton loading={busy} label="Change password and sign out" />
-    </form><div className="auth-security-devices"><h2>Signed-in devices</h2><p>End all sessions, including this device. You’ll need to sign in again.</p><button type="button" className="btn btn-primary" disabled={busy} onClick={() => void act('logout-all')}>Sign out all devices</button></div><p className="auth-switch-copy"><Link to={`/dashboard/${role}`}>Back to dashboard</Link></p></>}
+    </form><div className="auth-security-devices"><h2>Signed-in devices</h2><p>End all sessions, including this device. You’ll need to sign in again.</p><button type="button" className="btn btn-primary" disabled={busy} onClick={() => void act('logout-all')}>Sign out all devices</button></div><p className="auth-switch-copy"><Link to="/account/verification">Account verification</Link></p><p className="auth-switch-copy"><Link to={`/dashboard/${role}`}>Back to dashboard</Link></p></>}
   </AuthLayout></>;
 }

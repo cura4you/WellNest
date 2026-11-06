@@ -19,7 +19,8 @@ async function open(role, mode = 200) {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
   if (jar.length) await context.addCookies(jar);
   const state = { mode, invalidSchema: false, detailsFail: true, submitted: null };
-  await context.route('**/api/**', async route => {
+  await context.route('**/auth/account-status', route => route.fulfill({status:200,contentType:'application/json',headers:{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'*'},body:JSON.stringify({ email:'fixture@example.com',emailVerified:true,isAdmin:false,emailAvailable:false,approvalRequired:false,application:null })}));
+ await context.route('**/api/**', async route => {
     const url = new URL(route.request().url()); let status = 200, body = {};
     if (url.pathname.includes('/dashboard/')) { status = state.mode; body = status === 200 ? state.invalidSchema ? { metrics: [] } : role === 'patient' ? patient : role === 'doctor' ? doctor : hospital : { message: 'Injected service failure' }; }
     else if (url.pathname === '/api/documents/by-ids') { status = state.detailsFail ? 503 : 200; body = status === 200 ? { documents: [{ id: id1, documentName: 'Blood test report.pdf', documentType: 'lab_report', visitDate: '2026-11-01' }] } : { message: 'Injected detail lookup failure' }; }

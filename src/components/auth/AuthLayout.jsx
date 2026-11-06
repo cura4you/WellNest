@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import BrandLogo from '../brand/BrandLogo';
 import './auth.css';
 
-export default function AuthLayout({ title, subtitle, children, roleLabel, mode }) {
+export default function AuthLayout({ title, subtitle, children, roleLabel, mode, hideAccountSwitch = false }) {
   const switchCopy = mode === 'login' ? "Don't have an account?" : 'Already have an account?';
   const switchPath = mode === 'login' ? '/register' : '/login';
   const switchLabel = mode === 'login' ? 'Create one' : 'Login here';
@@ -19,9 +19,9 @@ export default function AuthLayout({ title, subtitle, children, roleLabel, mode 
 
       <div className="auth-shell-panel auth-shell-form">
         {children}
-        <p className="auth-switch-copy">
+        {!hideAccountSwitch && <p className="auth-switch-copy">
           {switchCopy} <Link to={switchPath}>{switchLabel}</Link>
-        </p>
+        </p>}
       </div>
     </section>
   );

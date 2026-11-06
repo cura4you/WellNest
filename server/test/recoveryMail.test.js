@@ -30,3 +30,22 @@ test('hosted delivery uses configured origin and rejects provider failures', asy
     await assert.rejects(sendRecoveryEmail({ to: 'patient@example.com', token: 'synthetic-token' }), /delivery failed/);
   } finally { globalThis.fetch = originalFetch; for (const k of Object.keys(process.env)) if (!(k in prior)) delete process.env[k]; Object.assign(process.env, prior); }
 });
+
+test('verification delivery binds the fixed origin and honors the portfolio recipient allowlist', async () => {
+  const prior = { ...process.env }, originalFetch = globalThis.fetch;
+  try {
+    process.env.APP_PUBLIC_URL = 'https://medivault.example'; process.env.RESEND_API_KEY = 'synthetic-key'; process.env.AUTH_EMAIL_FROM = 'auth@example.com'; delete process.env.RECOVERY_MAIL_FILE;
+    process.env.AUTH_EMAIL_ALLOWLIST = 'portfolio@example.com';
+    const { sendVerificationEmail } = await import('../src/recoveryMail.js');
+    let sent = 0;
+    globalThis.fetch = async (_url, options) => {
+      const payload = JSON.parse(options.body);
+      assert.deepEqual(payload.to, ['portfolio@example.com']);
+      assert.ok(payload.text.includes('https://medivault.example/verify-email#synthetic-token'));
+      assert.ok(payload.text.includes('24 hours')); sent++; return { ok: true };
+    };
+    await assert.rejects(sendVerificationEmail({ to: 'other@example.com', token: 'synthetic-token' }), /recipient unavailable/);
+    assert.equal(sent, 0);
+    await sendVerificationEmail({ to: 'portfolio@example.com', token: 'synthetic-token' }); assert.equal(sent, 1);
+  } finally { globalThis.fetch = originalFetch; for (const k of Object.keys(process.env)) if (!(k in prior)) delete process.env[k]; Object.assign(process.env, prior); }
+});

@@ -2,6 +2,11 @@ import { useLayoutEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
+import ProviderGate from './pages/identity/ProviderGate';
+import AccountVerificationPage from './pages/identity/AccountVerificationPage';
+import VerifyEmailPage from './pages/identity/VerifyEmailPage';
+import AdminLoginPage from './pages/identity/AdminLoginPage';
+import AdminReviewsPage from './pages/identity/AdminReviewsPage';
 import PasswordRecoveryPage from './pages/auth/PasswordRecoveryPage';
 import AccountSecurityPage from './pages/auth/AccountSecurityPage';
 import AuthRoleEntryPage from './pages/auth/AuthRoleEntryPage';
@@ -24,6 +29,10 @@ export default function App() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
 
+      <Route path="/verify-email" element={<VerifyEmailPage />} />
+      <Route element={<ProtectedRoute />}><Route path="/account/verification" element={<AccountVerificationPage />} /></Route>
+      <Route path="/admin/login" element={<AdminLoginPage />} />
+      <Route element={<ProtectedRoute loginPath="/admin/login" />}><Route path="/admin/reviews" element={<AdminReviewsPage />} /></Route>
       <Route path="/forgot-password" element={<PasswordRecoveryPage key="forgot" />} />
       <Route path="/reset-password" element={<PasswordRecoveryPage key="reset" />} />
       <Route element={<ProtectedRoute />}><Route path="/account/security" element={<AccountSecurityPage />} /></Route>
@@ -42,10 +51,10 @@ export default function App() {
         <Route path="/dashboard/patient" element={<PatientDashboardPage />} />
       </Route>
       <Route element={<ProtectedRoute allowedRole="doctor" />}>
-        <Route path="/dashboard/doctor" element={<DoctorDashboardPage />} />
+        <Route element={<ProviderGate />}><Route path="/dashboard/doctor" element={<DoctorDashboardPage />} /></Route>
       </Route>
       <Route element={<ProtectedRoute allowedRole="hospital" />}>
-        <Route path="/dashboard/hospital" element={<HospitalDashboardPage />} />
+        <Route element={<ProviderGate />}><Route path="/dashboard/hospital" element={<HospitalDashboardPage />} /></Route>
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
