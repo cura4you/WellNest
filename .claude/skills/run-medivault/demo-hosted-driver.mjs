@@ -20,7 +20,7 @@ try{
     const dashboard=await call(page,'/api/dashboard/patient');assert.equal(dashboard.status,200);assert.equal(dashboard.data.documents.length,3);assert.match(dashboard.headers['cache-control'],/no-store/);assert.equal(dashboard.data.documents[0].uploadedBy,'Willow Care Hospital');await page.screenshot({path:`${artifacts}/patient.png`,fullPage:true});
   });
   await check('Patient approval becomes visible after switching to doctor, with hospital data available too',async()=>{
-    await nav(page,'Access Requests');await page.getByRole('button',{name:'Approve',exact:true}).click();await role(page,'doctor');await nav(page,'Shared Documents');await page.getByText('Sample annual health review.pdf',{exact:true}).waitFor();assert.equal((await call(page,'/api/dashboard/doctor')).data.sharedDocuments.length,3);
+    await nav(page,'Access Requests');await page.getByRole('button',{name:'Approve',exact:true}).click();await page.getByText('Approved',{exact:false}).first().waitFor();await role(page,'doctor');await nav(page,'Shared Documents');await page.getByText('Sample annual health review.pdf',{exact:true}).waitFor();assert.equal((await call(page,'/api/dashboard/doctor')).data.sharedDocuments.length,3);
     await role(page,'hospital');assert.equal((await call(page,'/api/dashboard/hospital')).data.uploadQueue.length,3);await page.screenshot({path:`${artifacts}/hospital.png`,fullPage:true});await role(page,'patient');
   });
   await check('A second visitor cannot search or download another workspace’s records or use admin actions',async()=>{

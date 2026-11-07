@@ -20,3 +20,18 @@ vercel git connect https://github.com/cura4you/WellNest.git --yes --scope mohamm
 ```
 
 Production `APP_PUBLIC_URL`, allowed origins and account email sender display name use WellNest. Database, encryption secrets, storage and AI credentials stay with the existing project.
+
+## Verified rollout — 2026-11-07
+
+Runtime source commit: `23b4f4b`. Production deployment: `dpl_6tmRLozU6nrffrEYdye8KcRxYCXr`. Both the new WellNest address and the previous production alias returned healthy API responses.
+
+- Build, lint, TypeScript and all 50 unit tests passed.
+- Eight isolated real PostgreSQL/HTTP guest regression groups passed.
+- Twenty dashboard UI fixture groups passed across patient, doctor and hospital, six screen widths, both themes and shared branding.
+- Ten homepage report entries passed locally and on production, including individually exercising links, 13 screen widths, keyboard navigation and logo explorers.
+- Twelve public/account entry routes and all three actual guest dashboards showed WellNest with no visible MediVault text. A patient-created appointment persisted in the guest doctor's dashboard.
+- Six hosted guest groups passed: role entry, consent sharing, visitor isolation, actual cited AI chat/PDF summary, reset, mobile controls, exit and recoverable connection failure. Test-created guest workspaces were closed.
+
+The first hosted sharing run switched roles before approval finished. The regression now waits for the Approved state before switching, matching the existing full guest browser driver. The corrected run passed.
+
+Reports and screenshots are in [`docs/wellnest-transition`](docs/wellnest-transition). GitHub-to-Vercel automatic deployment remains pending organization app access; this verified production release was deployed through the CLI.

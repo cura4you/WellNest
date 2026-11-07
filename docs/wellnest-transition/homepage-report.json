@@ -1,0 +1,17 @@
+{
+  "base": "https://wellnest-cura4you.vercel.app",
+  "verifiedAt": "2026-11-07T18:10:22.660Z",
+  "results": [
+    "20 homepage links individually exercised",
+    "Every visible homepage link is clicked and reaches its destination",
+    "Mobile menu closes on outside click, keyboard departure, Escape and logo click",
+    "Mobile menu state resets when crossing the desktop breakpoint",
+    "Homepage logo returns to top and registration starts at the top on mobile",
+    "All three preview tabs fit internally at 13 phone/tablet/desktop widths",
+    "Wide desktop uses the screen with a shorter hero and earlier role cards",
+    "Preview keyboard selection and accessible state stay synchronized",
+    "Reduced-motion preference and skip-to-content focus work",
+    "All 12 logo choices, four palettes, theme toggle and shortlist work"
+  ],
+  "errors": []
+}

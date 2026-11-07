@@ -1,0 +1,17 @@
+{
+  "base": "https://wellnest-cura4you.vercel.app",
+  "verifiedAt": "2026-11-07T18:10:38.931Z",
+  "results": [
+    "Guest connection failures show a recoverable visitor-facing message without provisioning",
+    "Public entry starts an isolated populated patient workspace without registration",
+    "Patient approval becomes visible after switching to doctor, with hospital data available too",
+    "A second visitor cannot search or download another workspace’s records or use admin actions",
+    "Hosted AI retrieves the synthetic lab value with a citation and summarizes its PDF",
+    "Reset renews sample accounts while retaining expiry and limits; mobile controls and exit work"
+  ],
+  "errors": [],
+  "passed": true,
+  "liveAi": true,
+  "additionalWorkspacesClosed": 0,
+  "scope": "Actual public guest UI/API, isolated visitor workspaces and hosted AI over synthetic records. All owned guest sessions are closed; no ordinary account is modified. Protected cleanup is exercised only if explicitly configured."
+}

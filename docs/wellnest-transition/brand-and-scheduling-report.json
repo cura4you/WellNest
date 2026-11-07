@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "results": [
+    "/",
+    "/login",
+    "/register",
+    "/login/patient",
+    "/login/doctor",
+    "/login/hospital",
+    "/register/patient",
+    "/register/doctor",
+    "/register/hospital",
+    "/forgot-password",
+    "/admin/login",
+    "/demo",
+    "Patient appointment persists in doctor dashboard",
+    "Live WellNest branding across patient, doctor and hospital"
+  ]
+}
