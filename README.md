@@ -1,312 +1,303 @@
-<div align="center">
+<p align="center">
+  <img src="docs/readme/wellnest-cover.svg" alt="WellNest — Your health records. One clear place." width="100%" />
+</p>
 
-# 🏥 WellNest
+<p align="center">
+  <strong>A full-stack health records platform connecting patients, doctors, and hospitals.</strong><br />
+  Keep records together. Control who can access them. Ask questions and inspect the sources.
+</p>
 
-### *Encrypted. Consent-driven. AI-augmented. Patient-first.*
+<p align="center">
+  <a href="https://wellnest-cura4you.vercel.app"><strong>Visit WellNest ↗</strong></a> &nbsp; · &nbsp;
+  <a href="https://wellnest-cura4you.vercel.app/demo"><strong>Try the guest demo ↗</strong></a> &nbsp; · &nbsp;
+  <a href="#architecture">Architecture</a> &nbsp; · &nbsp;
+  <a href="#run-locally">Run locally</a> &nbsp; · &nbsp;
+  <a href="#verification">Verification</a>
+</p>
 
-[![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
-[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![MinIO](https://img.shields.io/badge/MinIO_(S3)-C72E49?style=for-the-badge&logo=minio&logoColor=white)](https://min.io/)
-[![Ollama](https://img.shields.io/badge/Ollama-000000?style=for-the-badge&logo=ollama&logoColor=white)](https://ollama.com/)
+<p align="center">
+  <img alt="React 19" src="https://img.shields.io/badge/React-19-29272e?style=flat-square&amp;logo=react&amp;logoColor=61dafb" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-dashboard-29272e?style=flat-square&amp;logo=typescript" />
+  <img alt="Express 5" src="https://img.shields.io/badge/Express-5-29272e?style=flat-square&amp;logo=express" />
+  <img alt="PostgreSQL and pgvector" src="https://img.shields.io/badge/PostgreSQL-pgvector-29272e?style=flat-square&amp;logo=postgresql&amp;logoColor=white" />
+  <img alt="Gemini" src="https://img.shields.io/badge/AI-Gemini_%2B_RAG-84416c?style=flat-square" />
+  <img alt="Deployed on Vercel" src="https://img.shields.io/badge/Vercel-live-29272e?style=flat-square&amp;logo=vercel" />
+</p>
 
-Maintained by [@moh0405](https://github.com/moh0405)
+![The live WellNest homepage, with the approved tonal petal identity and an interactive records preview](docs/readme/homepage.png)
 
-</div>
+## Explore it in three minutes
 
----
+**No registration, shared password, or local setup required.** Open the [guest demo](https://wellnest-cura4you.vercel.app/demo) and choose a role. Each visitor gets a separate workspace with fictional records, appointments, and care-team accounts.
 
-## 🩺 The Problem
+1. **Start as a patient.** Explore the record vault, vitals, appointments, and access requests.
+2. **Approve the sample doctor's request.** Wait for the confirmation, then switch to **Doctor** using the guest toolbar. The newly shared report appears in Shared Documents.
+3. **Schedule a follow-up.** As the patient, open Appointments and use the sample doctor shortcut. Switch to the doctor to see the same appointment.
+4. **Ask the records a question.** In AI Chat, try: *“What HbA1c value is in my sample laboratory report? Cite the record.”* Open the citation to inspect the source.
+5. **Explore the hospital view.** Switch roles, try the mobile layout, and use Reset demo to restore the sample workspace.
 
-> Every year, patients repeat tests, face delayed diagnoses, and receive unsafe care — all because their records are scattered across different hospitals and providers.
+Guest workspaces expire after **two hours**. Each has **four AI requests, two uploads, and two resets**, with additional shared capacity limits. Reset keeps the original expiry and usage budgets. Exit removes the workspace; expired data also has a scheduled cleanup path. Use fictional information only. [How the sandbox works →](GUEST_DEMO.md)
 
-Healthcare data is **fragmented**, **inaccessible**, and **out of the patient's hands**. In emergencies, this costs lives.
+## One design system. Three sides of care.
 
-**WellNest fixes this.**
+A shared dashboard shell, typography, plum palette, theme tokens, and accessible navigation keep the product consistent. Each role gets its own tools and permissions.
 
----
+| Patient | Doctor | Hospital |
+| --- | --- | --- |
+| Browse and download personal records | Upload records for a patient | Upload and manage patient records |
+| Approve requests and revoke grants | Request and use authorized access | Review upload queues and staff access |
+| Enter vitals and request appointments | Schedule and manage appointments | Coordinate appointments |
+| Review access history and notifications | Review grants, requests, and activity | Review compliance and access activity |
+| Ask questions about accessible records | Summarize and query authorized records | Summarize and query authorized records |
 
-## 💡 What is WellNest?
+### Your personal health space
 
-WellNest is a **secure, role-based medical records platform** that puts patients in full control of their health data. Patients own their records. Doctors request access. Hospitals stay accountable. AI makes it all understandable — and can answer questions about it, citing its sources.
+![Live patient dashboard with records, upcoming appointments, and care actions](docs/readme/patient-dashboard.png)
 
-- 🔐 **Patient-owned encrypted records**
-- ✅ **Explicit, auditable consent flows**
-- 🚨 **Emergency break-glass access with guardrails**
-- 🤖 **AI-powered report summaries and retrieval-augmented chat**
+<table>
+  <tr>
+    <td width="50%"><img src="docs/readme/doctor-dashboard.png" alt="Live doctor dashboard showing shared records, requests, and appointments" /></td>
+    <td width="50%"><img src="docs/readme/hospital-dashboard.png" alt="Live hospital dashboard showing upload activity and care coordination" /></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Doctor workspace</strong><br />Authorized records and the next patient interaction.</td>
+    <td align="center"><strong>Hospital workspace</strong><br />Record operations and care-team activity.</td>
+  </tr>
+</table>
 
----
+<details>
+<summary><strong>See appointment scheduling and the mobile dashboard</strong></summary>
 
-## ✨ Key Features
+![Live appointment scheduling with sample provider shortcuts and persisted appointments](docs/readme/appointments.png)
 
-| Feature | Description |
-|--------|-------------|
-| 🧑‍⚕️ **Role-Based Dashboards** | Separate, purpose-built flows for Patients, Doctors, and Hospitals |
-| 🗄️ **Secure Document Vault** | Encrypted upload/download with strict role-based authorization |
-| 🤝 **Consent & Access Governance** | Request, approve, reject, grant, revoke — full lifecycle control, with a full audit trail |
-| 🚨 **Emergency Access Workflow** | Time-boxed break-glass access for treating clinicians, fully audited |
-| 🤖 **AI Medical Summarization** | Structured summaries of uploaded records from a local vision model (Ollama) or any OpenAI-compatible API |
-| 💬 **AI Chat with RAG** | Ask natural-language questions about your own accessible documents; answers are grounded in retrieved excerpts (pgvector) and cite the source document, not freeform generation |
-| 💊 **Drug Interaction Checker** | Cross-checks a patient's current medications against known interaction pairs |
-| 📜 **Full Audit Log** | Every access, grant, revoke, upload, and AI action is logged per patient |
+<p align="center"><img src="docs/readme/patient-mobile.png" alt="Live patient dashboard at a 390-pixel mobile viewport" width="320" /></p>
 
----
+</details>
 
-## 🛠️ Tech Stack
+Screenshots above and below were captured from the deployed website using one isolated guest workspace, including a real hosted AI response. All displayed records and identities are synthetic. [Capture details →](docs/readme/capture-manifest.json)
 
-### Frontend
-- ⚛️ React 19 + React Router 7
-- ⚡ Vite 7
-- 🎨 Custom CSS (landing, auth, dashboards) — no Tailwind or component library
-- 🎨 Patient, Doctor, and Hospital dashboards use the shared TypeScript design system in `src/dashboard-v2/`. See **Project Status** below.
+## What is built
 
-### Backend
-- 🟢 Node.js + Express 5
-- 🔑 Custom HMAC-signed bearer token auth (role-aware)
-- 🛡️ Rate limiting, CORS controls, bcrypt password hashing
+| Area | Implemented behavior |
+| --- | --- |
+| **Document vault** | Provider uploads, server-side file encryption, authorized viewing/downloads, document filters, and structured AI summaries. |
+| **Consent and sharing** | Document access requests, patient approval/rejection, grants, expiry, revocation, and access-scoped retrieval. |
+| **Care workflows** | Patient-entered vitals; patient requests and provider-created appointments; conflict checks, confirmation, rescheduling, and cancellation. |
+| **Notifications** | Persistent in-app notifications, read state, and per-account notification preferences. |
+| **AI assistant** | Streaming conversation, saved chat sessions, authorized retrieval, source citations, and an optional bounded read-only tool planner. |
+| **Account security** | Password hashing, expiring signed sessions, server-side revocation, logout across devices, password changes, and single-use recovery links. |
+| **Provider review** | Email-verification workflow, encrypted proof uploads, revisioned applications, and administrator review decisions. |
+| **Clinical context** | Patient profile, clinician-recorded medication-interaction notes, and consent-aware, time-limited emergency access. |
+| **Guest showcase** | Isolated synthetic accounts for all three roles, role switching, resets, expiry, database boundaries, and usage budgets. |
 
-### Data & Storage
-- 🐘 PostgreSQL (`pg`, plain SQL migrations in `db/migrations/`) with the `pgvector` extension for embeddings
-- 🪣 S3-compatible object storage for encrypted document blobs (MinIO in Docker locally)
+## Architecture
 
-### AI
-- 🤖 **Summarization/chat completions**: any OpenAI-compatible chat API. Default: local Ollama `qwen2.5vl:7b` (free, vision-capable — reads the document image directly). OpenRouter/GPT-4o or Gemini work via env vars.
-- 🔎 **Embeddings (for Chat/RAG)**: a separate OpenAI-compatible `/embeddings` endpoint (`EMBEDDING_BASE_URL`/`EMBEDDING_MODEL`) — the chat-completions endpoint above doesn't necessarily also embed. Documents are chunked, embedded, and stored in `document_chunks` (pgvector); chat retrieves the top-k relevant chunks before answering.
+The application has a real backend and persistent data layer. React renders the experience; Express enforces permissions and coordinates records, care workflows, and AI. Production runs on **Vercel, Neon PostgreSQL, Cloudflare R2, and hosted Gemini**. Local development can use PostgreSQL, MinIO, and an optional Ollama adapter.
 
-### Tooling
-- ESLint 9 · Concurrently · dotenv
+```mermaid
+flowchart TB
+    visitor["Patient · Doctor · Hospital"]
+    subgraph vercel["Vercel"]
+        web["React 19 + Vite 7\nShared TypeScript dashboard system"]
+        api["Express 5 API\nAuth · Consent · Care · Identity · Chat"]
+        cron["Scheduled guest cleanup"]
+    end
+    subgraph data["Persistent data"]
+        pg[("Neon PostgreSQL + pgvector\nAccounts · Grants · Care · Chat · Audit")]
+        r2[("Cloudflare R2\nEncrypted ordinary document files")]
+        demo[("Expiring PostgreSQL demo files\nEncrypted synthetic guest uploads")]
+    end
+    ai["Hosted Gemini\nOpenAI-compatible model interface"]
+    visitor --> web
+    web -->|"Same-origin API + signed bearer token"| api
+    api --> pg
+    api --> r2
+    api --> demo
+    api -->|"Authorized evidence + model requests"| ai
+    api -->|"Streamed answers + source citations"| web
+    cron --> api
+```
 
----
+### A record's path through the system
 
-## 🚀 Getting Started
+1. **Upload and authorize.** The API checks the caller's role and target patient before accepting a record.
+2. **Encrypt and persist.** Each file receives a random AES-256-GCM data key. The key is wrapped using a server-held keyring; metadata and permissions live in PostgreSQL, and ordinary encrypted files live in R2.
+3. **Extract and index.** The ingestion pipeline extracts document text, chunks it, and stores text and embeddings for retrieval. Indexing readiness depends on the document and configured services.
+4. **Share deliberately.** Access requests and grants determine which documents another role can read. Authorization is rechecked for downloads and AI tools.
+5. **Answer with evidence.** Retrieval searches authorized document IDs, and the assistant streams an answer with links to its supporting records.
 
-### Prerequisites
-- Node.js (LTS)
-- npm
-- PostgreSQL database with the `pgvector` extension available
-- Docker Desktop (runs MinIO for file storage)
-- [Ollama](https://ollama.com/) (optional, for free local AI summaries/chat)
+Guest files use encrypted, expiring PostgreSQL storage rather than permanent R2 objects. Guest retrieval searches scoped sample text using PostgreSQL full-text ranking, avoiding a new set of embedding calls for every visitor. Ordinary-account semantic retrieval uses pgvector.
 
-### Installation
+<details>
+<summary><strong>Repository map</strong></summary>
 
-```bash
-# 1. Clone the repo
+```text
+src/
+├── pages/                Landing, authentication, role dashboards, identity, demo
+├── dashboard-v2/         Shared TypeScript shell, views, tokens, and care panels
+├── components/           Brand, chat, document, and authentication components
+├── context/              Session and guest-role lifecycle
+└── services/             Frontend API clients
+server/
+├── src/app.js            Express composition and record routes
+├── src/care.js           Vitals, scheduling, and participant permissions
+├── src/identity.js       Verification, evidence, and administrator review
+├── src/chat.js           Streaming chat and retrieval orchestration
+├── src/chatAgent.js      Bounded planner and authorized read-only tools
+├── src/embeddings.js     Extraction, chunking, indexing, and retrieval
+├── src/crypto.js         File encryption and versioned key wrapping
+├── src/demo*.js          Guest lifecycle, limits, and isolation
+├── test/                 Deterministic backend tests
+└── integration/          Real database/API guest checks
+api/server.js             Vercel serverless entry point
+db/migrations/            15 ordered SQL migrations
+scripts/                  Migration, admin, key rotation, and cleanup tools
+docs/                     Screenshots and verification evidence
+```
+
+</details>
+
+## AI that can show its work
+
+![Actual hosted AI answer citing the synthetic laboratory report](docs/readme/ai-assistant.png)
+
+The assistant combines **retrieval-augmented generation** with an optional **read-only agent loop**. It can gather evidence through several tool calls before generating an answer, while the backend keeps every lookup inside the caller's current permissions.
+
+| Tool capability | Purpose |
+| --- | --- |
+| `list_documents` | Find accessible records and their metadata. |
+| `search_documents` | Locate relevant passages within authorized records. |
+| `get_document_text` | Inspect additional text without loading every record into a prompt. |
+| `get_health_profile` | Read the signed-in patient's own structured profile. |
+| `list_drug_interactions` | Read the patient's recorded medication-interaction notes. |
+
+The loop has step, time, and output limits; reports progress to the UI; audits tool reads; and can fall back to the existing RAG path when planning is unavailable. Guest sessions use a smaller two-step planner budget. Conversation history provides context, while current authorized evidence supports factual answers.
+
+**Evaluation:** the documented full local evaluation passed **26 scenarios** using real Ollama, PostgreSQL/pgvector, API requests, and browser checks. It covered permission boundaries, revocation, missing evidence, hostile document text, provider failures, and disconnects. The hosted WellNest rollout separately verified cited chat and PDF summarization with Gemini. These are distinct test scopes; the full 26-scenario evaluation is not a hosted production certification. [Evaluation →](AGENT_EVALUATION.md) · [Agent runbook →](AGENTIC_CHAT_RUNBOOK.md)
+
+## Security and trust boundaries
+
+- **Server-side encryption:** random per-file keys, AES-256-GCM file encryption, and versioned wrapping keys kept outside the database. Authorized backend operations can decrypt files; this is not end-to-end encryption.
+- **Access control:** role and document permissions are checked server-side. Guest requests also have workspace-scoped checks and relational database boundaries.
+- **Session lifecycle:** HMAC-signed bearer tokens, account-version checks, revoked-token storage, and password-change invalidation.
+- **Account recovery:** hashed, expiring, single-use email tokens; provider applications retain evidence versions and review history.
+- **Traceability:** database audit records capture important access, sharing, and AI actions. They are not a cryptographically immutable ledger.
+- **AI data boundary:** extracted text and embeddings are stored for retrieval, and authorized evidence can be sent to the configured AI provider. Encrypted file storage does not imply encrypted search indexes.
+
+**Deployment scope:** this is a portfolio showcase using fictional demo data. Production deliberately runs provider review in portfolio mode; strict approval enforcement is available and tested separately. External verification/recovery email delivery still needs provider activation. Interaction notes are manually recorded, not an external drug-safety database. AI output is explanatory assistance, not a diagnosis or clinical validation. No regulatory compliance certification is claimed.
+
+[Security operations →](SECURITY_OPERATIONS.md) · [Identity review →](IDENTITY_REVIEW.md) · [Guest isolation →](GUEST_DEMO.md)
+
+## Run locally
+
+**Prerequisites:** Node.js 24, npm, and PostgreSQL with the `vector` extension available. Use a hosted S3-compatible bucket or Docker for MinIO. A hosted model works without Ollama; local AI is optional.
+
+```sh
 git clone https://github.com/cura4you/WellNest.git
 cd WellNest
-
-# 2. Install dependencies
-npm install
+npm ci
+cp .env.example .env
 ```
 
-### Environment Setup
+Configure `.env` using the template. For a new local installation, the essentials are:
 
-Create a single `.env` file in the project root (you can copy from `.env.example`).
+| Configuration | What to set |
+| --- | --- |
+| `DATABASE_URL` | Your local or hosted PostgreSQL connection string. |
+| `SESSION_SECRET` | A long random secret; generate with `openssl rand -hex 32`. |
+| `DOCUMENT_KEK_ID` | A key ID, such as `local-v1`. |
+| `DOCUMENT_KEKS` | A JSON keyring, such as `{"local-v1":"<32-byte Base64 key>"}`. Generate the value with `openssl rand -base64 32`. |
+| `VITE_API_BASE_URL` | `http://localhost:3001` for the local API. |
+| `ALLOWED_ORIGINS` | Include `http://localhost:5177`. |
+| `S3_*` | The template's local MinIO settings, or credentials for your hosted bucket. |
+| `AI_BASE_URL`, `AI_MODEL`, `AI_API_KEY` | A configured OpenAI-compatible model endpoint and a model available to your account. |
+| `EMBEDDING_*` | A compatible embeddings endpoint and model; use 768 dimensions to match the schema. |
 
-```env
-# Frontend (Vite)
-# Keep empty to use relative paths (recommended for Vercel rewrites).
-VITE_API_BASE_URL=
-VITE_ENABLE_MOCK_AUTH=false
+Keep secrets in `.env` or your hosting provider's environment settings. Retain encryption keys securely: replacing them makes existing wrapped keys unreadable. Leave `VITE_ENABLE_MOCK_AUTH=false` for real backend development.
 
-# Backend (Node/Express)
-DATABASE_URL=your_postgres_url
-SESSION_SECRET=your_secret_key
-API_PORT=3001
-API_HOST=0.0.0.0
-ALLOWED_ORIGINS=http://localhost:5173
-NODE_ENV=development
-
-# Object storage (MinIO from docker-compose.yml, or any S3-compatible service)
-S3_ENDPOINT=http://localhost:9000
-S3_ACCESS_KEY=medivault
-S3_SECRET_KEY=medivault-secret
-S3_BUCKET=medivault-documents
-S3_REGION=us-east-1
-
-# AI summaries (any OpenAI-compatible chat API; local Ollama by default)
-AI_BASE_URL=http://localhost:11434/v1
-AI_MODEL=qwen2.5vl:7b
-AI_API_KEY=
-AI_TIMEOUT_MS=300000
-
-# Chat + RAG embeddings — needs its own embedding-capable endpoint.
-# AI_BASE_URL above is chat-completions only and doesn't necessarily also embed.
-EMBEDDING_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
-EMBEDDING_MODEL=gemini-embedding-001
-EMBEDDING_API_KEY=
-EMBEDDING_DIMENSIONS=768
-RAG_TOP_K=5
-RAG_CHUNK_SIZE=1200
-RAG_CHUNK_OVERLAP=200
-```
-
-### Local Services (Docker + Ollama)
-
-```bash
-# File storage: MinIO on :9000 (console on :9001). Reads S3_ACCESS_KEY / S3_SECRET_KEY from .env
+```sh
+# Start local object storage if using the template's MinIO configuration.
 docker compose up -d
 
-# AI summaries (optional, free): install Ollama, then pull the vision model once (~6 GB)
-ollama pull qwen2.5vl:7b
-```
-
-To use OpenRouter instead of Ollama set `AI_BASE_URL=https://openrouter.ai/api/v1`, `AI_MODEL=openai/gpt-4o`, and `AI_API_KEY` to your key.
-
-### Database Setup
-
-```bash
-# pgvector must be enabled BEFORE migration 0009 runs (it creates a vector column)
-# brew install pgvector   # if using Homebrew Postgres and it's not already available
+# For a fresh local database; skip createdb if your database already exists.
 createdb medivault
-psql -d medivault -c "CREATE EXTENSION IF NOT EXISTS vector;"
+psql -d medivault -c 'CREATE EXTENSION IF NOT EXISTS vector;'
 
-# Apply the SQL migrations in order (PostgreSQL 14+)
-for f in db/migrations/*.sql; do psql -v ON_ERROR_STOP=1 -d medivault -f "$f" || break; done
-```
+# Apply all pending migrations to DATABASE_URL from .env.
+npm run db:migrate
 
-There are 11 migration files, through `0011_care_workflows.sql`. Always apply every file in order — a database built from an earlier subset will 500 on requests that touch newer columns/tables rather than failing loudly at startup.
-
-### Run the App
-
-```bash
-# Full stack (recommended) — frontend on :5177, API on :3001
+# Frontend :5177 + API :3001
 npm run dev:all
+```
 
-# Frontend only (mock auth, no backend needed — set VITE_ENABLE_MOCK_AUTH=true)
-npm run dev
+Open **http://localhost:5177**. The local `medivault` database/bucket names are retained compatibility identifiers; the application and repository are WellNest. On a hosted database, enable `vector` there before running migrations. The migration runner records applied files in `schema_migrations`.
 
-# Backend only
-npm run dev:api
+<details>
+<summary><strong>Optional features and deployment configuration</strong></summary>
 
-# Production build
+- **Local AI:** Ollama can provide the chat/vision API. It is not required for the hosted application. Configure a model supported by your machine rather than downloading a large model just to browse the UI.
+- **Agent:** set `CHAT_AGENT_ENABLED=true` and choose a tool-capable `AI_AGENT_MODEL`. See the agent runbook for budgets and fallback behavior.
+- **Guest demo:** set `DEMO_ENABLED=true`, optionally `DEMO_AI_MODEL`, and configure `CRON_SECRET` for protected cleanup. See the guest runbook before exposing it publicly.
+- **Identity/recovery:** configure `APP_PUBLIC_URL`, `RESEND_API_KEY`, and `AUTH_EMAIL_FROM`; set `PROVIDER_APPROVAL_REQUIRED=true` when you intend to enforce reviewed provider identities. See the identity runbook for administrator bootstrap.
+- **Vercel:** `vercel.json` builds the frontend and routes `/api/*`, `/auth/*`, `/demo/*`, and `/health` to `api/server.js`; the public `/demo` chooser remains a client route. Production uses the existing `wellnest` project and a configured 300-second function maximum. Keep AI deadlines within the actual host limits and ensure the object bucket already exists.
+- **Production frontend:** leave `VITE_API_BASE_URL` unset to use same-origin rewrites, and keep mock authentication disabled. Configure database, wrapping keys, storage, AI, public origin, allowed origins, and cleanup credentials on the server.
+- **Repository connection:** local Git pushes to `cura4you/WellNest`. The current release was deployed with the Vercel CLI; automatic deployments still require the Vercel GitHub app to be installed for the organization and connected to this repository.
+
+```sh
 npm run build
-npm run preview
+vercel deploy --prod --scope mohammad-petiwalas-projects
 ```
 
-### Vercel Deployment
+The scoped deployment command is for this project's existing owner. For your own deployment, link your own Vercel project and configure its environment first. Check `/health` after deployment. [Transition and rollout details →](WELLNEST_TRANSITION.md)
 
-Vercel runs the React build as static files and the Express app as one serverless function (`api/server.js`). Ollama and MinIO are local-only, so production needs hosted equivalents. All of them have free tiers:
+</details>
 
-| Need | Recommended | Also works |
-|---|---|---|
-| PostgreSQL (with pgvector) | [Neon](https://neon.tech) (free tier; also available as the Vercel Postgres integration; supports the `vector` extension) | Supabase, Railway, RDS |
-| S3-compatible bucket | [Cloudflare R2](https://developers.cloudflare.com/r2/) (10 GB free, no egress fees) | AWS S3, Backblaze B2, Supabase Storage |
-| Vision-capable model | [Google AI Studio](https://aistudio.google.com) Gemini API, free tier, OpenAI-compatible endpoint | Groq (free tier), OpenRouter (paid) |
-| Embeddings model | Google AI Studio `gemini-embedding-001` via the same OpenAI-compatible endpoint | Any OpenAI-compatible `/embeddings` endpoint |
+## Verification
 
-**1. Create the services**
+The latest WellNest rollout includes the following evidence. Counts describe separate suites, not unique tests added together, and do not imply every possible user action was exhaustively tested.
 
-- Neon: create a project, copy the connection string (it ends in `?sslmode=require`), then run `CREATE EXTENSION IF NOT EXISTS vector;` against it once (Neon supports pgvector natively).
-- R2: create a bucket named `medivault-documents`, then *Manage R2 API Tokens → Create API token* with Object Read & Write on that bucket. Note the Access Key ID, Secret Access Key, and the S3 endpoint `https://<account-id>.r2.cloudflarestorage.com`.
-- Gemini: create an API key in AI Studio (used for both chat completions and embeddings).
+| Scope | Result | Evidence |
+| --- | --- | --- |
+| Deterministic backend tests | 50 passed | `npm test`; [rollout record](WELLNEST_TRANSITION.md#verified-rollout--2026-11-07) |
+| Guest API integration | 8 groups passed against isolated PostgreSQL and HTTP | [Guest implementation and checks](GUEST_DEMO.md) |
+| Shared dashboard UI | 20 groups passed; three roles, six widths, light/dark themes | [Report](docs/wellnest-transition/dashboard-report.json) |
+| Hosted homepage | Links, preview tabs, keyboard access, and 13 viewport widths passed | [Report](docs/wellnest-transition/homepage-report.json) |
+| Hosted guest workflow | 6 groups passed, including sharing, isolation, cited AI, summaries, reset, and exit | [Report](docs/wellnest-transition/guest-hosted-report.json) |
+| Hosted rebrand and scheduling | 12 public/account routes, three dashboards, and persisted appointment checked | [Report](docs/wellnest-transition/brand-and-scheduling-report.json) |
+| Full local agent evaluation | 26 scenarios passed with a live model and database | [Report](docs/agent-live-verification.json) |
 
-**2. Apply the migrations to the hosted database** (from your machine, once per new database):
+```sh
+npm test
+npm run lint
+npx tsc --noEmit
+npm run build
 
-```bash
-DATABASE_URL='postgresql://...neon.tech/neondb?sslmode=require' npm run db:migrate
+# Integration/browser suites require their documented local services.
+npm run test:demo:api
+npm run test:e2e:demo
+npm run test:e2e:care
+npm run test:e2e:security
+npm run test:e2e:identity
+npm run test:e2e:agent
 ```
 
-The runner records applied files in `schema_migrations`, so re-running is safe. If the database was already migrated by hand, baseline it first with `npm run db:migrate -- --mark-applied`.
+The browser drivers use Playwright installed in `.claude/skills/run-medivault/`. Install its dependencies and Chromium there before the first browser run:
 
-**3. Import the repo in Vercel** (or `vercel link` from the CLI). Build settings come from `vercel.json`.
-
-**4. Environment variables** (Project Settings → Environment Variables, or `vercel env add NAME production`):
-
-| Variable | Value |
-|---|---|
-| `DATABASE_URL` | Neon connection string |
-| `SESSION_SECRET` | `openssl rand -hex 32` |
-| `S3_ENDPOINT` | `https://<account-id>.r2.cloudflarestorage.com` |
-| `S3_ACCESS_KEY` / `S3_SECRET_KEY` | R2 API token pair |
-| `S3_BUCKET` | `medivault-documents` |
-| `S3_REGION` | `auto` for R2 (`us-east-1` etc. for AWS) |
-| `AI_BASE_URL` | `https://generativelanguage.googleapis.com/v1beta/openai` |
-| `AI_MODEL` | `gemini-3.6-flash` (list the models your key can use with `curl "https://generativelanguage.googleapis.com/v1beta/models?key=$AI_API_KEY"` — Gemini periodically retires older model names) |
-| `AI_API_KEY` | Gemini API key |
-| `AI_TIMEOUT_MS` | `50000` (must stay under the function's 60 s `maxDuration` in `vercel.json`) |
-| `EMBEDDING_BASE_URL` | `https://generativelanguage.googleapis.com/v1beta/openai` |
-| `EMBEDDING_MODEL` | `gemini-embedding-001` |
-| `EMBEDDING_API_KEY` | Same Gemini key, or a separate one |
-| `EMBEDDING_DIMENSIONS` | `768` |
-| `ALLOWED_ORIGINS` | your production URL, e.g. `https://wellnest-cura4you.vercel.app` |
-| `NODE_ENV` | `production` |
-
-Leave `VITE_API_BASE_URL` **unset** in production: the frontend then uses relative `/api` URLs, which `vercel.json` rewrites to the function. Do not set `VITE_ENABLE_MOCK_AUTH` in production; it would make the site keep accounts in each visitor's browser instead of the database.
-
-**5. Deploy** (`vercel --prod`, or push to `main` once the Git integration is on) and check `https://<your-app>.vercel.app/health` returns `{"ok":true}`.
-
-Operational notes:
-- `/api/*`, `/auth/*`, and `/health` are rewritten to the Express serverless function in `api/server.js`; everything else serves `index.html` so React Router works on refresh.
-- Vercel serverless functions reject request bodies over 4.5 MB, so uploads are capped at 4 MB when `VERCEL` is set (20 MB locally).
-- `maxDuration` is 60 s on the Hobby plan; the AI call must finish inside it. Gemini Flash usually answers in a few seconds.
-- The bucket must already exist; the function does not create it (only the local `npm run dev:api` does).
-- TLS to Postgres is enabled automatically for non-localhost `DATABASE_URL`s (`server/src/db.js`); set `DATABASE_SSL=false` to override.
-
----
-
-## 📐 Architecture
-
-> See full architecture diagram: [`public/docs/MediVault-Architecture.pdf`](public/docs/MediVault-Architecture.pdf)
-
-```
-┌───────────────────────────────────────────────┐
-│                React Frontend                  │
-│      Patient · Doctor · Hospital Dashboards    │
-└──────────────────┬──────────────────────────────┘
-                   │ HMAC Bearer Token Auth
-┌──────────────────▼──────────────────────────────┐
-│             Express API (Node.js)               │
-│  Auth · Records · Consent · Emergency · Chat    │
-└──────┬───────────┬──────────────┬───────────┬────┘
-       │           │              │           │
-  ┌────▼────┐ ┌────▼─────┐ ┌─────▼──────┐ ┌──▼──────────┐
-  │PostgreSQL│ │ MinIO/S3 │ │ Ollama /   │ │ Embeddings +│
-  │ +pgvector│ │(Documents│ │ OpenAI-    │ │ pgvector    │
-  │  (Data)  │ │  Blobs)  │ │ compatible │ │ RAG search  │
-  │          │ │          │ │ (Summaries)│ │ (Chat)      │
-  └──────────┘ └──────────┘ └────────────┘ └─────────────┘
+```sh
+npm --prefix .claude/skills/run-medivault ci
+(cd .claude/skills/run-medivault && npx playwright install chromium)
 ```
 
----
+ Security and identity suites share ports and should run sequentially. [Care workflow setup →](CARE_WORKFLOWS.md)
 
-## Care workflows and local verification
+## Recent milestones and next steps
 
-Patient vitals, appointment scheduling for all three roles, and persistent in-app notification preferences are implemented. Apply migration `0011_care_workflows.sql`. `npm run dev:local` starts a local-only preview on port 5177, and `npm run test:e2e:care` runs the real-stack Playwright suite with synthetic accounts and isolated storage/database fixtures. See [CARE_WORKFLOWS.md](CARE_WORKFLOWS.md).
+**Shipped:** consistent dashboards across all three roles; real vitals, scheduling, and notification preferences; cited RAG and bounded agent tools; wrapped document keys and session revocation; provider review workflows; isolated guest showcase; the WellNest rebrand and organization repository transition.
 
-## Agentic chat
+**Next:** activate and verify external account email delivery; finish the organization-to-Vercel Git connection; add CI and operational monitoring; validate backup restores; complete the legacy storage/proof inventory. Hospital-system interoperability and a native mobile app remain future work, not current features.
 
-An optional read-only agent can gather evidence across several document lookups before answering. It provides document search/discovery/paged reads and patient-only profile/recorded-interaction tools, with per-tool authorization checks, auditing, progress events, limits, and fallback to existing RAG chat. It passed 26 local live evaluation scenarios; see [AGENT_EVALUATION.md](AGENT_EVALUATION.md) for results and remaining rollout limits, and [AGENTIC_CHAT_RUNBOOK.md](AGENTIC_CHAT_RUNBOOK.md) for activation. It defaults to `CHAT_AGENT_ENABLED=false`; a tool-capable `AI_AGENT_MODEL` is required for useful agent behavior.
+## Project and credits
 
-Run `npm run test:e2e:agent` for live local model/API/browser evaluation and `npm test` for deterministic agent/tool tests. These use injected data/model fixtures and do not replace testing against the real database and model.
+WellNest is maintained under **[cura4you](https://github.com/cura4you)** by [Mohammad Petiwala](https://github.com/moh0405) and [Saniya Desai](https://github.com/saniyadesai). It evolved from MediVault; the repository retains its original development history and contributor attribution. See the [commit history](https://github.com/cura4you/WellNest/commits/main/) for authorship.
 
-## Guest showcase
-
-Visitors can use **Try live demo** on the homepage or open `/demo` to explore populated patient, doctor and hospital dashboards. Each visitor gets a separate, expiring workspace with role switching and reset. See [GUEST_DEMO.md](GUEST_DEMO.md) for limits, isolation and verification.
-
-## 🧭 Project Status
-
-The Patient, Doctor, and Hospital dashboards share the plum/berry TypeScript design system in `src/dashboard-v2/`. Patient tabs were migrated first; Doctor and Hospital now use matching cards, lists, forms, and notifications throughout. The shared emergency access screen uses the same visual system and describes the actual consented, audited access flow. Patient Health Vitals now use patient-entered measurements, appointments support patient requests and provider scheduling across all roles, and notification preferences persist per account. See [CARE_WORKFLOWS.md](CARE_WORKFLOWS.md) for permissions, setup and browser verification.
-
-The latest dashboard, care workflow and homepage changes are deployed at https://wellnest-cura4you.vercel.app/. Account security setup and rollout are documented in SECURITY_OPERATIONS.md. Email verification and administrator provider review are described in IDENTITY_REVIEW.md; the live portfolio mode displays review state while preserving dashboard access. See `CLAUDE.md` for implementation history and local setup notes.
-
----
-
-## 🗺️ Roadmap
-
-- [x] **Email verification and provider review workflow** — Encrypted proof replacement, administrator decisions and strict-mode gates; external email delivery still needs its API credential.
-- [ ] **Legacy storage audit** — New uploads already use object storage; inventory any older DB-only records before retiring compatibility paths.
-- [x] **Session revocation and password recovery** — Server-side logout, sign-out-all, password change and single-use recovery links; production email delivery needs provider configuration.
-- [ ] **Legacy path cleanup** — Retire compatibility branches post-migration
-- [ ] **Mobile app** — React Native patient portal
-- [ ] **HL7 FHIR integration** — Interoperability with hospital systems
-- [x] **Doctor/Hospital dashboard redesign** — Extend the `dashboard-v2` design system across all role tabs
-
----
-
-<div align="center">
-
-**WellNest** — *Encrypted. Consent-driven. AI-augmented. Patient-first.*
-
-⭐ Star this repo if you found it useful!
-
-</div>
+<p align="center"><strong>Less searching. More understanding. Your care, connected.</strong></p>

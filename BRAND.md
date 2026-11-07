@@ -1,6 +1,6 @@
 # WellNest identity
 
-The approved identity is **P8 Tonal petals + W1 Modern**, selected by the user on 2026-11-05. Four rotationally balanced petals form a subtle healthcare cross. Opposite petals use 58% opacity. The wordmark has charcoal “Medi” and plum “Vault”, with no trailing period. Dark surfaces use lighter versions of the same colors.
+The approved identity is **P8 Tonal petals + W1 Modern**, selected by the user on 2026-11-05. Four rotationally balanced petals form a subtle healthcare cross. Opposite petals use 58% opacity. The wordmark has charcoal “Well” and plum “Nest”, with no trailing period. Dark surfaces use lighter versions of the same colors.
 
 - Primary: `#84416c` (plum); text: `#29272e` (charcoal).
 - Logo wordmark: W1 Modern, Arial/sans-serif at weight 600 with tight spacing. Keep it on one line. Application typography remains Plus Jakarta Sans.

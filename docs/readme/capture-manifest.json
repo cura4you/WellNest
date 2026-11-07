@@ -1,0 +1,50 @@
+{
+  "source": "https://wellnest-cura4you.vercel.app",
+  "capturedAt": "2026-11-07T18:48:06.528Z",
+  "data": "Synthetic records from one isolated guest workspace. No ordinary accounts used.",
+  "workspaceClosed": true,
+  "screenshots": [
+    {
+      "file": "homepage.png",
+      "caption": "The live WellNest landing page with the approved tonal petal identity and interactive health-record preview.",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "patient-dashboard.png",
+      "caption": "Patient overview with synthetic records, requests, appointments and health information.",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "doctor-dashboard.png",
+      "caption": "Doctor overview using the same visual system with role-specific care and shared-record tools.",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "hospital-dashboard.png",
+      "caption": "Hospital overview showing synthetic upload, access and compliance activity.",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "ai-assistant.png",
+      "caption": "A real hosted AI response explaining the synthetic HbA1c result, with a clickable document citation.",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "appointments.png",
+      "caption": "Persistent appointment scheduling in the isolated guest patient workspace.",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "patient-mobile.png",
+      "caption": "The live patient overview at a 390px mobile viewport, with responsive navigation and guest controls.",
+      "width": 390,
+      "height": 844
+    }
+  ]
+}
