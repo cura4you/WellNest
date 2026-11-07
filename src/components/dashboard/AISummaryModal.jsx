@@ -126,7 +126,7 @@ export default function AISummaryModal({ documentId, filename, onClose }) {
           <div className="aisummary-header-left">
             <span className="aisummary-logo">🧠</span>
             <div>
-              <h3 className="aisummary-title">MediVault AI Summary</h3>
+              <h3 className="aisummary-title">WellNest AI Summary</h3>
               <p className="aisummary-filename">{filename}</p>
             </div>
           </div>
@@ -141,7 +141,7 @@ export default function AISummaryModal({ documentId, filename, onClose }) {
             <div className="aisummary-loading">
               <div className="aisummary-spinner" />
               <p className="aisummary-loading-title">Analyzing your document...</p>
-              <p className="aisummary-loading-sub">MediVault AI is reading and summarizing</p>
+              <p className="aisummary-loading-sub">WellNest AI is reading and summarizing</p>
               <div className="aisummary-loading-dots">
                 <span /><span /><span />
               </div>

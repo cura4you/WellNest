@@ -65,7 +65,7 @@ export default function UploadModal({ onUpload, onClose, busy }) {
             <h3>Upload Document</h3>
             <p className="upload-modal-hint">
               <span className="upload-dot" />
-              MediVault stamp applied automatically
+              WellNest stamp applied automatically
             </p>
           </div>
           {step === 0 && (
@@ -100,7 +100,7 @@ export default function UploadModal({ onUpload, onClose, busy }) {
               )}
               <div className={`upload-step-message${step === 3 ? ' is-done' : ''}`}>
                 {step === 1 && 'Uploading your document…'}
-                {step === 2 && 'MediVault is verifying…'}
+                {step === 2 && 'WellNest is verifying…'}
                 {step === 3 && '✅ Stamp burned onto your document!'}
               </div>
             </div>
@@ -192,7 +192,7 @@ export default function UploadModal({ onUpload, onClose, busy }) {
                 <span className="upload-stamp-icon">⚡</span>
                 <div>
                   <div className="upload-stamp-title">Auto-verified & stamped</div>
-                  <div className="upload-stamp-desc">The MediVault seal is burned directly onto the uploaded file</div>
+                  <div className="upload-stamp-desc">The WellNest seal is burned directly onto the uploaded file</div>
                 </div>
               </div>
 

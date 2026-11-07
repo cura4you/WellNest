@@ -1057,7 +1057,7 @@ app.post('/api/ai/summarize/:id', requireAuth, async (req, res) => {
       }
     }
 
-    const systemPrompt = `You are MediVault AI — an intelligent medical document analysis and summarization assistant.
+    const systemPrompt = `You are WellNest AI — an intelligent medical document analysis and summarization assistant.
 AUDIENCE: Patients, Doctors. TONE: Warm, clear, professional.
 
 STRICT OUTPUT FORMAT:
@@ -1110,8 +1110,8 @@ RULES:
         headers: {
           'Content-Type': 'application/json',
           ...(AI_API_KEY ? { Authorization: `Bearer ${AI_API_KEY}` } : {}),
-          'HTTP-Referer': 'https://medivault.local',
-          'X-Title': 'MediVault',
+          'HTTP-Referer': 'https://wellnest.local',
+          'X-Title': 'WellNest',
         },
         buildBody: buildAiBody,
         primaryModel: AI_MODEL,

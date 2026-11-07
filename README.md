@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🏥 MediVault
+# 🏥 WellNest
 
 ### *Encrypted. Consent-driven. AI-augmented. Patient-first.*
 
@@ -22,13 +22,13 @@ Maintained by [@moh0405](https://github.com/moh0405)
 
 Healthcare data is **fragmented**, **inaccessible**, and **out of the patient's hands**. In emergencies, this costs lives.
 
-**MediVault fixes this.**
+**WellNest fixes this.**
 
 ---
 
-## 💡 What is MediVault?
+## 💡 What is WellNest?
 
-MediVault is a **secure, role-based medical records platform** that puts patients in full control of their health data. Patients own their records. Doctors request access. Hospitals stay accountable. AI makes it all understandable — and can answer questions about it, citing its sources.
+WellNest is a **secure, role-based medical records platform** that puts patients in full control of their health data. Patients own their records. Doctors request access. Hospitals stay accountable. AI makes it all understandable — and can answer questions about it, citing its sources.
 
 - 🔐 **Patient-owned encrypted records**
 - ✅ **Explicit, auditable consent flows**
@@ -91,8 +91,8 @@ MediVault is a **secure, role-based medical records platform** that puts patient
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/saniyadesai/medivault.git
-cd medivault
+git clone https://github.com/cura4you/WellNest.git
+cd WellNest
 
 # 2. Install dependencies
 npm install
@@ -228,7 +228,7 @@ The runner records applied files in `schema_migrations`, so re-running is safe. 
 | `EMBEDDING_MODEL` | `gemini-embedding-001` |
 | `EMBEDDING_API_KEY` | Same Gemini key, or a separate one |
 | `EMBEDDING_DIMENSIONS` | `768` |
-| `ALLOWED_ORIGINS` | your production URL, e.g. `https://medivault.vercel.app` |
+| `ALLOWED_ORIGINS` | your production URL, e.g. `https://wellnest-cura4you.vercel.app` |
 | `NODE_ENV` | `production` |
 
 Leave `VITE_API_BASE_URL` **unset** in production: the frontend then uses relative `/api` URLs, which `vercel.json` rewrites to the function. Do not set `VITE_ENABLE_MOCK_AUTH` in production; it would make the site keep accounts in each visitor's browser instead of the database.
@@ -287,7 +287,7 @@ Visitors can use **Try live demo** on the homepage or open `/demo` to explore po
 
 The Patient, Doctor, and Hospital dashboards share the plum/berry TypeScript design system in `src/dashboard-v2/`. Patient tabs were migrated first; Doctor and Hospital now use matching cards, lists, forms, and notifications throughout. The shared emergency access screen uses the same visual system and describes the actual consented, audited access flow. Patient Health Vitals now use patient-entered measurements, appointments support patient requests and provider scheduling across all roles, and notification preferences persist per account. See [CARE_WORKFLOWS.md](CARE_WORKFLOWS.md) for permissions, setup and browser verification.
 
-The latest dashboard, care workflow and homepage changes are deployed at https://medivault-roan-six.vercel.app/. Account security setup and rollout are documented in SECURITY_OPERATIONS.md. Email verification and administrator provider review are described in IDENTITY_REVIEW.md; the live portfolio mode displays review state while preserving dashboard access. See `CLAUDE.md` for implementation history and local setup notes.
+The latest dashboard, care workflow and homepage changes are deployed at https://wellnest-cura4you.vercel.app/. Account security setup and rollout are documented in SECURITY_OPERATIONS.md. Email verification and administrator provider review are described in IDENTITY_REVIEW.md; the live portfolio mode displays review state while preserving dashboard access. See `CLAUDE.md` for implementation history and local setup notes.
 
 ---
 
@@ -305,7 +305,7 @@ The latest dashboard, care workflow and homepage changes are deployed at https:/
 
 <div align="center">
 
-**MediVault** — *Encrypted. Consent-driven. AI-augmented. Patient-first.*
+**WellNest** — *Encrypted. Consent-driven. AI-augmented. Patient-first.*
 
 ⭐ Star this repo if you found it useful!
 

@@ -27,7 +27,7 @@ async function start() {
   }
 
   app.listen(port, host, () => {
-    console.log(`✅  MediVault API running on http://${host}:${port}`);
+    console.log(`✅  WellNest API running on http://${host}:${port}`);
   });
 }
 

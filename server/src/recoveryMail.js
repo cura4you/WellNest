@@ -16,7 +16,7 @@ async function sendAccountEmail({ to, token, purpose }) {
   // Fragment keeps the secret out of request URLs, referrers, and access logs.
   const verifying = purpose === 'verification';
   const link = `${config.origin}/${verifying ? 'verify-email' : 'reset-password'}#${token}`;
-  const text = verifying ? `Verify your MediVault email address.\n\n${link}\n\nThis link expires in 24 hours and can be used once. If you did not request this, ignore this email.` : `A password reset was requested for your MediVault account.\n\n${link}\n\nThis link expires in 30 minutes and can be used once. Resetting your password signs out all devices. If you did not request this, ignore this email.`;
+  const text = verifying ? `Verify your WellNest email address.\n\n${link}\n\nThis link expires in 24 hours and can be used once. If you did not request this, ignore this email.` : `A password reset was requested for your WellNest account.\n\n${link}\n\nThis link expires in 30 minutes and can be used once. Resetting your password signs out all devices. If you did not request this, ignore this email.`;
   if (config.file) {
     await appendFile(config.file, JSON.stringify({ to, link, purpose }) + '\n', { mode: 0o600 });
     return;
@@ -24,7 +24,7 @@ async function sendAccountEmail({ to, token, purpose }) {
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST', signal: AbortSignal.timeout(10000),
     headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json', 'Idempotency-Key': `${purpose}-${token}` },
-    body: JSON.stringify({ from: process.env.AUTH_EMAIL_FROM, to: [to], subject: verifying ? 'Verify your MediVault email' : 'Reset your MediVault password', text }),
+    body: JSON.stringify({ from: process.env.AUTH_EMAIL_FROM, to: [to], subject: verifying ? 'Verify your WellNest email' : 'Reset your WellNest password', text }),
   });
   if (!response.ok) throw new Error('Recovery email delivery failed.');
 }

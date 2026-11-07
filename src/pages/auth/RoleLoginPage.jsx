@@ -52,7 +52,7 @@ export default function RoleLoginPage({ roleKey }) {
       <Navbar />
       <AuthLayout
         title={`Welcome back, ${role.label}`}
-        subtitle="Sign in to access your secure MediVault records and role-specific workflows."
+        subtitle="Sign in to access your secure WellNest records and role-specific workflows."
         roleLabel={`${role.label} Login`}
         mode="login"
       >

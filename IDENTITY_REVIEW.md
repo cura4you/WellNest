@@ -24,7 +24,7 @@ Apply migration `0013_identity_review.sql` before deploying.
 
 - `APP_PUBLIC_URL`: fixed origin for verification/recovery links.
 - `RESEND_API_KEY`: server-only email credential.
-- `AUTH_EMAIL_FROM`: an authorized sender. For a domain-free portfolio test, `MediVault <onboarding@resend.dev>` can send only to the address associated with that Resend account; see [Resend's testing restriction](https://resend.com/docs/knowledge-base/403-error-resend-dev-domain).
+- `AUTH_EMAIL_FROM`: an authorized sender. For a domain-free portfolio test, `WellNest <onboarding@resend.dev>` can send only to the address associated with that Resend account; see [Resend's testing restriction](https://resend.com/docs/knowledge-base/403-error-resend-dev-domain).
 - `AUTH_EMAIL_ALLOWLIST`: optional comma-separated recipient restriction. The portfolio deployment limits email to its configured burner inbox. It never redirects other users' links to the burner inbox; those addresses cannot receive verification email in that mode.
 - `PROVIDER_APPROVAL_REQUIRED=false`: portfolio mode. Existing dashboards remain accessible, and banners/pages display actual unverified/draft/pending/rejected status. This is not approval enforcement.
 - `PROVIDER_APPROVAL_REQUIRED=true`: strict mode. Doctor/hospital clinical API requests and dashboard routes require both a verified email and an approved current application. Patients retain their ordinary role permissions. Proof upload, verification, account security and admin review endpoints remain accessible to authorized accounts outside the clinical API gate.

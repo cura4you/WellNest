@@ -1,6 +1,6 @@
 # One-click portfolio guest showcase
 
-Share `/demo` on the public MediVault site, or use **Try live demo** on the homepage. Visitors choose Patient, Doctor or Hospital and enter a populated temporary workspace without registration or a shared password. Bots/link previews loading the page do not provision accounts; creation requires clicking a role button.
+Share `/demo` on the public WellNest site, or use **Try live demo** on the homepage. Visitors choose Patient, Doctor or Hospital and enter a populated temporary workspace without registration or a shared password. Bots/link previews loading the page do not provision accounts; creation requires clicking a role button.
 
 ## Experience
 

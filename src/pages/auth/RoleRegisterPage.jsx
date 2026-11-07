@@ -150,7 +150,7 @@ export default function RoleRegisterPage({ roleKey }) {
       <Navbar />
       <AuthLayout
         title={`Create ${role.label} account`}
-        subtitle="Set up your credentials and complete role verification to access the MediVault ecosystem."
+        subtitle="Set up your credentials and complete role verification to access the WellNest ecosystem."
         roleLabel={`${role.label} Registration`}
         mode="register"
       >

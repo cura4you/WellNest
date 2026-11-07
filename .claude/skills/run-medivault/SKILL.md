@@ -1,9 +1,9 @@
 ---
 name: run-medivault
-description: Build, run, and drive MediVault (React 19 + Vite frontend, Express API, chat/RAG over pgvector). Use when asked to start MediVault, run the dev server, take a screenshot of its UI, register/login as a patient, doctor, or hospital, test the AI chat feature, or interact with the running app.
+description: Build, run, and drive WellNest (React 19 + Vite frontend, Express API, chat/RAG over pgvector). Use when asked to start WellNest, run the dev server, take a screenshot of its UI, register/login as a patient, doctor, or hospital, test the AI chat feature, or interact with the running app.
 ---
 
-MediVault is a Vite/React frontend plus an Express API that needs Postgres. Drive it by starting the Vite dev server on port 5177 and running `.claude/skills/run-medivault/driver.mjs`, a Playwright script that registers a user through the built-in mock auth, lands on the role dashboard, and screenshots each step. The API is not required for that path; a verified local-Postgres path for the full stack, including the Chat + RAG feature, is below.
+WellNest is a Vite/React frontend plus an Express API that needs Postgres. Drive it by starting the Vite dev server on port 5177 and running `.claude/skills/run-medivault/driver.mjs`, a Playwright script that registers a user through the built-in mock auth, lands on the role dashboard, and screenshots each step. The API is not required for that path; a verified local-Postgres path for the full stack, including the Chat + RAG feature, is below.
 
 All paths are relative to the repo root.
 

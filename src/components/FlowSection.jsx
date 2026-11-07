@@ -11,7 +11,7 @@ const ROLES = [
             </svg>
         ),
         steps: [
-            { icon: '📝', title: 'Create Account', desc: 'Sign up and set up your secure MediVault profile.' },
+            { icon: '📝', title: 'Create Account', desc: 'Sign up and set up your secure WellNest profile.' },
             { icon: '📤', title: 'Upload Records', desc: 'Add your health records, lab reports, prescriptions, and documents.' },
             { icon: '🔑', title: 'Grant Doctor Access', desc: 'Give your doctor permission to view specific records.' },
             { icon: '🚨', title: 'Emergency Access Enabled', desc: "Critical data is available to ER doctors if you're incapacitated." },
@@ -110,7 +110,7 @@ export default function FlowSection() {
                 <div className="section-header">
                     <span className="section-tag">How It Works</span>
                     <h2>Designed for Every Role</h2>
-                    <p>MediVault adapts to how each person interacts with healthcare data — securely and transparently.</p>
+                    <p>WellNest adapts to how each person interacts with healthcare data — securely and transparently.</p>
                 </div>
 
                 {/* Role Tabs */}

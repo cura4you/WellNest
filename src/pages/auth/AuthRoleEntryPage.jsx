@@ -13,7 +13,7 @@ export default function AuthRoleEntryPage({ mode }) {
         <div className="auth-shell-panel auth-shell-brand">
           <h1>{action} by Role</h1>
           <p className="auth-brand-subtitle">
-            Choose your role to continue with secure access tailored for your MediVault workflow.
+            Choose your role to continue with secure access tailored for your WellNest workflow.
           </p>
         </div>
 

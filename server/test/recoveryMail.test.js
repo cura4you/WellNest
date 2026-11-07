@@ -7,7 +7,7 @@ test('recovery refuses missing delivery config, unsafe public URLs and productio
     delete process.env.RESEND_API_KEY; delete process.env.AUTH_EMAIL_FROM; delete process.env.RECOVERY_MAIL_FILE;
     process.env.APP_PUBLIC_URL = 'https://medivault.example';
     assert.throws(() => recoveryConfiguration());
-    process.env.RESEND_API_KEY = 'synthetic-key'; process.env.AUTH_EMAIL_FROM = 'MediVault <auth@example.com>';
+    process.env.RESEND_API_KEY = 'synthetic-key'; process.env.AUTH_EMAIL_FROM = 'WellNest <auth@example.com>';
     assert.equal(recoveryConfiguration().origin, 'https://medivault.example');
     for (const url of ['http://example.com', 'https://user:password@example.com', 'https://example.com/other', 'https://example.com/?redirect=evil']) {
       process.env.APP_PUBLIC_URL = url; assert.throws(() => recoveryConfiguration());

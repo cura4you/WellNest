@@ -10,7 +10,7 @@ export default function AuthLayout({ title, subtitle, children, roleLabel, mode,
   return (
     <section className="auth-shell">
       <div className="auth-shell-panel auth-shell-brand">
-        <Link to="/" className="auth-brand-link" aria-label="MediVault home"><BrandLogo /></Link>
+        <Link to="/" className="auth-brand-link" aria-label="WellNest home"><BrandLogo /></Link>
         <p className="auth-brand-kicker">Secure healthcare identity platform</p>
         <h1>{title}</h1>
         <p className="auth-brand-subtitle">{subtitle}</p>

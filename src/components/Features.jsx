@@ -94,7 +94,7 @@ export default function Features() {
             <div className="container">
                 <div className="section-header">
                     <span className="section-tag">Core Capabilities</span>
-                    <h2>Everything MediVault Offers</h2>
+                    <h2>Everything WellNest Offers</h2>
                     <p>Medical-grade software built around people — patients, doctors, and hospitals alike.</p>
                 </div>
 

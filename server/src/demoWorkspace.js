@@ -29,7 +29,7 @@ async function seed(client,workspace){
   const id=workspace.id,generation=workspace.generation;
   const accounts={};
   for(const [role,name]of [['patient','Jamie Morgan'],['doctor','Dr. Avery Patel'],['hospital','Willow Care Hospital']]){
-    accounts[role]=(await client.query("INSERT INTO users(email,password_hash,role,demo_workspace_id) VALUES($1,'guest-session-only',$2,$3) RETURNING *",[`${role}+${id}.g${generation}@demo.medivault.invalid`,role,id])).rows[0];accounts[role].name=name;
+    accounts[role]=(await client.query("INSERT INTO users(email,password_hash,role,demo_workspace_id) VALUES($1,'guest-session-only',$2,$3) RETURNING *",[`${role}+${id}.g${generation}@demo.wellnest.invalid`,role,id])).rows[0];accounts[role].name=name;
   }
   const p=accounts.patient,d=accounts.doctor,h=accounts.hospital;
   const patient=(await client.query("INSERT INTO patients(user_id,full_name,date_of_birth,blood_group,gender,allergies,current_medications) VALUES($1,$2,'1995-06-15','O+','Other','None recorded (synthetic)','Vitamin D3 sample entry') RETURNING id",[p.id,p.name])).rows[0].id;

@@ -12,7 +12,7 @@ export default function VerifiedStamp({ size = 180, variant = 'badge', color = '
           <path d="M25 3L5 12v13c0 12.5 8.5 24.2 20 27.4C36.5 49.2 45 37.5 45 25V12L25 3z" fill="white" opacity="0.9" />
           <polyline points="14,25 22,33 37,17" stroke={color} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
         </g>
-        <text x="75" y="28" fontSize="18" fontWeight="900" fontFamily="'Plus Jakarta Sans','Segoe UI',sans-serif" fill="white" letterSpacing="2">MEDIVAULT</text>
+        <text x="75" y="28" fontSize="18" fontWeight="900" fontFamily="'Plus Jakarta Sans','Segoe UI',sans-serif" fill="white" letterSpacing="2">WELLNEST</text>
         <text x="75" y="48" fontSize="11" fontWeight="600" fontFamily="'Plus Jakarta Sans','Segoe UI',sans-serif" fill="rgba(255,255,255,0.85)" letterSpacing="3">VERIFIED DOCUMENT</text>
         <text x="370" y="42" fontSize="10" fill="rgba(255,255,255,0.6)" textAnchor="end">✓</text>
       </svg>
@@ -34,7 +34,7 @@ export default function VerifiedStamp({ size = 180, variant = 'badge', color = '
       <circle cx="110" cy="110" r="98" fill="none" stroke={color} strokeOpacity="0.65" strokeWidth="1.8" strokeDasharray="5 3.5" filter={`url(#ink${uid})`} />
       <circle cx="110" cy="110" r="70" fill="none" stroke={color} strokeOpacity="0.5" strokeWidth="1.2" filter={`url(#ink${uid})`} />
       <text fontSize="13" fontWeight="900" fontFamily="'Plus Jakarta Sans','Segoe UI',sans-serif" fill={color} letterSpacing="7.5" filter={`url(#ink${uid})`}>
-        <textPath href={`#ta${uid}`} startOffset="50%" textAnchor="middle">MEDIVAULT</textPath>
+        <textPath href={`#ta${uid}`} startOffset="50%" textAnchor="middle">WELLNEST</textPath>
       </text>
       <text fontSize="10" fontWeight="800" fontFamily="'Plus Jakarta Sans','Segoe UI',sans-serif" fill={color} letterSpacing="4" filter={`url(#ink${uid})`}>
         <textPath href={`#ba${uid}`} startOffset="50%" textAnchor="middle">VERIFIED DOCUMENT</textPath>

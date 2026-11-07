@@ -15,7 +15,7 @@ export default function BrandLogo({ compact = false, className = '' }) {
           />
         ))}
       </svg>
-      {!compact && <span className="brand-logo-wordmark">Medi<span className="brand-logo-vault">Vault</span></span>}
+      {!compact && <span className="brand-logo-wordmark">Well<span className="brand-logo-vault">Nest</span></span>}
     </span>
   );
 }

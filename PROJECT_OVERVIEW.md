@@ -1,11 +1,11 @@
-# MediVault Project Overview
+# WellNest Project Overview
 
 ## 1) Project Name and One-Line Description
 - **Project name:** `medivault-react`
-- **One-line description:** MediVault is a secure, role-based medical records platform where patients, doctors, and hospitals manage encrypted records, consented access, emergency access, and AI-assisted report summaries.
+- **One-line description:** WellNest is a secure, role-based medical records platform where patients, doctors, and hospitals manage encrypted records, consented access, emergency access, and AI-assisted report summaries.
 
 ## 2) Core Problem It Solves (The Why)
-Healthcare records are typically fragmented across hospitals and providers, which causes delays, repeated tests, and unsafe care decisions (especially during emergencies). MediVault addresses this by:
+Healthcare records are typically fragmented across hospitals and providers, which causes delays, repeated tests, and unsafe care decisions (especially during emergencies). WellNest addresses this by:
 - Centralizing patient records under patient ownership
 - Enforcing explicit, auditable access control
 - Enabling emergency break-glass access with guardrails
@@ -114,11 +114,11 @@ Healthcare records are typically fragmented across hospitals and providers, whic
 - `public/carousel/slide-2.png`
 - `public/carousel/slide-3.png`
 - `public/carousel/slide-4.png`
-- `public/docs/MediVault-Architecture.pdf`
-- `public/docs/MediVault-Team-Briefing.docx`
+- `public/docs/WellNest-Architecture.pdf`
+- `public/docs/WellNest-Team-Briefing.docx`
 
 ## 7) Team Name and Member Names (If Found)
-- No explicit team name (separate from "MediVault") found in the current code/config.
+- No explicit team name (separate from "WellNest") found in the current code/config.
 - No explicit member name list found in current code/config.
 - Text references found:
   - "Team Briefing"

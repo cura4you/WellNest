@@ -7,7 +7,7 @@ export default function Footer() {
                 <div className="footer-logo">
                     <BrandLogo />
                 </div>
-                <p className="footer-copy">MediVault &copy; 2026 &mdash; Secure Medical Records Platform</p>
+                <p className="footer-copy">WellNest &copy; 2026 &mdash; Secure Medical Records Platform</p>
                 <p className="footer-sub">Built with care for patients everywhere</p>
             </div>
         </footer>

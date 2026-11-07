@@ -1,4 +1,4 @@
-.medivault-home {
+.wellnest-home {
   --home-ink: var(--brand-ink);
   --home-muted: #6d6873;
   --home-plum: var(--brand-plum);
@@ -9,13 +9,13 @@
   font-size: 15px;
   line-height: 1.7;
 }
-.medivault-home h1, .medivault-home h2, .medivault-home h3 { font-family: inherit; font-weight: 600; color: var(--home-ink); }
-.medivault-home button, .medivault-home a { -webkit-tap-highlight-color: transparent; }
-.medivault-home button { font: inherit; cursor: pointer; }
-.medivault-home svg { flex-shrink: 0; vertical-align: middle; }
-.medivault-home :is(a, button, [tabindex]):focus-visible { outline: 3px solid #84416c; outline-offset: 5px; }
+.wellnest-home h1, .wellnest-home h2, .wellnest-home h3 { font-family: inherit; font-weight: 600; color: var(--home-ink); }
+.wellnest-home button, .wellnest-home a { -webkit-tap-highlight-color: transparent; }
+.wellnest-home button { font: inherit; cursor: pointer; }
+.wellnest-home svg { flex-shrink: 0; vertical-align: middle; }
+.wellnest-home :is(a, button, [tabindex]):focus-visible { outline: 3px solid #84416c; outline-offset: 5px; }
 .home-container { width: min(1760px, calc(100% - clamp(64px, 8vw, 192px))); margin-inline: auto; }
-.medivault-home [id] { scroll-margin-top: 105px; }
+.wellnest-home [id] { scroll-margin-top: 105px; }
 .home-skip { position: fixed; top: -100px; left: 16px; z-index: 100; padding: 12px 20px; background: #fff; border: 1px solid var(--home-plum); border-radius: 8px; }
 .home-skip:focus { top: 12px; }
 .home-header { position: sticky; top: 0; z-index: 30; background: #fdfcfbf5; border-bottom: 1px solid var(--home-line); backdrop-filter: blur(16px); }
@@ -65,7 +65,7 @@
 .home-preview-metrics strong { font-size: 17px; line-height: 1.4; font-weight: 600; }
 .home-preview-metrics strong > span { display: block; color: #6d6274; font-size: 9px; font-weight: 400; white-space: nowrap; }
 .home-preview-tabs { display: flex; gap: 22px; border-bottom: 1px solid #eeeaf0; }
-.medivault-home .home-preview-tabs button { min-height: 44px; padding: 0 0 10px; font-size: 11px; color: #6d6274; border: 0; border-bottom: 2px solid transparent; background: none; }
+.wellnest-home .home-preview-tabs button { min-height: 44px; padding: 0 0 10px; font-size: 11px; color: #6d6274; border: 0; border-bottom: 2px solid transparent; background: none; }
 .home-preview-tabs button[aria-selected='true'] { color: var(--home-plum); border-bottom-color: var(--home-plum); font-weight: 600; }
 .home-preview-panel { min-height: 216px; padding-bottom: 8px; }
 .home-panel-heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding-top: 16px; margin-bottom: 6px; }
@@ -180,7 +180,7 @@
   .home-preview-greeting p { font-size: 12px; }
   .home-preview-metrics strong { font-size: 19px; }
   .home-preview-metrics strong > span { font-size: 10px; }
-  .medivault-home .home-preview-tabs button { font-size: 12px; }
+  .wellnest-home .home-preview-tabs button { font-size: 12px; }
   .home-record strong { font-size: 13px; }
   .home-record div > span, .home-record time { font-size: 11px; }
   .home-panel-heading h3 { font-size: 13px; }
@@ -244,7 +244,7 @@
   .home-nav { min-height: 70px; justify-content: space-between; }
   .home-nav .brand-logo { font-size: 21px; }
   .home-nav .brand-logo-mark { width: 27px; height: 31px; }
-  .medivault-home .home-menu-toggle { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--home-line); border-radius: 7px; background: #fff; color: var(--home-plum); }
+  .wellnest-home .home-menu-toggle { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--home-line); border-radius: 7px; background: #fff; color: var(--home-plum); }
   .home-navigation { display: none; position: absolute; top: 100%; left: 0; right: 0; padding: 16px 20px 22px; background: #fdfcfb; border-bottom: 1px solid var(--home-line); box-shadow: 0 12px 15px #392a3708; }
   .home-navigation.is-open { display: flex; flex-direction: column; align-items: stretch; gap: 15px; }
   .home-nav-links { flex-direction: column; align-items: stretch; gap: 0; margin: 0; }
@@ -274,7 +274,7 @@
   .home-preview-metrics svg { width: 13px; }
   .home-preview-metrics strong { font-size: 15px; }
   .home-preview-metrics strong > span { font-size: 7px; }
-  .medivault-home .home-preview-tabs button { font-size: 10px; padding-bottom: 12px; min-height: 44px; }
+  .wellnest-home .home-preview-tabs button { font-size: 10px; padding-bottom: 12px; min-height: 44px; }
   .home-preview-tabs { gap: 20px; }
   .home-preview-panel { min-height: 235px; }
   .home-panel-heading > span { font-size: 7px; }
@@ -333,8 +333,8 @@
   .home-footer-bottom { font-size: 8px; gap: 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  html:has(.medivault-home) { scroll-behavior: auto; }
-  .medivault-home *, .medivault-home *::before, .medivault-home *::after { transition: none !important; animation: none !important; }
+  html:has(.wellnest-home) { scroll-behavior: auto; }
+  .wellnest-home *, .wellnest-home *::before, .wellnest-home *::after { transition: none !important; animation: none !important; }
 }
 
 /* Small phones must fit the preview itself, not merely hide page overflow. */

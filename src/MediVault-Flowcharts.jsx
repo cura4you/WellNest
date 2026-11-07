@@ -98,7 +98,7 @@ function ArchitectureDiagram() {
   return (
     <div>
       <p style={{ color: "#4A5568", fontSize: 13, marginBottom: 20 }}>
-        MediVault is a multi-role platform. All four user types interact with the same central encrypted data layer through role-specific interfaces with strictly enforced permissions.
+        WellNest is a multi-role platform. All four user types interact with the same central encrypted data layer through role-specific interfaces with strictly enforced permissions.
       </p>
 
       {/* Central vault */}
@@ -231,7 +231,7 @@ function TransferDiagram() {
   return (
     <div>
       <p style={{ color: "#4A5568", fontSize: 13, marginBottom: 20 }}>
-        MediVault's flagship feature. The patient initiates all transfers — the old hospital cannot block access permanently. Every step is logged in an immutable audit trail.
+        WellNest's flagship feature. The patient initiates all transfers — the old hospital cannot block access permanently. Every step is logged in an immutable audit trail.
       </p>
       <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
         {steps.map((s, i) => (
@@ -385,7 +385,7 @@ export default function App() {
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: 28 }}>
         <div style={{ fontSize: 28, fontWeight: 900, color: BLUE, letterSpacing: -1 }}>
-          MEDIVAULT
+          WELLNEST
         </div>
         <div style={{ color: "#718096", fontSize: 13, marginTop: 4 }}>
           Visual Architecture & Flow Diagrams · Team Briefing
@@ -413,7 +413,7 @@ export default function App() {
           <span style={{ fontSize: 28 }}>{activeMeta.emoji}</span>
           <div>
             <div style={{ fontWeight: 800, fontSize: 18, color: activeMeta.color }}>{activeMeta.label}</div>
-            <div style={{ fontSize: 11, color: "#A0AEC0", fontWeight: 600, textTransform: "uppercase", letterSpacing: 1 }}>MediVault · System Diagram</div>
+            <div style={{ fontSize: 11, color: "#A0AEC0", fontWeight: 600, textTransform: "uppercase", letterSpacing: 1 }}>WellNest · System Diagram</div>
           </div>
         </div>
         <ActiveDiagram />
@@ -421,7 +421,7 @@ export default function App() {
 
       {/* Footer */}
       <div style={{ textAlign: "center", marginTop: 24, color: "#A0AEC0", fontSize: 11 }}>
-        MediVault · Hackathon 2026 · Confidential — For Team Use Only
+        WellNest · Hackathon 2026 · Confidential — For Team Use Only
       </div>
     </div>
   );

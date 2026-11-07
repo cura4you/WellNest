@@ -1,4 +1,4 @@
-// MediVault smoke driver. Runs the frontend through a real browser:
+// WellNest smoke driver. Runs the frontend through a real browser:
 // landing page -> register <role> -> dashboard -> Storage Vault tab -> logout
 // -> login again. Screenshots land in --shots (default: ./.claude/skills/run-medivault/shots).
 //

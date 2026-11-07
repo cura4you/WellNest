@@ -1,4 +1,4 @@
-# MediVault | Full-Stack, AI-Powered Medical Records Platform
+# WellNest | Full-Stack, AI-Powered Medical Records Platform
 
 **Technologies:** React, TypeScript, JavaScript, Node.js, Express.js, REST APIs, PostgreSQL, pgvector, Google Gemini, Cloudflare R2, Vercel, Playwright, SQL, Git
 

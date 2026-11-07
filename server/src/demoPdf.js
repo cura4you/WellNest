@@ -1,6 +1,6 @@
 // Small, valid, text-only PDF for fictional showcase records. No image/model generation.
 export function samplePdf(text){
-  const words=text.replace(/[^\x20-\x7e]/g,' ').split(/\s+/);const lines=['MediVault | Synthetic portfolio record',''];let line='';
+  const words=text.replace(/[^\x20-\x7e]/g,' ').split(/\s+/);const lines=['WellNest | Synthetic portfolio record',''];let line='';
   for(const word of words){if((line+' '+word).trim().length>82){lines.push(line);line=word;}else line=(line+' '+word).trim();}if(line)lines.push(line);
   const escape=value=>value.replaceAll('\\','\\\\').replaceAll('(','\\(').replaceAll(')','\\)');
   const stream=`BT /F1 11 Tf 50 742 Td 15 TL ${lines.map(t=>`(${escape(t)}) Tj T*`).join('\n')} ET`;

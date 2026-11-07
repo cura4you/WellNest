@@ -1,6 +1,6 @@
 # Chat + RAG Integration Spec
 
-Goal: add a persistent, multi-turn AI chat to MediVault that can answer
+Goal: add a persistent, multi-turn AI chat to WellNest that can answer
 questions using Retrieval-Augmented Generation (RAG) over documents already
 stored in the vault (lab reports, prescriptions, imaging, discharge
 summaries, etc.), built entirely with this project's existing stack and
@@ -10,24 +10,24 @@ This is a spec to implement against, not a set of files to copy. There is
 no compatible reference implementation to port — a Next.js/Gemini/Sequelize
 chat feature from another project was evaluated and rejected as a literal
 copy source because the stack doesn't match (see "Why not copy" below).
-Everything here should be built fresh in MediVault's own style.
+Everything here should be built fresh in WellNest's own style.
 
 ## Why not copy an existing implementation
 
 A chat feature was found in a sibling project, but it's Next.js App Router
 route handlers, the Gemini SDK's function-calling API, and Sequelize models
-against Azure SQL. MediVault is Vite + React (SPA) on the frontend, a single
+against Azure SQL. WellNest is Vite + React (SPA) on the frontend, a single
 Express app (`server/src/app.js`) + Vercel serverless wrapper on the
 backend, and Drizzle ORM + Postgres for data, already calling a generic
 OpenAI-compatible endpoint via plain `fetch`. None of the other project's
 files would run here. The useful part of that implementation is the
 *pattern* (streaming responses, session persistence, rolling summarization
 of long histories), not its code, and that pattern is described below in
-terms of what MediVault should actually build.
+terms of what WellNest should actually build.
 
 ## Hard constraint: this is a medical records vault — access control is not optional
 
-MediVault already enforces document-level access control: a patient owns
+WellNest already enforces document-level access control: a patient owns
 their documents, an uploader can access what they uploaded, and anyone else
 needs an **approved, unexpired, unrevoked grant** (see the three-tier check
 in `server/src/app.js` around lines 1046-1062, used by both the download

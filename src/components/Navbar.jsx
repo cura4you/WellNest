@@ -82,7 +82,7 @@ export default function Navbar() {
         <nav className="navbar" id="navbar">
             <div className="nav-inner">
                 {/* Logo */}
-                <Link to="/" className="nav-logo" aria-label="MediVault Home" onClick={closeMenu}>
+                <Link to="/" className="nav-logo" aria-label="WellNest Home" onClick={closeMenu}>
                     <BrandLogo />
                 </Link>
 

@@ -61,7 +61,7 @@ export default function DocumentViewer({ url, filename, mimeType, onClose, verif
               <h3 className="docviewer-filename">{filename || 'Document'}</h3>
               <span className="docviewer-verified-tag">
                 <span className="upload-dot" />
-                MediVault Verified
+                WellNest Verified
               </span>
             </div>
           </div>

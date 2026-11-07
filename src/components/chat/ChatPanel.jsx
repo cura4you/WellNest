@@ -158,7 +158,7 @@ export default function ChatPanel() {
         <div className="chat-messages">
           {messages.length === 0 ? (
             <p className="dashboard-empty-state chat-intro">
-              Ask a question about the documents you have access to. MediVault will retrieve relevant excerpts and answer using only that content.
+              Ask a question about the documents you have access to. WellNest will retrieve relevant excerpts and answer using only that content.
             </p>
           ) : (
             messages.map((m) => {

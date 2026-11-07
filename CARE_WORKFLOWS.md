@@ -14,7 +14,7 @@ The server derives the patient from the authenticated account, validates numeric
 
 ## Appointments
 
-All three dashboards have an Appointments view and an Overview preview. The other participant must already have a MediVault account. Patients request a doctor/hospital appointment; providers can create a confirmed appointment for a patient. Providers confirm requests. Either participant can reschedule or cancel; patient rescheduling requires renewed confirmation. Only the provider can complete a confirmed visit after its start time.
+All three dashboards have an Appointments view and an Overview preview. The other participant must already have a WellNest account. Patients request a doctor/hospital appointment; providers can create a confirmed appointment for a patient. Providers confirm requests. Either participant can reschedule or cancel; patient rescheduling requires renewed confirmation. Only the provider can complete a confirmed visit after its start time.
 
 - `GET /api/appointments` (latest 200 matching appointments)
 - `POST /api/appointments`
